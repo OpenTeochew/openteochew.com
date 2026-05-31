@@ -1,0 +1,14 @@
+{
+  "main": "src/index.tsx",
+  "compatibility_date": "2025-04-01",
+  "assets": {
+    "directory": "public"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "openteochew-db",
+      "database_id": "TODO_FILL_IN"
+    }
+  ]
+}

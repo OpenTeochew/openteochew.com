@@ -1,0 +1,26 @@
+export interface Source {
+  id: number
+  name: string
+  name_zh: string | null
+  author: string | null
+  year: string | null
+  type: 'scan_dict' | 'text_dict' | 'corpus' | 'wordlist'
+  level: string | null
+  status: string | null
+  description: string | null
+  cover_url: string | null
+  total_entries: number
+  total_pages: number
+  sort_order: number
+}
+
+export interface SourceDetail extends Source {
+  sections: Section[]
+}
+
+export interface Section {
+  id: number
+  source_id: number
+  title: string
+  sort_order: number
+}
