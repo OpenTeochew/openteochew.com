@@ -53,13 +53,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { sourcesApi } from '../../api/sources'
-import type { Source } from '../../types/source'
 
 const activeCat = ref(0)
 const catTabs = ['全部', '字典原書', '語料文本', '教材']
 
-const dicts = ref<Source[]>([])
-const articles = ref<Source[]>([])
+const dicts = ref([])
+const articles = ref([])
 const loading = ref(true)
 
 onMounted(async () => {

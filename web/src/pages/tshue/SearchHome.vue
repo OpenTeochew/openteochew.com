@@ -62,7 +62,6 @@
 import { reactive, ref, onMounted } from 'vue'
 import { useSearch } from '../../composables/useSearch'
 import { sourcesApi } from '../../api/sources'
-import type { Source } from '../../types/source'
 
 const { doSearch } = useSearch()
 
@@ -83,7 +82,7 @@ function addRow() {
   queryRows.push({ field: 'en', value: '' })
 }
 
-function removeRow(i: number) {
+function removeRow(i) {
   if (queryRows.length > 1) queryRows.splice(i, 1)
 }
 
@@ -96,7 +95,7 @@ function handleSubmit() {
   if (hasInput) doSearch(queryRows)
 }
 
-const sources = ref<Source[]>([])
+const sources = ref([])
 const sourcesLoading = ref(true)
 
 onMounted(async () => {

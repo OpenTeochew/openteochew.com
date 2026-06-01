@@ -67,7 +67,6 @@
 import { reactive, ref, computed, onMounted } from 'vue'
 import { useSearchStore } from '../../stores/search'
 import { useSearch } from '../../composables/useSearch'
-import type { SearchGroup } from '../../types/search'
 
 const store = useSearchStore()
 const { doSearch } = useSearch()
@@ -87,7 +86,7 @@ const queryRows = reactive([
 
 const activeFilter = ref(0)
 
-const groups = computed<SearchGroup[]>(() => store.result?.groups || [])
+const groups = computed(() => store.result?.groups || [])
 const total = computed(() => store.result?.total || 0)
 const currentPage = computed(() => store.result?.page || 1)
 
@@ -105,7 +104,7 @@ function addRow() {
   queryRows.push({ field: 'en', value: '' })
 }
 
-function removeRow(i: number) {
+function removeRow(i) {
   if (queryRows.length > 1) queryRows.splice(i, 1)
 }
 

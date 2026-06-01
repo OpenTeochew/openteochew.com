@@ -58,15 +58,13 @@
 import { ref, onMounted, computed } from 'vue'
 import { entriesApi } from '../../api/entries'
 import { searchApi } from '../../api/search'
-import type { EntryDetail as EntryDetailType } from '../../types/entry'
-import type { SearchGroup } from '../../types/search'
 
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const audioPlaying = ref(false)
 const loading = ref(true)
-const entry = ref<EntryDetailType | null>(null)
-const crossSourceGroups = ref<SearchGroup[]>([])
+const entry = ref(null)
+const crossSourceGroups = ref([])
 
 function toggleAudio() {
   audioPlaying.value = !audioPlaying.value
@@ -88,7 +86,7 @@ const defTabs = computed(() => {
     definitions: [currentDef]
   }]
 
-  const sourceTabs: Record<string, { key: string; label: string; definitions: { source: string; text: string }[] }> = {}
+  const sourceTabs = {}
   sourceTabs[entry.value.source.name] = {
     key: `source-${entry.value.source.id}`,
     label: entry.value.source.name,

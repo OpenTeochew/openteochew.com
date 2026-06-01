@@ -31,7 +31,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Marked } from 'marked'
 import { articlesApi } from '../../api/articles'
-import type { Article } from '../../types/article'
 
 const marked = new Marked()
 marked.use({
@@ -46,7 +45,7 @@ marked.use({
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const loading = ref(true)
-const article = ref<Article | null>(null)
+const article = ref(null)
 const activeSection = ref('')
 
 const renderedContent = computed(() => {

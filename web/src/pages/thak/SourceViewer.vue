@@ -60,18 +60,16 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { sourcesApi } from '../../api/sources'
-import type { SourceDetail, Page } from '../../types/source'
-import type { Entry } from '../../types/entry'
 
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const loading = ref(true)
-const source = ref<SourceDetail | null>(null)
+const source = ref(null)
 const viewMode = ref('scan')
 const pageNum = ref(1)
 const sidebarQuery = ref('')
-const entries = ref<Entry[]>([])
-const pages = ref<Page[]>([])
+const entries = ref([])
+const pages = ref([])
 
 async function loadData() {
   loading.value = true
