@@ -45,7 +45,7 @@
               <span class="source-group-count">{{ group.count }} 筆</span>
             </div>
             <table class="results-table">
-              <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th><th></th></tr></thead>
+              <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th></tr></thead>
               <tbody>
                 <tr v-for="entry in group.entries" :key="entry.id">
                   <td class="rt-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></td>
@@ -53,7 +53,6 @@
                   <td class="rt-dp">{{ entry.dp }}</td>
                   <td class="rt-def">{{ entry.en }}<OrigIndicator :orig="entry.en_orig" /></td>
                   <td class="rt-page">{{ entry.page_num ? `p. ${entry.page_num}` : '' }}</td>
-                  <td><button class="rt-audio" @click.stop><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></td>
                 </tr>
               </tbody>
             </table>
