@@ -72,6 +72,15 @@ tmp/                  # 原型（已忽略）
 - `backend/wrangler.jsonc` 中 D1 database_id 為 `TODO_FILL_IN`
 - 原型參考：`tmp/index.html`（已 gitignore）
 
+## Coding Principles
+
+1. **Think Before Coding** — 不假設，不掩蓋困惑，主動揭示權衡。
+2. **Simplicity First** — 只寫解決問題的最少代碼，不做投機性設計。
+3. **Surgical Changes** — 只改必須改的，只清理自己弄亂的。
+4. **Goal-Driven Execution** — 先定義成功標準，循環直到驗證通過。
+
+完成功能後，審視 `docs/` 下設計文檔是否需要同步更新。
+
 ## Dev Commands
 
 ```bash
