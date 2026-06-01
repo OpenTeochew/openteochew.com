@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const searchSchema = z.object({
-  q_hanzi: z.string().optional(),
+  q_han: z.string().optional(),
   q_puj: z.string().optional(),
   q_dp: z.string().optional(),
   q_en: z.string().optional(),

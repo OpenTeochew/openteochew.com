@@ -14,7 +14,7 @@ export async function getEntryById(db: D1Database, id: number) {
 
   return {
     id: entry.id,
-    hanzi: entry.hanzi,
+    han: entry.han,
     puj: entry.puj,
     dp: entry.dp,
     en: entry.en,

@@ -11,7 +11,7 @@
 **OpenTeochew** (開放潮州話) is an open-source platform for Teochew (潮州話) language resources. It aggregates dictionaries, corpora, and texts into a unified digital platform.
 
 **Two sub-sites:**
-- **Tshue (查)** — Dictionary search engine. Multi-field, multi-script search (PUJ, DP, Hanzi, English, Mandarin, Japanese) with AND-query rows. Results displayed as source-grouped tables. Aggregates all source dictionaries.
+- **Chhe (查)** — Dictionary search engine. Multi-field, multi-script search (PUJ, DP, Hanzi, English, Mandarin, Japanese) with AND-query rows. Results displayed as source-grouped tables. Aggregates all source dictionaries.
 - **Thak (讀)** — Reading / browsing interface. View original dictionary scans with OCR overlay, read curated language corpora with three-line (Teochew / PUJ / translation) alignment.
 
 **Tech stack:** Single-page HTML application. No frameworks, no build step. Vanilla JS with hash-based routing. All CSS is inline in a single `<style>` block.
@@ -140,9 +140,9 @@ No hard drop shadows. No transforms on hover. No brightness shifts.
 | Hash route | Page ID | Description |
 |------------|---------|-------------|
 | `#home` (default) | `page-home` | Landing page with dual-site cards |
-| `#tshue` | `page-tshue` | Search home — multi-field query form + popular words + sources |
-| `#tshue-results` | `page-tshue-results` | Search results in source-grouped tables |
-| `#tshue-entry` | `page-tshue-entry` | Single entry detail page |
+| `#chhe` | `page-chhe` | Search home — multi-field query form + popular words + sources |
+| `#chhe-results` | `page-chhe-results` | Search results in source-grouped tables |
+| `#chhe-entry` | `page-chhe-entry` | Single entry detail page |
 | `#thak` | `page-thak` | Reading home — dictionary list + corpus list |
 | `#thak-read` | `page-thak-read` | Corpus/article reading page |
 | `#thak-dict` | `page-thak-dict` | Dictionary scan/OCR viewer |
@@ -156,12 +156,12 @@ No hard drop shadows. No transforms on hover. No brightness shifts.
 // - Defaults to 'home' when hash is empty
 // - Sets document.title per route
 // - Scrolls to top on route change
-// - Highlights active nav tab (Tshue or Thak)
+// - Highlights active nav tab (Chhe or Thak)
 ```
 
 ### 3.3 Shared Elements
 
-- **Top nav** (`<header class="topnav">`): sticky, parchment bg with blur, contains logo + Tshue/Thak tabs + language button
+- **Top nav** (`<header class="topnav">`): sticky, parchment bg with blur, contains logo + Chhe/Thak tabs + language button
 - **Footer** (`<footer class="pagefoot">`): copyright + links, always visible
 - **Breadcrumb** (on detail pages): inside the page `<div>`, not shared
 
@@ -180,7 +180,7 @@ The search form uses dynamic query rows. Default shows one row; users click **�
 │                                                                      │
 │ [+ 新增條件]                                                         │
 │                                                                      │
-│              [查 Tshue]  [清除]                                      │
+│              [查 Chhe]  [清除]                                      │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -202,7 +202,7 @@ The search form uses dynamic query rows. Default shows one row; users click **�
 function createQueryRow(field, value) { /* builds .query-row HTML */ }
 function updateRemoveVis(container) { /* hides × on last row */ }
 function setupQueryRows(containerId, addBtnId) { /* wires select change, remove click, add click */ }
-setupQueryRows('searchQueryRows', 'searchAddRow');   // Tshue home
+setupQueryRows('searchQueryRows', 'searchAddRow');   // Chhe home
 setupQueryRows('resultsQueryRows', 'resultsAddRow'); // Results bar
 ```
 
@@ -376,7 +376,7 @@ Each source group in the results uses this HTML pattern:
   <table class="results-table">
     <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th><th></th></tr></thead>
     <tbody>
-      <tr onclick="location.hash='#tshue-entry'">
+      <tr onclick="location.hash='#chhe-entry'">
         <td class="rt-char">食</td>
         <td class="rt-puj">tsia̍h</td>
         <td class="rt-dp">ziah8</td>
@@ -443,9 +443,9 @@ Three breakpoints, matching the CSS in the file:
   3. **Add click** → appends new `.query-row` (default: English field), focuses input
 - `createQueryRow(field, value)` builds row HTML with correct select + placeholder
 - `updateRemoveVis(container)` hides × on last remaining row
-- Form submit on `#searchForm` → navigates to `#tshue-results`
-- Word chip clicks → fills first row input + navigates to `#tshue-results`
-- Results search button → stays on `#tshue-results`
+- Form submit on `#searchForm` → navigates to `#chhe-results`
+- Word chip clicks → fills first row input + navigates to `#chhe-results`
+- Results search button → stays on `#chhe-results`
 - Clear button → empties all inputs
 
 ### 7.3 Filter Chips (Source Filter)
@@ -518,7 +518,7 @@ this.closest('tr').style.display='none'
 | Class | Purpose |
 |-------|---------|
 | `.word-chip` | Hot word tile (char + PUJ) |
-| `.source-card` | Dictionary source card on Tshue home |
+| `.source-card` | Dictionary source card on Chhe home |
 | `.dict-card` | Dictionary card on Thak home (cover + info) |
 | `.article-row` | Corpus article row (grid 100px 1fr 80px) |
 | `.phrase-row` | Three-column phrase (Teochew / PUJ / translation) |
@@ -536,9 +536,9 @@ If the SPA is later split into multiple files:
 ```
 openteochew/
 ├── index.html              ← overview/launcher
-├── tshue.html              ← search home
-├── tshue-results.html      ← search results
-├── tshue-entry.html        ← entry detail
+├── chhe.html              ← search home
+├── chhe-results.html      ← search results
+├── chhe-entry.html        ← entry detail
 ├── thak.html               ← reading home
 ├── thak-read.html          ← corpus reading
 ├── thak-dict.html          ← dictionary viewer

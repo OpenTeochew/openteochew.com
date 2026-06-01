@@ -7,19 +7,19 @@ const routes = [
     component: () => import('../pages/HomePage.vue')
   },
   {
-    path: '/tshue',
+    path: '/chhe',
     name: 'SearchHome',
-    component: () => import('../pages/tshue/SearchHome.vue')
+    component: () => import('../pages/chhe/SearchHome.vue')
   },
   {
-    path: '/tshue/results',
+    path: '/chhe/results',
     name: 'SearchResults',
-    component: () => import('../pages/tshue/SearchResults.vue')
+    component: () => import('../pages/chhe/SearchResults.vue')
   },
   {
-    path: '/tshue/entry/:id',
+    path: '/chhe/entry/:id',
     name: 'EntryDetail',
-    component: () => import('../pages/tshue/EntryDetail.vue'),
+    component: () => import('../pages/chhe/EntryDetail.vue'),
     props: true
   },
   {
@@ -48,7 +48,7 @@ const router = createRouter({
 
 const titles = {
   Home: '開放潮州話 OpenTeochew',
-  SearchHome: '查 Tshue — 開放潮州話',
+  SearchHome: '查 Chhe — 開放潮州話',
   SearchResults: '搜尋結果 — 開放潮州話',
   EntryDetail: '詞條 — 開放潮州話',
   ReadHome: '讀 Thak — 開放潮州話',

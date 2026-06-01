@@ -67,13 +67,13 @@ CREATE INDEX IF NOT EXISTS idx_articles_source ON articles(source_id);
 
 ### 頁面對接
 
-#### SearchHome (`/tshue`)
+#### SearchHome (`/chhe`)
 
 - 調 `sourcesApi.getAll()` 替換 hardcode 來源列表
 - 接入 `useSearch` composable 處理查詢表單提交
 - 隱藏 hotWords 區塊（加 `v-if="false"` 或刪除）
 
-#### SearchResults (`/tshue/results`)
+#### SearchResults (`/chhe/results`)
 
 - 從 `useSearchStore` 讀取 `result`（groups, total）
 - 用 `useUIStore` 管理來源篩選
@@ -81,7 +81,7 @@ CREATE INDEX IF NOT EXISTS idx_articles_source ON articles(source_id);
 - 分頁從 total/limit 計算
 - 替換全部 hardcode 的 sourceGroups / filters / pages
 
-#### EntryDetail (`/tshue/entry/:id`)
+#### EntryDetail (`/chhe/entry/:id`)
 
 - `entriesApi.getById(id)` 取主詞條 + examples
 - 用 entry.hanzi 調 `searchApi.search({ q_hanzi })` 補查其他來源，聚合為 defTabs

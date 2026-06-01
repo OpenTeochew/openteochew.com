@@ -3,12 +3,12 @@
   <div v-else-if="!entry" style="text-align:center;padding:80px 0;color:var(--muted)">詞條未找到</div>
   <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'SearchHome' }">Chhe</router-link> › <router-link :to="{ name: 'SearchResults' }">搜索「{{ entry.hanzi }}」</router-link> › 詞條詳情
+      <router-link :to="{ name: 'SearchHome' }">Chhe</router-link> › <router-link :to="{ name: 'SearchResults' }">搜索「{{ entry.han }}」</router-link> › 詞條詳情
     </div>
     <main>
       <section class="entry-header container">
         <div class="entry-header-inner">
-          <div class="entry-char">{{ entry.hanzi }}<OrigIndicator :orig="entry.han_orig" /></div>
+          <div class="entry-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></div>
           <div class="entry-info">
             <div class="entry-puj">{{ entry.puj }}</div>
             <div class="entry-readings">
@@ -78,7 +78,7 @@ const defTabs = computed(() => {
 
   const currentDef = {
     source: `${entry.value.source.name}${entry.value.page_num ? ' · p. ' + entry.value.page_num : ''}`,
-    text: `<strong>${entry.value.hanzi || ''} ${entry.value.puj || ''}</strong> — ${entry.value.en || ''}`
+    text: `<strong>${entry.value.han || ''} ${entry.value.puj || ''}</strong> — ${entry.value.en || ''}`
   }
 
   const tabs = [{
@@ -99,7 +99,7 @@ const defTabs = computed(() => {
     for (const e of group.entries) {
       const def = {
         source: `${group.source.name}${e.page_num ? ' · p. ' + e.page_num : ''}`,
-        text: `<strong>${e.hanzi || ''} ${e.puj || ''}</strong> — ${e.en || ''}`
+        text: `<strong>${e.han || ''} ${e.puj || ''}</strong> — ${e.en || ''}`
       }
       tabs[0].definitions.push(def)
 
@@ -125,7 +125,7 @@ onMounted(async () => {
 
     if (entry.value?.hanzi) {
       try {
-        const result = await searchApi.search({ q_hanzi: entry.value.hanzi, limit: 50 })
+        const result = await searchApi.search({ q_hanzi: entry.value.han, limit: 50 })
         crossSourceGroups.value = result.groups
       } catch {}
     }

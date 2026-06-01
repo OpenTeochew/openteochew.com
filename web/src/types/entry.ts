@@ -2,7 +2,7 @@ export interface Entry {
   id: number
   source_id: number
   section_id: number | null
-  hanzi: string | null
+  han: string | null
   puj: string | null
   dp: string | null
   en: string | null

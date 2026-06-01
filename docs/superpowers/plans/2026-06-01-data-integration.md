@@ -30,9 +30,9 @@ backend/src/server/api.ts              # 掛載 articles route
 backend/src/server/routes/sources.ts   # 新增 pages 路由
 web/src/types/source.ts                # 新增 Page 類型
 web/src/api/sources.ts                 # 新增 getPages 方法
-web/src/pages/tshue/SearchHome.vue     # 接入 API
-web/src/pages/tshue/SearchResults.vue  # 接入 API
-web/src/pages/tshue/EntryDetail.vue    # 接入 API
+web/src/pages/chhe/SearchHome.vue     # 接入 API
+web/src/pages/chhe/SearchResults.vue  # 接入 API
+web/src/pages/chhe/EntryDetail.vue    # 接入 API
 web/src/pages/thak/ReadHome.vue        # 接入 API
 web/src/pages/thak/SourceViewer.vue    # 接入 API
 web/src/pages/thak/ArticleReader.vue   # 簡化為 markdown 渲染
@@ -280,7 +280,7 @@ git commit -m "feat: add article/page types, API clients, install marked"
 ## Task 5: SearchHome — 接入 API
 
 **Files:**
-- Modify: `web/src/pages/tshue/SearchHome.vue`
+- Modify: `web/src/pages/chhe/SearchHome.vue`
 
 - [ ] **Step 1: 替換整個 `<script setup>` 區塊**
 
@@ -368,7 +368,7 @@ onMounted(async () => {
 - [ ] **Step 3: Commit**
 
 ```bash
-git add web/src/pages/tshue/SearchHome.vue
+git add web/src/pages/chhe/SearchHome.vue
 git commit -m "feat: wire SearchHome to sources API and useSearch composable"
 ```
 
@@ -377,7 +377,7 @@ git commit -m "feat: wire SearchHome to sources API and useSearch composable"
 ## Task 6: SearchResults — 接入 API
 
 **Files:**
-- Modify: `web/src/pages/tshue/SearchResults.vue`
+- Modify: `web/src/pages/chhe/SearchResults.vue`
 
 - [ ] **Step 1: 替換整個 `<script setup>` 區塊**
 
@@ -525,7 +525,7 @@ onMounted(() => {
 - [ ] **Step 3: Commit**
 
 ```bash
-git add web/src/pages/tshue/SearchResults.vue
+git add web/src/pages/chhe/SearchResults.vue
 git commit -m "feat: wire SearchResults to search store, replace all hardcoded data"
 ```
 
@@ -534,7 +534,7 @@ git commit -m "feat: wire SearchResults to search store, replace all hardcoded d
 ## Task 7: EntryDetail — 接入 API
 
 **Files:**
-- Modify: `web/src/pages/tshue/EntryDetail.vue`
+- Modify: `web/src/pages/chhe/EntryDetail.vue`
 
 - [ ] **Step 1: 替換整個 `<script setup>` 區塊**
 
@@ -635,7 +635,7 @@ onMounted(async () => {
   <div v-else-if="!entry" style="text-align:center;padding:80px 0;color:var(--muted)">詞條未找到</div>
   <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'SearchHome' }">Tshue</router-link> › <router-link :to="{ name: 'SearchResults' }">搜索「{{ entry.hanzi }}」</router-link> › 詞條詳情
+      <router-link :to="{ name: 'SearchHome' }">Chhe</router-link> › <router-link :to="{ name: 'SearchResults' }">搜索「{{ entry.hanzi }}」</router-link> › 詞條詳情
     </div>
     <main>
       <section class="entry-header container">
@@ -690,7 +690,7 @@ onMounted(async () => {
 - [ ] **Step 3: Commit**
 
 ```bash
-git add web/src/pages/tshue/EntryDetail.vue
+git add web/src/pages/chhe/EntryDetail.vue
 git commit -m "feat: wire EntryDetail to entries API + cross-source search"
 ```
 

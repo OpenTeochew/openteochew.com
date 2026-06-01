@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS entries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   source_id INTEGER NOT NULL REFERENCES sources(id),
   section_id INTEGER REFERENCES sections(id),
-  hanzi TEXT,
+  han TEXT,
   puj TEXT,
   dp TEXT,
   en TEXT,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS pages (
 
 CREATE INDEX IF NOT EXISTS idx_entries_source ON entries(source_id);
 CREATE INDEX IF NOT EXISTS idx_entries_section ON entries(section_id);
-CREATE INDEX IF NOT EXISTS idx_entries_hanzi ON entries(hanzi);
+CREATE INDEX IF NOT EXISTS idx_entries_han ON entries(han);
 CREATE INDEX IF NOT EXISTS idx_entries_puj ON entries(puj);
 CREATE INDEX IF NOT EXISTS idx_entries_dp ON entries(dp);
 CREATE INDEX IF NOT EXISTS idx_entries_en ON entries(en);

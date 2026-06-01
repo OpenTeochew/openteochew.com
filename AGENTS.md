@@ -45,9 +45,9 @@ tmp/                  # 原型（已忽略）
 | Path | Page | Description |
 |------|------|-------------|
 | `/` | HomePage | 首頁 hero |
-| `/tshue` | SearchHome | 搜尋表單 + 熱門詞彙 + 來源列表 |
-| `/tshue/results` | SearchResults | 結果表格（按來源分組） |
-| `/tshue/entry/:id` | EntryDetail | 詞條詳情（定義 + 例句） |
+| `/chhe` | SearchHome | 搜尋表單 + 熱門詞彙 + 來源列表 |
+| `/chhe/results` | SearchResults | 結果表格（按來源分組） |
+| `/chhe/entry/:id` | EntryDetail | 詞條詳情（定義 + 例句） |
 | `/thak` | ReadHome | 字典卡片 + 語料列表 |
 | `/thak/article/:id` | ArticleReader | 文章閱讀（markdown 渲染 + TOC） |
 | `/thak/source/:id` | SourceViewer | 掃描頁 + OCR 詞條列表 |
@@ -85,13 +85,9 @@ tmp/                  # 原型（已忽略）
 ## Dev Commands
 
 ```bash
-# Frontend
-cd web && npm run dev      # Vite dev server (proxy /api → :8787)
-cd web && npm run build    # Production build
-
-# Backend
-cd backend && npm run dev  # Wrangler dev (--remote)
-
 # Full build
 ./build.sh                 # Build frontend → copy to backend/public
+
+# Backend                   # Start backend server
+./dev.sh
 ```

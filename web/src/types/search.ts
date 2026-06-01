@@ -2,7 +2,7 @@ import type { Entry } from './entry'
 import type { SourceSummary } from './source'
 
 export interface SearchParams {
-  q_hanzi?: string
+  q_han?: string
   q_puj?: string
   q_dp?: string
   q_en?: string

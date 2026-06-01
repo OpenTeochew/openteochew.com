@@ -41,9 +41,9 @@ web/
 │   ├── types/source.ts
 │   ├── types/search.ts
 │   ├── pages/HomePage.vue
-│   ├── pages/tshue/SearchHome.vue
-│   ├── pages/tshue/SearchResults.vue
-│   ├── pages/tshue/EntryDetail.vue
+│   ├── pages/chhe/SearchHome.vue
+│   ├── pages/chhe/SearchResults.vue
+│   ├── pages/chhe/EntryDetail.vue
 │   ├── pages/thak/ReadHome.vue
 │   ├── pages/thak/ArticleReader.vue
 │   ├── pages/thak/SourceViewer.vue
@@ -278,9 +278,9 @@ git commit -m "feat: initialize Vue 3 + Vite + Tailwind frontend"
 - Create: `web/src/App.vue`
 - Create: `web/src/router/index.js`
 - Create: `web/src/pages/HomePage.vue`
-- Create: `web/src/pages/tshue/SearchHome.vue`
-- Create: `web/src/pages/tshue/SearchResults.vue`
-- Create: `web/src/pages/tshue/EntryDetail.vue`
+- Create: `web/src/pages/chhe/SearchHome.vue`
+- Create: `web/src/pages/chhe/SearchResults.vue`
+- Create: `web/src/pages/chhe/EntryDetail.vue`
 - Create: `web/src/pages/thak/ReadHome.vue`
 - Create: `web/src/pages/thak/ArticleReader.vue`
 - Create: `web/src/pages/thak/SourceViewer.vue`
@@ -297,19 +297,19 @@ const routes = [
     component: () => import('../pages/HomePage.vue')
   },
   {
-    path: '/tshue',
+    path: '/chhe',
     name: 'SearchHome',
-    component: () => import('../pages/tshue/SearchHome.vue')
+    component: () => import('../pages/chhe/SearchHome.vue')
   },
   {
-    path: '/tshue/results',
+    path: '/chhe/results',
     name: 'SearchResults',
-    component: () => import('../pages/tshue/SearchResults.vue')
+    component: () => import('../pages/chhe/SearchResults.vue')
   },
   {
-    path: '/tshue/entry/:id',
+    path: '/chhe/entry/:id',
     name: 'EntryDetail',
-    component: () => import('../pages/tshue/EntryDetail.vue'),
+    component: () => import('../pages/chhe/EntryDetail.vue'),
     props: true
   },
   {
@@ -338,7 +338,7 @@ const router = createRouter({
 
 const titles = {
   Home: '開放潮州話 OpenTeochew',
-  SearchHome: '查 Tshue — 開放潮州話',
+  SearchHome: '查 Chhe — 開放潮州話',
   SearchResults: '搜尋結果 — 開放潮州話',
   EntryDetail: '詞條 — 開放潮州話',
   ReadHome: '讀 Thak — 開放潮州話',
@@ -386,9 +386,9 @@ import TopNav from './components/TopNav.vue'
     <h1 class="font-display text-5xl font-medium text-fg mb-4">開放潮州話</h1>
     <p class="text-muted text-lg">OpenTeochew — 潮州話語言資源平台</p>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
-      <router-link to="/tshue"
+      <router-link to="/chhe"
         class="block p-8 bg-ivory rounded-kami-lg border border-kami-border hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
-        <h2 class="font-display text-2xl font-medium text-fg">查 Tshue</h2>
+        <h2 class="font-display text-2xl font-medium text-fg">查 Chhe</h2>
         <p class="text-muted mt-2">多欄位字典搜尋</p>
       </router-link>
       <router-link to="/thak"
@@ -405,7 +405,7 @@ import TopNav from './components/TopNav.vue'
 ```vue
 <template>
   <div class="max-w-container mx-auto px-8 py-16">
-    <h1 class="font-display text-2xl font-medium text-fg mb-8">查 Tshue</h1>
+    <h1 class="font-display text-2xl font-medium text-fg mb-8">查 Chhe</h1>
     <p class="text-muted">搜尋首頁（待實現）</p>
   </div>
 </template>
@@ -483,10 +483,10 @@ defineProps({ id: { type: [String, Number], required: true } })
         開放潮州話
       </router-link>
       <nav class="flex items-center gap-1">
-        <router-link to="/tshue"
+        <router-link to="/chhe"
           class="px-3 py-1.5 rounded-kami text-sm transition-colors"
-          :class="isTshueActive ? 'bg-warm-sand text-fg font-medium' : 'text-muted hover:text-fg'">
-          查 Tshue
+          :class="isChheActive ? 'bg-warm-sand text-fg font-medium' : 'text-muted hover:text-fg'">
+          查 Chhe
         </router-link>
         <router-link to="/thak"
           class="px-3 py-1.5 rounded-kami text-sm transition-colors"
@@ -504,7 +504,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const isTshueActive = computed(() => route.path.startsWith('/tshue'))
+const isChheActive = computed(() => route.path.startsWith('/chhe'))
 const isThakActive = computed(() => route.path.startsWith('/thak'))
 </script>
 ```

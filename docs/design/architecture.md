@@ -10,10 +10,10 @@
 **OpenTeochew** 是一個開源潮州話語言資源平台，聚合字典、詞典、語料於統一數字平台。
 
 **兩大功能：**
-- **Tshue (查)** — 多欄位、多文字搜尋引擎（PUJ、DP、漢字、English、普通話、日本語），結果按來源分組展示
+- **Chhe (查)** — 多欄位、多文字搜尋引擎（PUJ、DP、漢字、English、普通話、日本語），結果按來源分組展示
 - **Thak (讀)** — 閱讀瀏覽界面，查看字典掃描頁面（OCR 疊加）、閱讀語料文章（三行對齊：潮州話 / PUJ / 翻譯）
 
-**單一 SPA 架構**，`/tshue` 和 `/thak` 作為頂級路由。
+**單一 SPA 架構**，`/chhe` 和 `/thak` 作為頂級路由。
 
 ---
 
@@ -54,7 +54,7 @@ openteochew.com/
 │   │   │   └── useIntersection.ts # TOC 追蹤
 │   │   ├── pages/
 │   │   │   ├── HomePage.vue      # 首頁
-│   │   │   ├── tshue/
+│   │   │   ├── chhe/
 │   │   │   │   ├── SearchHome.vue
 │   │   │   │   ├── SearchResults.vue
 │   │   │   │   └── EntryDetail.vue
@@ -128,10 +128,10 @@ openteochew.com/
 
 | 路由 | 頁面組件 | 描述 |
 |------|----------|------|
-| `/` | `HomePage.vue` | 首頁（Tshue + Thak 卡片） |
-| `/tshue` | `SearchHome.vue` | 搜尋首頁：多欄位查詢表單 |
-| `/tshue/results` | `SearchResults.vue` | 搜尋結果：來源分組表格 |
-| `/tshue/entry/:id` | `EntryDetail.vue` | 詞條詳情頁 |
+| `/` | `HomePage.vue` | 首頁（Chhe + Thak 卡片） |
+| `/chhe` | `SearchHome.vue` | 搜尋首頁：多欄位查詢表單 |
+| `/chhe/results` | `SearchResults.vue` | 搜尋結果：來源分組表格 |
+| `/chhe/entry/:id` | `EntryDetail.vue` | 詞條詳情頁 |
 | `/thak` | `ReadHome.vue` | 閱讀首頁：來源列表 |
 | `/thak/article/:id` | `ArticleReader.vue` | 博客文章閱讀頁（三行對齊 + TOC） |
 | `/thak/source/:id` | `SourceViewer.vue` | 來源查看器（掃描圖片 + OCR 疊加 + 詞條列表） |

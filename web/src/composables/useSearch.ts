@@ -5,7 +5,7 @@ import type { SearchParams } from '../types/search'
 const FIELD_MAP: Record<string, string> = {
   puj: 'puj',
   dp: 'dp',
-  hanzi: 'hanzi',
+  hanzi: 'han',
   en: 'en',
   zh: 'mandarin',
   ja: 'ja'

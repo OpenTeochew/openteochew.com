@@ -1,7 +1,7 @@
 export async function searchEntries(
   db: D1Database,
   params: {
-    q_hanzi?: string
+    q_han?: string
     q_puj?: string
     q_dp?: string
     q_en?: string
@@ -15,7 +15,7 @@ export async function searchEntries(
   const conditions: string[] = []
   const values: any[] = []
 
-  if (params.q_hanzi) { conditions.push('e.hanzi LIKE ?'); values.push(`%${params.q_hanzi}%`) }
+  if (params.q_han) { conditions.push('e.han LIKE ?'); values.push(`%${params.q_han}%`) }
   if (params.q_puj) { conditions.push('e.puj LIKE ?'); values.push(`%${params.q_puj}%`) }
   if (params.q_dp) { conditions.push('e.dp LIKE ?'); values.push(`%${params.q_dp}%`) }
   if (params.q_en) { conditions.push('e.en LIKE ?'); values.push(`%${params.q_en}%`) }
@@ -56,7 +56,7 @@ export async function searchEntries(
     group.count++
     group.entries.push({
       id: entry.id,
-      hanzi: entry.hanzi,
+      han: entry.han,
       puj: entry.puj,
       dp: entry.dp,
       en: entry.en,

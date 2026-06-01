@@ -46,7 +46,7 @@
               <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th><th></th></tr></thead>
               <tbody>
                 <tr v-for="entry in group.entries" :key="entry.id" @click="$router.push({ name: 'EntryDetail', params: { id: entry.id } })">
-                  <td class="rt-char">{{ entry.hanzi }}<OrigIndicator :orig="entry.han_orig" /></td>
+                  <td class="rt-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></td>
                   <td class="rt-puj">{{ entry.puj }}<OrigIndicator :orig="entry.puj_orig" /></td>
                   <td class="rt-dp">{{ entry.dp }}</td>
                   <td class="rt-def">{{ entry.en }}<OrigIndicator :orig="entry.en_orig" /></td>

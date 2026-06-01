@@ -3,7 +3,7 @@
     <div class="container nav-inner">
       <router-link to="/" class="logo">OpenTeochew</router-link>
       <nav class="nav-tabs">
-        <router-link to="/tshue" class="nav-tab" :class="{ active: isTshueActive }">Tshue 查</router-link>
+        <router-link to="/chhe" class="nav-tab" :class="{ active: isChheActive }">Chhe 查</router-link>
         <router-link to="/thak" class="nav-tab" :class="{ active: isThakActive }">Thak 讀</router-link>
       </nav>
       <button class="lang-btn" aria-label="切換語言">中 ▾</button>
@@ -17,6 +17,6 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const isTshueActive = computed(() => route.path.startsWith('/tshue'))
+const isChheActive = computed(() => route.path.startsWith('/chhe'))
 const isThakActive = computed(() => route.path.startsWith('/thak'))
 </script>

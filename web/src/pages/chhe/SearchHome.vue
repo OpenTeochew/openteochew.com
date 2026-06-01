@@ -26,7 +26,7 @@
             </button>
           </div>
           <div class="query-actions">
-            <button type="submit" class="search-btn">查 Tshue</button>
+            <button type="submit" class="search-btn">查 Chhe</button>
             <button type="button" class="search-clear" @click="clearAll">清除</button>
           </div>
         </form>

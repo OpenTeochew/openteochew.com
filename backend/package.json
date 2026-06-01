@@ -2,7 +2,7 @@
   "name": "openteochew-backend",
   "type": "module",
   "scripts": {
-    "dev": "npx wrangler dev --remote",
+    "dev": "npx wrangler dev",
     "build": "npx wrangler build",
     "deploy": "npx wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"

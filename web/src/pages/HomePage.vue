@@ -10,8 +10,8 @@
     <section class="section">
       <div class="container">
         <div class="sites-grid">
-          <router-link to="/tshue" class="site-card">
-            <div class="site-card-name">Tshue <small>查</small></div>
+          <router-link to="/chhe" class="site-card">
+            <div class="site-card-name">Chhe <small>查</small></div>
             <p>潮州話詞典查詢。支持白話字（PUJ）、潮州拼音（DP）、漢字、英文多維度檢索。一次搜索聚合所有字典來源。</p>
             <div class="site-card-links">
               <span class="site-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>搜索首頁</span>

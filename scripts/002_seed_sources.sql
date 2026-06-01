@@ -5,7 +5,7 @@ INSERT INTO sources (name, name_zh, author, year, type, level, status, descripti
 ('潮汕方言詞典', '潮汕方言詞典', '林倫倫、陳暁楓', '現代', 'text_dict', 'A', 'pending', '現代潮汕方言詞典', 4),
 ('Primer of the Swatow Dialect', '汕頭方言入門', 'William Ashmore', '1883', 'scan_dict', 'B', 'public_domain', 'Introductory primer for learning Swatow dialect', 5);
 
-INSERT INTO entries (source_id, hanzi, puj, dp, en, mandarin, ja, page_num, sort_order) VALUES
+INSERT INTO entries (source_id, han, puj, dp, en, mandarin, ja, page_num, sort_order) VALUES
 (1, '食', 'tsia̍h', 'ziah8', 'to eat; to take food; to consume', '吃', '食べる', 42, 1),
 (1, '食飯', 'tsia̍h-pn̄g', 'ziah8-bng7', 'to eat a meal', '吃飯', 'ご飯を食べる', 42, 2),
 (1, '食茶', 'tsia̍h-tê', 'ziah8-de5', 'to drink tea', '喝茶', 'お茶を飲む', 42, 3),
