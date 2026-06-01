@@ -33,13 +33,24 @@ export async function searchEntries(
     `SELECT COUNT(*) as total FROM entries e WHERE ${where}`
   ).bind(...values).first<{ total: number }>()
 
+  const primaryField = (params.q_han && 'e.han')
+    || (params.q_puj && 'e.puj')
+    || (params.q_dp && 'e.dp')
+    || (params.q_en && 'e.en')
+    || (params.q_mandarin && 'e.mandarin')
+    || (params.q_ja && 'e.ja')
+    || null
+  const relevanceOrder = primaryField
+    ? `LENGTH(${primaryField})`
+    : '0'
+
   const offset = (params.page - 1) * params.limit
   const entries = await db.prepare(
     `SELECT e.*, s.name as source_name, s.year as source_year
      FROM entries e
      JOIN sources s ON e.source_id = s.id
      WHERE ${where}
-     ORDER BY e.source_id, e.sort_order
+     ORDER BY ${relevanceOrder}, e.source_id, e.sort_order
      LIMIT ? OFFSET ?`
   ).bind(...values, params.limit, offset).all()
 

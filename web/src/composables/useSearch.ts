@@ -28,8 +28,12 @@ export function useSearch() {
 
   async function doSearch(rows: { field: string; value: string }[]) {
     const params = buildParams(rows)
+    const query: Record<string, string> = {}
+    for (const [k, v] of Object.entries(params)) {
+      if (v) query[k] = String(v)
+    }
     await store.search(params)
-    router.push({ name: 'SearchResults' })
+    router.push({ name: 'SearchResults', query })
   }
 
   return { store, buildParams, doSearch }

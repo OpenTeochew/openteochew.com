@@ -8,12 +8,12 @@
           <div class="query-rows">
             <div v-for="(row, i) in queryRows" :key="i" class="query-row">
               <select v-model="row.field" class="query-select">
-                <option value="puj">PUJ 白話字</option>
-                <option value="dp">DP 潮州拼音</option>
-                <option value="hanzi">漢字</option>
-                <option value="en">English</option>
-                <option value="zh">普通話</option>
-                <option value="ja">日本語</option>
+                <option value="hanzi" :disabled="isFieldUsed('hanzi', i)">漢字</option>
+                <option value="puj" :disabled="isFieldUsed('puj', i)">PUJ 白話字</option>
+                <option value="dp" :disabled="isFieldUsed('dp', i)">DP 潮州話拼音</option>
+                <option value="zh" :disabled="isFieldUsed('zh', i)">普通話</option>
+                <option value="en" :disabled="isFieldUsed('en', i)">English</option>
+                <option value="ja" :disabled="isFieldUsed('ja', i)">日本語</option>
               </select>
               <input v-model="row.value" type="text" class="query-input" :placeholder="placeholders[row.field]">
               <button type="button" class="query-remove" :class="{ hidden: queryRows.length <= 1 }" title="移除此條件" @click="removeRow(i)">&times;</button>
@@ -56,12 +56,15 @@ import { sourcesApi } from '../../api/sources'
 
 const { doSearch } = useSearch()
 
+const FIELD_ORDER = ['hanzi', 'puj', 'dp', 'zh', 'en', 'ja']
+const MUTEX = { puj: 'dp', dp: 'puj' }
+
 const placeholders = {
+  hanzi: '例：食, 潮州, 飯',
   puj: '例：tsia̍h, tsuí, hó',
   dp: '例：ziah8, zui3, ho3',
-  hanzi: '例：食, 潮州, 飯',
-  en: '例：eat, water, good',
   zh: '例：吃, 潮州, 你好',
+  en: '例：eat, water, good',
   ja: '例：食べる, お茶, 方言'
 }
 
@@ -69,8 +72,20 @@ const queryRows = reactive([
   { field: 'hanzi', value: '' }
 ])
 
+function isFieldUsed(field, excludeIndex) {
+  for (let i = 0; i < queryRows.length; i++) {
+    if (i === excludeIndex) continue
+    const f = queryRows[i].field
+    if (f === field) return true
+    if (MUTEX[field] && f === MUTEX[field]) return true
+  }
+  return false
+}
+
 function addRow() {
-  queryRows.push({ field: 'en', value: '' })
+  if (queryRows.length >= 3) return
+  const nextField = FIELD_ORDER.find(f => !isFieldUsed(f, -1))
+  queryRows.push({ field: nextField || 'en', value: '' })
 }
 
 function removeRow(i) {

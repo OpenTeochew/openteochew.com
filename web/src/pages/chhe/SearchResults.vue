@@ -6,12 +6,12 @@
           <div class="query-rows">
             <div v-for="(row, i) in queryRows" :key="i" class="query-row">
               <select v-model="row.field" class="query-select">
-                <option value="puj">PUJ 白話字</option>
-                <option value="dp">DP 潮州拼音</option>
-                <option value="hanzi">漢字</option>
-                <option value="en">English</option>
-                <option value="zh">普通話</option>
-                <option value="ja">日本語</option>
+                <option value="hanzi" :disabled="isFieldUsed('hanzi', i)">漢字</option>
+                <option value="puj" :disabled="isFieldUsed('puj', i)">PUJ 白話字</option>
+                <option value="dp" :disabled="isFieldUsed('dp', i)">DP 潮州話拼音</option>
+                <option value="zh" :disabled="isFieldUsed('zh', i)">普通話</option>
+                <option value="en" :disabled="isFieldUsed('en', i)">English</option>
+                <option value="ja" :disabled="isFieldUsed('ja', i)">日本語</option>
               </select>
               <input v-model="row.value" type="text" class="query-input" :placeholder="placeholders[row.field]">
               <button type="button" class="query-remove" :class="{ hidden: queryRows.length <= 1 }" title="移除此條件" @click="removeRow(i)">&times;</button>
@@ -47,7 +47,7 @@
             <table class="results-table">
               <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th><th></th></tr></thead>
               <tbody>
-                <tr v-for="entry in group.entries" :key="entry.id" @click="$router.push({ name: 'EntryDetail', params: { id: entry.id } })">
+                <tr v-for="entry in group.entries" :key="entry.id">
                   <td class="rt-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></td>
                   <td class="rt-puj">{{ entry.puj }}<OrigIndicator :orig="entry.puj_orig" /></td>
                   <td class="rt-dp">{{ entry.dp }}</td>
@@ -66,26 +66,41 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useSearchStore } from '../../stores/search'
 import { useSearch } from '../../composables/useSearch'
 import OrigIndicator from '../../components/OrigIndicator.vue'
 
+const route = useRoute()
 const store = useSearchStore()
 const { doSearch } = useSearch()
 
+const FIELD_ORDER = ['hanzi', 'puj', 'dp', 'zh', 'en', 'ja']
+const MUTEX = { puj: 'dp', dp: 'puj' }
+
 const placeholders = {
+  hanzi: '例：食, 潮州, 飯',
   puj: '例：tsia̍h, tsuí, hó',
   dp: '例：ziah8, zui3, ho3',
-  hanzi: '例：食, 潮州, 飯',
-  en: '例：eat, water, good',
   zh: '例：吃, 潮州, 你好',
+  en: '例：eat, water, good',
   ja: '例：食べる, お茶, 方言'
 }
 
 const queryRows = reactive([
   { field: 'hanzi', value: '' }
 ])
+
+function isFieldUsed(field, excludeIndex) {
+  for (let i = 0; i < queryRows.length; i++) {
+    if (i === excludeIndex) continue
+    const f = queryRows[i].field
+    if (f === field) return true
+    if (MUTEX[field] && f === MUTEX[field]) return true
+  }
+  return false
+}
 
 const activeFilter = ref(0)
 
@@ -103,8 +118,10 @@ const filteredGroups = computed(() => {
   return groups.value.filter((_, i) => i === activeFilter.value - 1)
 })
 
-function addRow() {
-  queryRows.push({ field: 'en', value: '' })
+  function addRow() {
+  if (queryRows.length >= 3) return
+  const nextField = FIELD_ORDER.find(f => !isFieldUsed(f, -1))
+  queryRows.push({ field: nextField || 'en', value: '' })
 }
 
 function removeRow(i) {
@@ -118,22 +135,42 @@ function handleSearch() {
 
 const API_TO_FIELD = { han: 'hanzi', puj: 'puj', dp: 'dp', en: 'en', mandarin: 'zh', ja: 'ja' }
 
-onMounted(() => {
-  if (store.result && store.params) {
-    const params = store.params
-    let filled = false
-    for (const [k, v] of Object.entries(params)) {
-      if (v && k.startsWith('q_')) {
-        const apiField = k.slice(2)
-        const field = API_TO_FIELD[apiField] || apiField
-        if (!filled) {
-          queryRows[0] = { field, value: String(v) }
-          filled = true
-        } else {
-          queryRows.push({ field, value: String(v) })
-        }
+function restoreFromQuery(query) {
+  queryRows.splice(0, queryRows.length, { field: 'hanzi', value: '' })
+  let filled = false
+  for (const [k, v] of Object.entries(query)) {
+    if (v && k.startsWith('q_')) {
+      const apiField = k.slice(2)
+      const field = API_TO_FIELD[apiField] || apiField
+      if (!filled) {
+        queryRows[0] = { field, value: String(v) }
+        filled = true
+      } else {
+        queryRows.push({ field, value: String(v) })
       }
     }
   }
+  return filled
+}
+
+function runSearch(query) {
+  restoreFromQuery(query)
+  const { buildParams } = useSearch()
+  const params = buildParams(queryRows)
+  store.search(params)
+}
+
+onMounted(() => {
+  const hasUrlParams = Object.keys(route.query).some(k => k.startsWith('q_'))
+  if (hasUrlParams) {
+    runSearch(route.query)
+  } else if (store.result && store.params) {
+    restoreFromQuery(store.params)
+  }
+})
+
+watch(() => route.query, (query) => {
+  const hasUrlParams = Object.keys(query).some(k => k.startsWith('q_'))
+  if (hasUrlParams) runSearch(query)
 })
 </script>
