@@ -2,6 +2,15 @@ import { useRouter } from 'vue-router'
 import { useSearchStore } from '../stores/search'
 import type { SearchParams } from '../types/search'
 
+const FIELD_MAP: Record<string, string> = {
+  puj: 'puj',
+  dp: 'dp',
+  hanzi: 'hanzi',
+  en: 'en',
+  zh: 'mandarin',
+  ja: 'ja'
+}
+
 export function useSearch() {
   const router = useRouter()
   const store = useSearchStore()
@@ -10,7 +19,8 @@ export function useSearch() {
     const params: SearchParams = {}
     for (const row of rows) {
       if (!row.value.trim()) continue
-      const key = `q_${row.field}` as keyof SearchParams
+      const mappedField = FIELD_MAP[row.field] || row.field
+      const key = `q_${mappedField}` as keyof SearchParams
       ;(params as any)[key] = row.value.trim()
     }
     return params
