@@ -27,45 +27,50 @@
     </div>
     <main class="section">
       <div class="container">
-        <div class="results-header">
-          <p class="results-count">找到 <strong>8</strong> 筆與「<strong>食</strong>」相關的結果（4 個來源）</p>
-          <div class="filter-chips">
-            <button v-for="(f, i) in filters" :key="f" class="filter-chip" :class="{ active: activeFilter === i }" @click="activeFilter = i">{{ f }}</button>
+        <div v-if="store.loading" style="text-align:center;padding:60px 0;color:var(--muted)">搜尋中…</div>
+        <div v-else-if="store.error" style="text-align:center;padding:60px 0;color:var(--muted)">{{ store.error }}</div>
+        <template v-else-if="store.result">
+          <div class="results-header">
+            <p class="results-count">找到 <strong>{{ total }}</strong> 筆結果（{{ groups.length }} 個來源）</p>
+            <div class="filter-chips">
+              <button v-for="(f, i) in filters" :key="f" class="filter-chip" :class="{ active: activeFilter === i }" @click="activeFilter = i">{{ f }}</button>
+            </div>
           </div>
-        </div>
 
-        <div v-for="group in sourceGroups" :key="group.title" class="source-group">
-          <div class="source-group-head">
-            <span class="source-group-title">{{ group.title }}</span>
-            <span class="source-group-count">{{ group.count }} 筆</span>
+          <div v-for="group in filteredGroups" :key="group.source.name" class="source-group">
+            <div class="source-group-head">
+              <span class="source-group-title">{{ group.source.name }}</span>
+              <span class="source-group-count">{{ group.count }} 筆</span>
+            </div>
+            <table class="results-table">
+              <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th><th></th></tr></thead>
+              <tbody>
+                <tr v-for="entry in group.entries" :key="entry.id" @click="$router.push({ name: 'EntryDetail', params: { id: entry.id } })">
+                  <td class="rt-char">{{ entry.hanzi }}</td>
+                  <td class="rt-puj">{{ entry.puj }}</td>
+                  <td class="rt-dp">{{ entry.dp }}</td>
+                  <td class="rt-def">{{ entry.en }}</td>
+                  <td class="rt-page">{{ entry.page_num ? `p. ${entry.page_num}` : '' }}</td>
+                  <td><button class="rt-audio" @click.stop><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <table class="results-table">
-            <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>{{ group.pageLabel }}</th><th></th></tr></thead>
-            <tbody>
-              <tr v-for="(row, ri) in group.rows" :key="ri" :class="{ 'hidden-row': ri > 0 && !group.expanded }" @click="$router.push({ name: 'EntryDetail', params: { id: '1' } })">
-                <td class="rt-char">{{ row.char }}</td>
-                <td class="rt-puj">{{ row.puj }}</td>
-                <td class="rt-dp">{{ row.dp }}</td>
-                <td class="rt-def">{{ row.def }}</td>
-                <td class="rt-page">{{ row.page }}</td>
-                <td><button class="rt-audio" @click.stop><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></td>
-              </tr>
-              <tr v-if="group.rows.length > 1 && !group.expanded" class="show-more-row"><td colspan="6"><button class="show-more-btn" @click="group.expanded = true">查看更多 (共 {{ group.count }} 筆)</button></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="pagination">
-          <button v-for="p in pages" :key="p" class="page-btn" :class="{ active: p === 1 }">{{ p }}</button>
-          <button class="page-btn">下一頁 →</button>
-        </div>
+        </template>
+        <div v-else style="text-align:center;padding:60px 0;color:var(--muted)">請輸入搜尋條件</div>
       </div>
     </main>
   </div>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
+import { useSearchStore } from '../../stores/search'
+import { useSearch } from '../../composables/useSearch'
+import type { SearchGroup } from '../../types/search'
+
+const store = useSearchStore()
+const { doSearch } = useSearch()
 
 const placeholders = {
   puj: '例：tsia̍h, tsuí, hó',
@@ -77,57 +82,51 @@ const placeholders = {
 }
 
 const queryRows = reactive([
-  { field: 'hanzi', value: '食' },
-  { field: 'puj', value: 'tsia̍h' }
+  { field: 'hanzi', value: '' }
 ])
 
 const activeFilter = ref(0)
-const filters = ['全部來源', 'Ashmore 1883', 'Campbell 1904', '潮汕方言詞典', 'Giles 1877']
-const pages = [1, 2, 3]
 
-const sourceGroups = reactive([
-  {
-    title: 'Ashmore 1883', count: 3, pageLabel: '頁碼', expanded: false,
-    rows: [
-      { char: '食', puj: 'tsia̍h', dp: 'ziah8', def: 'to eat; to take food; to consume', page: 'p. 42' },
-      { char: '食飯', puj: 'tsia̍h-pūng', dp: 'ziah8 bung6', def: 'to eat a meal; to take rice', page: 'p. 42' },
-      { char: '食包', puj: 'tsia̍h-pau', dp: 'ziah8 bao1', def: 'to guarantee (food); to take full responsibility', page: 'p. 43' }
-    ]
-  },
-  {
-    title: 'Campbell 1904', count: 2, pageLabel: '編號', expanded: false,
-    rows: [
-      { char: '食', puj: 'tsia̍h', dp: 'ziah8', def: 'eat; food; meal; to live (on)', page: 'no. 3847' },
-      { char: '食錫', puj: 'tsia̍h-siah', dp: 'ziah8 siah4', def: 'to be poisoned by tin; said of workers in tin mines', page: 'no. 3852' }
-    ]
-  },
-  {
-    title: '潮汕方言詞典', count: 2, pageLabel: '頁碼', expanded: false,
-    rows: [
-      { char: '食', puj: 'tsia̍h', dp: 'ziah8', def: '吃。泛指進食、飲用。如：食飯（吃飯）、食茶（喝茶）。', page: 'p. 128' },
-      { char: '食物', puj: 'tsia̍h-mi̍h', dp: 'ziah8 mih8', def: '食物；食品', page: 'p. 129' }
-    ]
-  },
-  {
-    title: 'Giles 1877', count: 1, pageLabel: '頁碼', expanded: false,
-    rows: [
-      { char: '食', puj: 'tsia̍h', dp: 'ziah8', def: 'to eat; food; living; livelihood', page: 'p. 19' }
-    ]
-  }
-])
+const groups = computed<SearchGroup[]>(() => store.result?.groups || [])
+const total = computed(() => store.result?.total || 0)
+const currentPage = computed(() => store.result?.page || 1)
+
+const filters = computed(() => {
+  const names = groups.value.map(g => g.source.name)
+  return ['全部來源', ...names]
+})
+
+const filteredGroups = computed(() => {
+  if (activeFilter.value === 0) return groups.value
+  return groups.value.filter((_, i) => i === activeFilter.value - 1)
+})
 
 function addRow() {
   queryRows.push({ field: 'en', value: '' })
 }
 
-function removeRow(i) {
+function removeRow(i: number) {
   if (queryRows.length > 1) queryRows.splice(i, 1)
 }
 
 function handleSearch() {
   const hasInput = queryRows.some(r => r.value.trim())
-  if (hasInput) {
-    // refresh results
-  }
+  if (hasInput) doSearch(queryRows)
 }
+
+onMounted(() => {
+  if (store.result && store.params) {
+    const params = store.params
+    for (const [k, v] of Object.entries(params)) {
+      if (v && k.startsWith('q_')) {
+        const field = k.slice(2)
+        if (queryRows.length === 1 && queryRows[0].field === 'hanzi' && !queryRows[0].value) {
+          queryRows[0] = { field, value: String(v) }
+        } else {
+          queryRows.push({ field, value: String(v) })
+        }
+      }
+    }
+  }
+})
 </script>
