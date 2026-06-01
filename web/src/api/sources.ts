@@ -1,5 +1,5 @@
 import { request } from './client'
-import type { Source, SourceDetail } from '../types/source'
+import type { Source, SourceDetail, Page } from '../types/source'
 import type { Entry } from '../types/entry'
 
 export const sourcesApi = {
@@ -11,5 +11,8 @@ export const sourcesApi = {
   },
   getEntries(sourceId: number, params?: Record<string, string | number | undefined>): Promise<Entry[]> {
     return request<Entry[]>(`/api/v1/sources/${sourceId}/entries`, params)
+  },
+  getPages(sourceId: number, params?: Record<string, string | number | undefined>): Promise<Page[]> {
+    return request<Page[]>(`/api/v1/sources/${sourceId}/pages`, params)
   }
 }

@@ -24,3 +24,12 @@ export interface Section {
   title: string
   sort_order: number
 }
+
+export interface Page {
+  id: number
+  section_id: number
+  page_num: number
+  image_url: string | null
+  ocr_text: string | null
+  sort_order: number
+}
