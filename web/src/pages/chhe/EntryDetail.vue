@@ -8,11 +8,11 @@
     <main>
       <section class="entry-header container">
         <div class="entry-header-inner">
-          <div class="entry-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></div>
+          <div class="entry-char">{{ entry.han }}</div>
           <div class="entry-info">
             <div class="entry-puj">{{ entry.puj }}</div>
             <div class="entry-readings">
-              <div class="reading-row"><span class="reading-label">PUJ</span><span class="reading-value">{{ entry.puj }}<OrigIndicator :orig="entry.puj_orig" /></span></div>
+              <div class="reading-row"><span class="reading-label">PUJ</span><span class="reading-value">{{ entry.puj }}</span></div>
               <div class="reading-row"><span class="reading-label">DP</span><span class="reading-value">{{ entry.dp }}</span></div>
             </div>
             <div class="entry-actions">
@@ -58,7 +58,6 @@
 import { ref, onMounted, computed } from 'vue'
 import { entriesApi } from '../../api/entries'
 import { searchApi } from '../../api/search'
-import OrigIndicator from '../../components/OrigIndicator.vue'
 
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
@@ -123,9 +122,9 @@ onMounted(async () => {
   try {
     entry.value = await entriesApi.getById(Number(props.id))
 
-    if (entry.value?.hanzi) {
+    if (entry.value?.han) {
       try {
-        const result = await searchApi.search({ q_hanzi: entry.value.han, limit: 50 })
+        const result = await searchApi.search({ q_han: entry.value.han, limit: 50 })
         crossSourceGroups.value = result.groups
       } catch {}
     }

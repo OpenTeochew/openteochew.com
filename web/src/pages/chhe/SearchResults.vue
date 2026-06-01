@@ -2,27 +2,29 @@
   <div>
     <div class="search-bar">
       <div class="container">
-        <div class="query-rows">
-          <div v-for="(row, i) in queryRows" :key="i" class="query-row">
-            <select v-model="row.field" class="query-select">
-              <option value="puj">PUJ 白話字</option>
-              <option value="dp">DP 潮州拼音</option>
-              <option value="hanzi">漢字</option>
-              <option value="en">English</option>
-              <option value="zh">普通話</option>
-              <option value="ja">日本語</option>
-            </select>
-            <input v-model="row.value" type="text" class="query-input" :placeholder="placeholders[row.field]">
-            <button type="button" class="query-remove" :class="{ hidden: queryRows.length <= 1 }" title="移除此條件" @click="removeRow(i)">&times;</button>
+        <form autocomplete="off" @submit.prevent="handleSearch">
+          <div class="query-rows">
+            <div v-for="(row, i) in queryRows" :key="i" class="query-row">
+              <select v-model="row.field" class="query-select">
+                <option value="puj">PUJ 白話字</option>
+                <option value="dp">DP 潮州拼音</option>
+                <option value="hanzi">漢字</option>
+                <option value="en">English</option>
+                <option value="zh">普通話</option>
+                <option value="ja">日本語</option>
+              </select>
+              <input v-model="row.value" type="text" class="query-input" :placeholder="placeholders[row.field]">
+              <button type="button" class="query-remove" :class="{ hidden: queryRows.length <= 1 }" title="移除此條件" @click="removeRow(i)">&times;</button>
+            </div>
           </div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;">
-          <button type="button" class="query-add" @click="addRow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            新增條件
-          </button>
-          <button class="search-bar-btn" @click="handleSearch">查</button>
-        </div>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+            <button type="button" class="query-add" @click="addRow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              新增條件
+            </button>
+            <button type="submit" class="search-bar-btn">Chhe 查</button>
+          </div>
+        </form>
       </div>
     </div>
     <main class="section">
@@ -114,14 +116,19 @@ function handleSearch() {
   if (hasInput) doSearch(queryRows)
 }
 
+const API_TO_FIELD = { han: 'hanzi', puj: 'puj', dp: 'dp', en: 'en', mandarin: 'zh', ja: 'ja' }
+
 onMounted(() => {
   if (store.result && store.params) {
     const params = store.params
+    let filled = false
     for (const [k, v] of Object.entries(params)) {
       if (v && k.startsWith('q_')) {
-        const field = k.slice(2)
-        if (queryRows.length === 1 && queryRows[0].field === 'hanzi' && !queryRows[0].value) {
+        const apiField = k.slice(2)
+        const field = API_TO_FIELD[apiField] || apiField
+        if (!filled) {
           queryRows[0] = { field, value: String(v) }
+          filled = true
         } else {
           queryRows.push({ field, value: String(v) })
         }
