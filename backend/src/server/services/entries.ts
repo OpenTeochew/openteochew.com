@@ -20,6 +20,9 @@ export async function getEntryById(db: D1Database, id: number) {
     en: entry.en,
     mandarin: entry.mandarin,
     ja: entry.ja,
+    han_orig: entry.han_orig,
+    puj_orig: entry.puj_orig,
+    en_orig: entry.en_orig,
     page_num: entry.page_num,
     source: { id: entry.source_id, name: entry.source_name, year: entry.source_year },
     examples: (examples.results as any[]).map((ex) => ({

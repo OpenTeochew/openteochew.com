@@ -62,6 +62,9 @@ export async function searchEntries(
       en: entry.en,
       mandarin: entry.mandarin,
       ja: entry.ja,
+      han_orig: entry.han_orig,
+      puj_orig: entry.puj_orig,
+      en_orig: entry.en_orig,
       page_num: entry.page_num,
     })
   }
