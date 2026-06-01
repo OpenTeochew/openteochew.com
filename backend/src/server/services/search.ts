@@ -33,6 +33,13 @@ export async function searchEntries(
     `SELECT COUNT(*) as total FROM entries e WHERE ${where}`
   ).bind(...values).first<{ total: number }>()
 
+  const sourceCounts = await db.prepare(
+    `SELECT e.source_id, COUNT(*) as total FROM entries e WHERE ${where} GROUP BY e.source_id`
+  ).bind(...values).all()
+  const sourceTotalMap = new Map<number, number>()
+  for (const row of sourceCounts.results as any[]) {
+    sourceTotalMap.set(row.source_id, row.total)
+  }
   const primaryField = (params.q_han && 'e.han')
     || (params.q_puj && 'e.puj')
     || (params.q_dp && 'e.dp')
@@ -59,13 +66,11 @@ export async function searchEntries(
     if (!groups.has(entry.source_id)) {
       groups.set(entry.source_id, {
         source: { id: entry.source_id, name: entry.source_name, year: entry.source_year },
-        count: 0,
+        count: sourceTotalMap.get(entry.source_id) || 0,
         entries: []
       })
     }
-    const group = groups.get(entry.source_id)!
-    group.count++
-    group.entries.push({
+    groups.get(entry.source_id)!.entries.push({
       id: entry.id,
       han: entry.han,
       puj: entry.puj,

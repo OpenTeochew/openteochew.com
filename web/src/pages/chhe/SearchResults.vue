@@ -39,23 +39,30 @@
             </div>
           </div>
 
-          <div v-for="group in filteredGroups" :key="group.source.name" class="source-group">
-            <div class="source-group-head">
+          <div v-for="group in filteredGroups" :key="group.source.id" class="source-group">
+            <div class="source-group-head" @click="toggleCollapse(group.source.id)">
+              <svg class="collapse-arrow" :class="{ collapsed: collapsedSources.has(group.source.id) }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
               <span class="source-group-title">{{ group.source.name }}</span>
               <span class="source-group-count">{{ group.count }} 筆</span>
             </div>
-            <table class="results-table">
-              <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th></tr></thead>
-              <tbody>
-                <tr v-for="entry in group.entries" :key="entry.id">
-                  <td class="rt-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></td>
-                  <td class="rt-puj">{{ entry.puj }}<OrigIndicator :orig="entry.puj_orig" /></td>
-                  <td class="rt-dp">{{ entry.dp }}</td>
-                  <td class="rt-def">{{ entry.en }}<OrigIndicator :orig="entry.en_orig" /></td>
-                  <td class="rt-page">{{ entry.page_num ? `p. ${entry.page_num}` : '' }}</td>
-                </tr>
-              </tbody>
-            </table>
+            <div v-show="!collapsedSources.has(group.source.id)">
+              <table class="results-table">
+                <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th></tr></thead>
+                <tbody>
+                  <tr v-for="entry in group.entries" :key="entry.id">
+                    <td class="rt-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></td>
+                    <td class="rt-puj">{{ entry.puj }}<OrigIndicator :orig="entry.puj_orig" /></td>
+                    <td class="rt-dp">{{ entry.dp }}</td>
+                    <td class="rt-def">{{ entry.en }}<OrigIndicator :orig="entry.en_orig" /></td>
+                    <td class="rt-page">{{ entry.page_num ? `p. ${entry.page_num}` : '' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <button v-if="group.hasMore" type="button" class="show-more-btn" @click="loadMore(group)">
+                {{ moreLoading === group.source.id ? '載入中…' : `顯示更多（還有 ${group.count - group.entries.length} 筆）` }}
+              </button>
+              <button type="button" class="collapse-btn" @click="toggleCollapse(group.source.id)">收起</button>
+            </div>
           </div>
         </template>
         <div v-else style="text-align:center;padding:60px 0;color:var(--muted)">請輸入搜尋條件</div>
@@ -69,6 +76,7 @@ import { reactive, ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSearchStore } from '../../stores/search'
 import { useSearch } from '../../composables/useSearch'
+import { searchApi } from '../../api/search'
 import OrigIndicator from '../../components/OrigIndicator.vue'
 
 const route = useRoute()
@@ -102,10 +110,26 @@ function isFieldUsed(field, excludeIndex) {
 }
 
 const activeFilter = ref(0)
+const moreLoading = ref(null)
+const groupPages = reactive({})
+const groupMoreData = reactive({})
+const collapsedSources = reactive(new Set())
 
-const groups = computed(() => store.result?.groups || [])
+function toggleCollapse(sourceId) {
+  if (collapsedSources.has(sourceId)) collapsedSources.delete(sourceId)
+  else collapsedSources.add(sourceId)
+}
+
+const groups = computed(() => {
+  const apiGroups = store.result?.groups || []
+  return apiGroups.map(g => {
+    const extra = groupMoreData[g.source.id] || []
+    const allEntries = [...g.entries, ...extra]
+    const hasMore = allEntries.length < g.count
+    return { ...g, entries: allEntries, hasMore }
+  })
+})
 const total = computed(() => store.result?.total || 0)
-const currentPage = computed(() => store.result?.page || 1)
 
 const filters = computed(() => {
   const names = groups.value.map(g => g.source.name)
@@ -116,6 +140,22 @@ const filteredGroups = computed(() => {
   if (activeFilter.value === 0) return groups.value
   return groups.value.filter((_, i) => i === activeFilter.value - 1)
 })
+
+async function loadMore(group) {
+  const sourceId = group.source.id
+  moreLoading.value = sourceId
+  const nextPage = (groupPages[sourceId] || 1) + 1
+  groupPages[sourceId] = nextPage
+  try {
+    const result = await searchApi.search({ ...store.params, source_id: sourceId, page: nextPage, limit: 20 })
+    if (result.groups.length > 0) {
+      if (!groupMoreData[sourceId]) groupMoreData[sourceId] = []
+      groupMoreData[sourceId].push(...result.groups[0].entries)
+    }
+  } finally {
+    moreLoading.value = null
+  }
+}
 
   function addRow() {
   if (queryRows.length >= 3) return
