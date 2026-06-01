@@ -49,4 +49,19 @@ routes.get('/sources/:id/entries', async (c) => {
   return c.json({ success: true, data: result.results })
 })
 
+routes.get('/sources/:id/pages', async (c) => {
+  const sourceId = Number(c.req.param('id'))
+  const pageNum = c.req.query('page_num')
+
+  let sql = 'SELECT * FROM pages WHERE section_id IN (SELECT id FROM sections WHERE source_id = ?)'
+  const params: any[] = [sourceId]
+
+  if (pageNum) { sql += ' AND page_num = ?'; params.push(Number(pageNum)) }
+
+  sql += ' ORDER BY page_num, sort_order'
+
+  const result = await c.env.DB.prepare(sql).bind(...params).all()
+  return c.json({ success: true, data: result.results })
+})
+
 export default routes
