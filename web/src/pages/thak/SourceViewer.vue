@@ -28,7 +28,7 @@
             <div v-if="currentPage?.ocr_text" v-html="currentPage.ocr_text"></div>
             <div v-else>
               <div v-for="e in entries" :key="e.id" class="ocr-entry">
-                <span class="ocr-char">{{ e.hanzi }}</span><span class="ocr-puj">{{ e.puj }}</span>
+                <span class="ocr-char">{{ e.hanzi }}<OrigIndicator :orig="e.han_orig" /></span><span class="ocr-puj">{{ e.puj }}</span>
                 <p class="ocr-def">{{ e.en }}</p>
               </div>
             </div>
@@ -45,7 +45,7 @@
           <ul class="entry-list">
             <li v-for="e in filteredEntries" :key="e.id" class="entry-item">
               <router-link :to="{ name: 'EntryDetail', params: { id: e.id } }" class="entry-link">
-                <span class="entry-link-char">{{ e.hanzi }}</span>
+                <span class="entry-link-char">{{ e.hanzi }}<OrigIndicator :orig="e.han_orig" /></span>
                 <span class="entry-link-puj">{{ e.puj }}</span>
                 <span class="entry-link-def">{{ e.en }}</span>
               </router-link>
@@ -60,6 +60,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { sourcesApi } from '../../api/sources'
+import OrigIndicator from '../../components/OrigIndicator.vue'
 
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
