@@ -34,24 +34,14 @@
     </section>
     <section class="section">
       <div class="container">
-        <h2>熱門查詢</h2>
-        <div class="word-chips">
-          <router-link v-for="w in hotWords" :key="w.hanzi" :to="{ name: 'SearchResults', query: { q: w.hanzi, field: 'hanzi' } }" class="word-chip">
-            <span class="word-hanzi">{{ w.hanzi }}</span>
-            <span class="word-puj">{{ w.puj }}</span>
-          </router-link>
-        </div>
-      </div>
-    </section>
-    <section class="section">
-      <div class="container">
         <h2>收錄來源</h2>
-        <div class="source-grid">
-          <div v-for="s in sources" :key="s.title" class="source-card">
-            <span class="source-badge">{{ s.badge }}</span>
-            <h3>{{ s.title }}</h3>
-            <p class="meta-text">{{ s.meta }}</p>
-            <p>{{ s.desc }}</p>
+        <div v-if="sourcesLoading" class="source-grid"><p>載入中…</p></div>
+        <div v-else class="source-grid">
+          <div v-for="s in sources" :key="s.id" class="source-card">
+            <span class="source-badge">{{ s.level || '—' }}</span>
+            <h3>{{ s.name }}</h3>
+            <p class="meta-text">{{ [s.author, s.year].filter(Boolean).join(' · ') }}</p>
+            <p>{{ s.description }}</p>
           </div>
         </div>
       </div>
@@ -69,10 +59,12 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { reactive, ref, onMounted } from 'vue'
+import { useSearch } from '../../composables/useSearch'
+import { sourcesApi } from '../../api/sources'
+import type { Source } from '../../types/source'
 
-const router = useRouter()
+const { doSearch } = useSearch()
 
 const placeholders = {
   puj: '例：tsia̍h, tsuí, hó',
@@ -91,7 +83,7 @@ function addRow() {
   queryRows.push({ field: 'en', value: '' })
 }
 
-function removeRow(i) {
+function removeRow(i: number) {
   if (queryRows.length > 1) queryRows.splice(i, 1)
 }
 
@@ -101,28 +93,19 @@ function clearAll() {
 
 function handleSubmit() {
   const hasInput = queryRows.some(r => r.value.trim())
-  if (hasInput) router.push({ name: 'SearchResults' })
+  if (hasInput) doSearch(queryRows)
 }
 
-const hotWords = [
-  { hanzi: '食', puj: 'tsia̍h' },
-  { hanzi: '水', puj: 'tsuí' },
-  { hanzi: '好', puj: 'hó' },
-  { hanzi: '潮州', puj: 'Tiê-tsiu' },
-  { hanzi: '話', puj: 'uē' },
-  { hanzi: '人', puj: 'nâng' },
-  { hanzi: '厝', puj: 'tshù' },
-  { hanzi: '行', puj: 'kiâⁿ' },
-  { hanzi: '知', puj: 'tsai' },
-  { hanzi: '愛', puj: 'ài' }
-]
+const sources = ref<Source[]>([])
+const sourcesLoading = ref(true)
 
-const sources = [
-  { badge: 'S 級', title: 'A Dictionary of the Swatow Dialect', meta: 'William Ashmore · 1883 · 公共領域', desc: '最早系統性的潮州話英漢字典之一，收錄大量口語詞彙與例句。' },
-  { badge: 'S 級', title: 'A Swatow Index to the Syllabic Dictionary of Chinese', meta: 'William Campbell · 1904 · 公共領域', desc: '以潮州話音序編排的漢字索引，收字量大，注音精確。' },
-  { badge: 'A 級', title: 'English-Chinese Vocabulary of the Vernacular or Spoken Language of Swatow', meta: 'Herbert Giles · 1877 · 公共領域', desc: '早期潮州話英漢詞彙對照，側重日常用語。' },
-  { badge: 'A 級', title: '潮汕方言詞典', meta: '林倫倫、陳暁楓 · 現代 · 待確認', desc: '現代編纂的潮汕方言詞典，收錄當代潮州話詞彙。' },
-  { badge: 'B 級', title: 'Primer of the Swatow Dialect', meta: 'William Ashmore · 1883 · 公共領域', desc: '潮州話入門教材，包含基礎對話與文法說明。' },
-  { badge: 'B 級', title: '潮州話速成', meta: '現代教材 · 待確認', desc: '面向學習者的潮州話入門教材，附拼音對照。' }
-]
+onMounted(async () => {
+  try {
+    sources.value = await sourcesApi.getAll()
+  } catch (e) {
+    console.error('Failed to load sources:', e)
+  } finally {
+    sourcesLoading.value = false
+  }
+})
 </script>
