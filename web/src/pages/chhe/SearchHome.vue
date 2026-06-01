@@ -45,15 +45,7 @@
         </div>
       </div>
     </section>
-    <section class="section">
-      <div class="container">
-        <div class="stats-row">
-          <div><span class="stat-num">—</span><p class="stat-label">收錄詞條（數字化中）</p></div>
-          <div><span class="stat-num">—</span><p class="stat-label">字典與詞典</p></div>
-          <div><span class="stat-num">—</span><p class="stat-label">語料來源</p></div>
-        </div>
-      </div>
-    </section>
+
   </main>
 </template>
 

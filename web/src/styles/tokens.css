@@ -37,7 +37,14 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 .lang-btn { padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; color: var(--fg-2); }
 
 .pagefoot { padding-block: 40px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
-.foot-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.foot-inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+.foot-left { display: flex; flex-direction: column; gap: 6px; }
+.foot-links { display: flex; gap: 16px; }
+.foot-right { flex: 1; display: flex; justify-content: flex-end; }
+.foot-stats { display: flex; gap: 32px; }
+.foot-stat { display: flex; flex-direction: column; align-items: flex-end; }
+.foot-stat-num { font-family: var(--font-display); font-size: 24px; font-weight: 500; color: var(--fg-2); line-height: 1; font-variant-numeric: tabular-nums; }
+.foot-stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .breadcrumb { padding-block: 16px; font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border-soft); }
 .breadcrumb a { color: var(--muted); }
 .breadcrumb a:hover { color: var(--fg); }
@@ -92,9 +99,7 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 .source-badge { display: inline-flex; padding: 2px 8px; background: var(--surface-warm); color: var(--muted); border-radius: 4px; font-family: var(--font-mono); font-size: 11px; font-weight: 500; width: fit-content; }
 .source-card p { color: var(--muted); font-size: 14px; }
 .source-card .meta-text { font-size: 12px; }
-.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; text-align: center; }
-.stat-num { display: block; font-family: var(--font-display); font-size: clamp(36px, 5vw, 48px); font-weight: 500; color: var(--fg-2); line-height: 1; font-variant-numeric: tabular-nums; }
-.stat-label { font-size: 14px; color: var(--muted); margin-top: 8px; }
+
 
 /* ── Chhe Results ─────────────────────────────── */
 .search-bar { padding-block: 16px; border-bottom: 1px solid var(--border-soft); }
@@ -350,7 +355,9 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 }
 @media (max-width: 640px) {
   .sites-grid, .source-grid, .dict-grid { grid-template-columns: 1fr; }
-  .stats-row { grid-template-columns: 1fr; }
+  .foot-stats { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .foot-stat { align-items: flex-start; }
+  .foot-inner { flex-direction: column; }
   .nav-inner { flex-wrap: wrap; }
   .nav-tabs { order: 3; width: 100%; justify-content: center; }
   .search-btn { width: 100%; justify-content: center; }
