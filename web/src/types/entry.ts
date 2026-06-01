@@ -8,6 +8,9 @@ export interface Entry {
   en: string | null
   mandarin: string | null
   ja: string | null
+  han_orig: string | null
+  puj_orig: string | null
+  en_orig: string | null
   page_num: number | null
   sort_order: number
 }
