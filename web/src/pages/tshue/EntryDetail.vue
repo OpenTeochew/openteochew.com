@@ -1,18 +1,19 @@
 <template>
-  <div>
+  <div v-if="loading" style="text-align:center;padding:80px 0;color:var(--muted)">載入中…</div>
+  <div v-else-if="!entry" style="text-align:center;padding:80px 0;color:var(--muted)">詞條未找到</div>
+  <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'SearchHome' }">Tshue</router-link> › <router-link :to="{ name: 'SearchResults' }">搜索「食」</router-link> › 詞條詳情
+      <router-link :to="{ name: 'SearchHome' }">Tshue</router-link> › <router-link :to="{ name: 'SearchResults' }">搜索「{{ entry.hanzi }}」</router-link> › 詞條詳情
     </div>
     <main>
       <section class="entry-header container">
         <div class="entry-header-inner">
-          <div class="entry-char">食</div>
+          <div class="entry-char">{{ entry.hanzi }}</div>
           <div class="entry-info">
-            <div class="entry-puj">tsia̍h</div>
+            <div class="entry-puj">{{ entry.puj }}</div>
             <div class="entry-readings">
-              <div class="reading-row"><span class="reading-label">PUJ</span><span class="reading-value">tsia̍h</span></div>
-              <div class="reading-row"><span class="reading-label">DP</span><span class="reading-value">ziah8</span></div>
-              <div class="reading-row"><span class="reading-label">異體</span><span class="reading-value">𠊎（古寫）</span></div>
+              <div class="reading-row"><span class="reading-label">PUJ</span><span class="reading-value">{{ entry.puj }}</span></div>
+              <div class="reading-row"><span class="reading-label">DP</span><span class="reading-value">{{ entry.dp }}</span></div>
             </div>
             <div class="entry-actions">
               <button class="entry-audio-btn" @click="toggleAudio">
@@ -39,7 +40,7 @@
           </div>
         </div>
       </section>
-      <section class="section examples-section container">
+      <section v-if="examples.length" class="section examples-section container">
         <h2>例句</h2>
         <div class="example-list">
           <div v-for="ex in examples" :key="ex.teochew" class="example-item">
@@ -49,25 +50,23 @@
           </div>
         </div>
       </section>
-      <section class="section related-section container">
-        <h2>相關詞</h2>
-        <div class="related-grid">
-          <router-link v-for="r in related" :key="r.char" :to="{ name: 'EntryDetail', params: { id: '1' } }" class="related-chip">
-            <span class="related-char">{{ r.char }}</span>
-            <span class="related-puj">{{ r.puj }}</span>
-          </router-link>
-        </div>
-      </section>
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { entriesApi } from '../../api/entries'
+import { searchApi } from '../../api/search'
+import type { EntryDetail as EntryDetailType } from '../../types/entry'
+import type { SearchGroup } from '../../types/search'
 
-defineProps({ id: { type: [String, Number], required: true } })
+const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const audioPlaying = ref(false)
+const loading = ref(true)
+const entry = ref<EntryDetailType | null>(null)
+const crossSourceGroups = ref<SearchGroup[]>([])
 
 function toggleAudio() {
   audioPlaying.value = !audioPlaying.value
@@ -75,49 +74,66 @@ function toggleAudio() {
 
 const activeTab = ref('all')
 
-const defTabs = [
-  {
-    key: 'all', label: '全部來源',
-    definitions: [
-      { source: 'Ashmore 1883 · p. 42', text: '<strong>食 tsia̍h</strong> — to eat; to take food; to consume. Used broadly for any act of eating or drinking, e.g. 食飯 (eat rice), 食茶 (drink tea), 食酒 (drink wine).' },
-      { source: 'Campbell 1904 · no. 3847', text: '<strong>食 tsia̍h</strong> — eat; food; meal; to live on. A very common character in Swatow vernacular. 食力 (eat strength) = to take pains. 食力人 = a hard worker.' },
-      { source: '潮汕方言詞典 · p. 128', text: '<strong>食 tsia̍h</strong> — 吃。泛指進食、飲用。潮州話中「食」的用法比普通話「吃」更廣，涵蓋吃喝。如：食飯（吃飯）、食茶（喝茶）、食藥（吃藥）。' }
-    ]
-  },
-  {
-    key: 'ashmore', label: 'Ashmore 1883',
-    definitions: [
-      { source: 'Ashmore 1883 · p. 42', text: '<strong>食 tsia̍h</strong> — to eat; to take food; to consume. Used broadly for any act of eating or drinking, e.g. 食飯 (eat rice), 食茶 (drink tea), 食酒 (drink wine).' }
-    ]
-  },
-  {
-    key: 'campbell', label: 'Campbell 1904',
-    definitions: [
-      { source: 'Campbell 1904 · no. 3847', text: '<strong>食 tsia̍h</strong> — eat; food; meal; to live on. A very common character in Swatow vernacular. 食力 (eat strength) = to take pains. 食力人 = a hard worker.' }
-    ]
-  },
-  {
-    key: 'modern', label: '潮汕方言詞典',
-    definitions: [
-      { source: '潮汕方言詞典 · p. 128', text: '<strong>食 tsia̍h</strong> — 吃。泛指進食、飲用。潮州話中「食」的用法比普通話「吃」更廣，涵蓋吃喝。如：食飯（吃飯）、食茶（喝茶）、食藥（吃藥）。' }
-    ]
+const defTabs = computed(() => {
+  if (!entry.value) return []
+
+  const currentDef = {
+    source: `${entry.value.source.name}${entry.value.page_num ? ' · p. ' + entry.value.page_num : ''}`,
+    text: `<strong>${entry.value.hanzi || ''} ${entry.value.puj || ''}</strong> — ${entry.value.en || ''}`
   }
-]
 
-const examples = [
-  { teochew: '食飯未？', puj: 'Tsia̍h-pūng buē?', translation: '吃了飯嗎？（打招呼用語）' },
-  { teochew: '我欲食潮州粿條。', puj: 'Uá ài tsia̍h Tiê-tsiu kóe-tiâu.', translation: '我想吃潮州粿條。' },
-  { teochew: '食茶好過食酒。', puj: 'Tsia̍h tê hó kè tsia̍h tsiú.', translation: '喝茶比喝酒好。' }
-]
+  const tabs = [{
+    key: 'all',
+    label: '全部來源',
+    definitions: [currentDef]
+  }]
 
-const related = [
-  { char: '食飯', puj: 'tsia̍h-pūng' },
-  { char: '食茶', puj: 'tsia̍h-tê' },
-  { char: '食酒', puj: 'tsia̍h-tsiú' },
-  { char: '食藥', puj: 'tsia̍h-io̍h' },
-  { char: '食物', puj: 'tsia̍h-mi̍h' },
-  { char: '飽', puj: 'pá' },
-  { char: '餓', puj: 'gō' },
-  { char: '煮', puj: 'tsú' }
-]
+  const sourceTabs: Record<string, { key: string; label: string; definitions: { source: string; text: string }[] }> = {}
+  sourceTabs[entry.value.source.name] = {
+    key: `source-${entry.value.source.id}`,
+    label: entry.value.source.name,
+    definitions: [currentDef]
+  }
+
+  for (const group of crossSourceGroups.value) {
+    if (group.source.id === entry.value.source.id) continue
+    for (const e of group.entries) {
+      const def = {
+        source: `${group.source.name}${e.page_num ? ' · p. ' + e.page_num : ''}`,
+        text: `<strong>${e.hanzi || ''} ${e.puj || ''}</strong> — ${e.en || ''}`
+      }
+      tabs[0].definitions.push(def)
+
+      if (!sourceTabs[group.source.name]) {
+        sourceTabs[group.source.name] = {
+          key: `source-${group.source.id}`,
+          label: group.source.name,
+          definitions: []
+        }
+      }
+      sourceTabs[group.source.name].definitions.push(def)
+    }
+  }
+
+  return [...tabs, ...Object.values(sourceTabs)]
+})
+
+const examples = computed(() => entry.value?.examples || [])
+
+onMounted(async () => {
+  try {
+    entry.value = await entriesApi.getById(Number(props.id))
+
+    if (entry.value?.hanzi) {
+      try {
+        const result = await searchApi.search({ q_hanzi: entry.value.hanzi, limit: 50 })
+        crossSourceGroups.value = result.groups
+      } catch {}
+    }
+  } catch (e) {
+    console.error('Failed to load entry:', e)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
