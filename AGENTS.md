@@ -23,15 +23,15 @@ web/                  # Vue 3 前端
     components/       # TopNav
     styles/tokens.css # 全部 CSS（含響應式），從原型移植
     router/           # hash-based 路由
-    api/              # API client（已搭建，頁面尚未接入）
-    stores/           # Pinia stores（已搭建，頁面尚未接入）
+    api/              # API client（已接入頁面）
+    stores/           # Pinia stores（已接入頁面）
     composables/      # useSearch, useIntersection
     types/            # TypeScript 類型定義
 backend/              # Hono + Cloudflare Workers
   src/
     index.tsx         # /api/v1 路由 + SPA fallback
     server/
-      routes/         # search, entries, sources
+      routes/         # search, entries, sources, articles
       services/       # search, entries
       schemas/        # Zod 驗證
       db/             # D1 查詢輔助
@@ -49,26 +49,27 @@ tmp/                  # 原型（已忽略）
 | `/tshue/results` | SearchResults | 結果表格（按來源分組） |
 | `/tshue/entry/:id` | EntryDetail | 詞條詳情（定義 + 例句） |
 | `/thak` | ReadHome | 字典卡片 + 語料列表 |
-| `/thak/article/:id` | ArticleReader | 文章閱讀（三行對齊 + TOC） |
+| `/thak/article/:id` | ArticleReader | 文章閱讀（markdown 渲染 + TOC） |
 | `/thak/source/:id` | SourceViewer | 掃描頁 + OCR 詞條列表 |
 
-## DB Schema (5 tables)
+## DB Schema (6 tables)
 
 - **sources** — 字典/語料/詞表（type: scan_dict | text_dict | corpus | wordlist）
 - **sections** — 來源下的章節
 - **entries** — 詞條（hanzi, puj, dp, en, mandarin, ja, page_num）
 - **examples** — 例句（teochew, puj, translation）
 - **pages** — 掃描頁（image_url, ocr_text）
+- **articles** — 文章（title, content markdown, source_id）
 
 ## API Prefix
 
-`/api/v1` — routes: search, entries, sources
+`/api/v1` — routes: search, entries, sources, articles
 
 ## Key Conventions
 
 - UI 語言：繁體中文，不用 vue-i18n
 - CSS：只用 tokens.css 中的類名和變量，不引入 Tailwind 工具類
-- 頁面組件目前使用 hardcode 數據，API client 和 stores 已搭建待接入
+- `.vue` 頁面組件使用 `<script setup>`（純 JS），不用 `lang="ts"`
 - `backend/wrangler.jsonc` 中 D1 database_id 為 `TODO_FILL_IN`
 - 原型參考：`tmp/index.html`（已 gitignore）
 

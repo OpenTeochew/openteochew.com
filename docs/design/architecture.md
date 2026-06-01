@@ -228,6 +228,18 @@ CREATE INDEX idx_entries_page ON entries(source_id, page_num);
 CREATE INDEX idx_sections_source ON sections(source_id);
 CREATE INDEX idx_pages_section ON pages(section_id);
 CREATE INDEX idx_examples_entry ON examples(entry_id);
+
+-- 文章（markdown 內容）
+CREATE TABLE articles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  source_id INTEGER NOT NULL REFERENCES sources(id),
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX idx_articles_source ON articles(source_id);
 ```
 
 ---
@@ -353,6 +365,40 @@ GET /api/v1/sources/:id/entries
 | `limit` | integer | 每頁數量 |
 
 **響應：** 該來源下的詞條列表。
+
+### 6.4 文章
+
+```
+GET /api/v1/articles/:id
+```
+
+**響應：** 文章詳情，包含 markdown 內容和關聯 source。
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "source_id": 1,
+    "title": "潮州話食字用法",
+    "content": "# 食字用法\n\n...",
+    "source": { "id": 1, "name": "Ashmore 1883", "type": "scan_dict" }
+  }
+}
+```
+
+### 6.5 來源頁面
+
+```
+GET /api/v1/sources/:id/pages
+```
+
+**參數：**
+| 參數 | 類型 | 描述 |
+|------|------|------|
+| `page_num` | integer | 篩選特定頁碼 |
+
+**響應：** 該來源下的 pages 列表。
 
 ---
 
