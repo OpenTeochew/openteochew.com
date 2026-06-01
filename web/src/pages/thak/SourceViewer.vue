@@ -1,13 +1,15 @@
 <template>
-  <div>
+  <div v-if="loading" style="text-align:center;padding:80px 0;color:var(--muted)">載入中…</div>
+  <div v-else-if="!source" style="text-align:center;padding:80px 0;color:var(--muted)">來源未找到</div>
+  <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">字典原書</router-link> › <span style="color:var(--fg)">Ashmore 1883</span>
+      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">字典原書</router-link> › <span style="color:var(--fg)">{{ source.name }}</span>
     </div>
     <div class="container dict-header">
       <div class="dict-header-inner">
         <div>
-          <h1>A Dictionary of the Swatow Dialect</h1>
-          <p class="meta-text">William Ashmore · 1883 · Presbyterian Mission Press · 公共領域</p>
+          <h1>{{ source.name }}</h1>
+          <p class="meta-text">{{ [source.author, source.year].filter(Boolean).join(' · ') }}</p>
         </div>
         <div class="view-toggle">
           <button class="view-btn" :class="{ active: viewMode === 'scan' }" @click="viewMode = 'scan'">原書掃描</button>
@@ -20,17 +22,20 @@
         <div class="page-viewer">
           <div class="page-image">
             <svg class="page-image-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4M7 11h10M7 15h6"/></svg>
-            <p class="page-image-text">原書掃描頁面<br><span style="font-size:12px">第 {{ pageNum }} 頁 · Ashmore 1883</span></p>
+            <p class="page-image-text">原書掃描頁面<br><span style="font-size:12px">第 {{ pageNum }} 頁 · {{ source.name }}</span></p>
           </div>
           <div class="ocr-overlay" :class="{ visible: viewMode === 'ocr' }">
-            <div v-for="e in ocrEntries" :key="e.char" class="ocr-entry">
-              <span class="ocr-char">{{ e.char }}</span><span class="ocr-puj">{{ e.puj }}</span>
-              <p class="ocr-def">{{ e.def }}</p>
+            <div v-if="currentPage?.ocr_text" v-html="currentPage.ocr_text"></div>
+            <div v-else>
+              <div v-for="e in entries" :key="e.id" class="ocr-entry">
+                <span class="ocr-char">{{ e.hanzi }}</span><span class="ocr-puj">{{ e.puj }}</span>
+                <p class="ocr-def">{{ e.en }}</p>
+              </div>
             </div>
           </div>
           <div class="page-nav">
             <button class="page-nav-btn" :disabled="pageNum <= 1" @click="pageNum--">← 上一頁</button>
-            <span class="page-num">第 {{ pageNum }} 頁 / 共 — 頁</span>
+            <span class="page-num">第 {{ pageNum }} 頁 / 共 {{ source.total_pages || '—' }} 頁</span>
             <button class="page-nav-btn" @click="pageNum++">下一頁 →</button>
           </div>
         </div>
@@ -38,11 +43,11 @@
           <p class="sidebar-title">本頁詞條</p>
           <div class="sidebar-search"><input v-model="sidebarQuery" type="text" class="sidebar-input" placeholder="在詞條中搜索…"></div>
           <ul class="entry-list">
-            <li v-for="e in filteredEntries" :key="e.char" class="entry-item">
-              <router-link :to="{ name: 'EntryDetail', params: { id: '1' } }" class="entry-link">
-                <span class="entry-link-char">{{ e.char }}</span>
+            <li v-for="e in filteredEntries" :key="e.id" class="entry-item">
+              <router-link :to="{ name: 'EntryDetail', params: { id: e.id } }" class="entry-link">
+                <span class="entry-link-char">{{ e.hanzi }}</span>
                 <span class="entry-link-puj">{{ e.puj }}</span>
-                <span class="entry-link-def">{{ e.def }}</span>
+                <span class="entry-link-def">{{ e.en }}</span>
               </router-link>
             </li>
           </ul>
@@ -53,37 +58,62 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { sourcesApi } from '../../api/sources'
+import type { SourceDetail, Page } from '../../types/source'
+import type { Entry } from '../../types/entry'
 
-defineProps({ id: { type: [String, Number], required: true } })
+const props = defineProps({ id: { type: [String, Number], required: true } })
 
+const loading = ref(true)
+const source = ref<SourceDetail | null>(null)
 const viewMode = ref('scan')
-const pageNum = ref(42)
+const pageNum = ref(1)
 const sidebarQuery = ref('')
+const entries = ref<Entry[]>([])
+const pages = ref<Page[]>([])
 
-const ocrEntries = [
-  { char: '食', puj: 'tsia̍h', def: 'to eat; to take food; to consume. Used broadly for any act of eating or drinking.' },
-  { char: '食飯', puj: 'tsia̍h-pūng', def: 'to eat a meal; to take rice. The common expression for eating.' },
-  { char: '食茶', puj: 'tsia̍h-tê', def: 'to drink tea. Note: in Swatow vernacular, 食 is used for both eating and drinking.' },
-  { char: '食酒', puj: 'tsia̍h-tsiú', def: 'to drink wine or spirits.' },
-  { char: '食力', puj: 'tsia̍h-la̍t', def: 'to take pains; to work hard. 食力人, a hard worker.' },
-  { char: '食虧', puj: 'tsia̍h-kui', def: 'to suffer loss; to be at a disadvantage.' }
-]
+async function loadData() {
+  loading.value = true
+  try {
+    source.value = await sourcesApi.getById(Number(props.id))
+    const [entriesResult, pagesResult] = await Promise.all([
+      sourcesApi.getEntries(Number(props.id), { page_num: pageNum.value }),
+      sourcesApi.getPages(Number(props.id), { page_num: pageNum.value })
+    ])
+    entries.value = entriesResult
+    pages.value = pagesResult
+  } catch (e) {
+    console.error('Failed to load source:', e)
+  } finally {
+    loading.value = false
+  }
+}
 
-const sidebarEntries = [
-  { char: '食', puj: 'tsia̍h', def: 'to eat; to take food' },
-  { char: '食飯', puj: 'tsia̍h-pūng', def: 'to eat a meal' },
-  { char: '食茶', puj: 'tsia̍h-tê', def: 'to drink tea' },
-  { char: '食酒', puj: 'tsia̍h-tsiú', def: 'to drink wine' },
-  { char: '食力', puj: 'tsia̍h-la̍t', def: 'to work hard' },
-  { char: '食虧', puj: 'tsia̍h-kui', def: 'to suffer loss' }
-]
+onMounted(loadData)
+
+watch(pageNum, async () => {
+  try {
+    const [entriesResult, pagesResult] = await Promise.all([
+      sourcesApi.getEntries(Number(props.id), { page_num: pageNum.value }),
+      sourcesApi.getPages(Number(props.id), { page_num: pageNum.value })
+    ])
+    entries.value = entriesResult
+    pages.value = pagesResult
+  } catch (e) {
+    console.error('Failed to load page data:', e)
+  }
+})
 
 const filteredEntries = computed(() => {
   const q = sidebarQuery.value.trim().toLowerCase()
-  if (!q) return sidebarEntries
-  return sidebarEntries.filter(e =>
-    e.char.includes(q) || e.puj.toLowerCase().includes(q) || e.def.toLowerCase().includes(q)
+  if (!q) return entries.value
+  return entries.value.filter(e =>
+    (e.hanzi || '').toLowerCase().includes(q) ||
+    (e.puj || '').toLowerCase().includes(q) ||
+    (e.en || '').toLowerCase().includes(q)
   )
 })
+
+const currentPage = computed(() => pages.value[0] || null)
 </script>
