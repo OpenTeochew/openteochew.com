@@ -66,7 +66,7 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 .principle-item strong { font-weight: 500; }
 .principle-item p { color: var(--muted); font-size: 15px; margin-top: 4px; }
 
-/* ── Tshue (search) ────────────────────────────── */
+/* ── Chhe (search) ────────────────────────────── */
 .hero-search { text-align: center; padding-block: clamp(60px, 14vw, 140px); }
 .hero-search h1 { font-size: clamp(36px, 5vw, 56px); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 16px; }
 .hero-search .lead { margin-inline: auto; margin-bottom: 36px; }
@@ -94,7 +94,7 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 .stat-num { display: block; font-family: var(--font-display); font-size: clamp(36px, 5vw, 48px); font-weight: 500; color: var(--fg-2); line-height: 1; font-variant-numeric: tabular-nums; }
 .stat-label { font-size: 14px; color: var(--muted); margin-top: 8px; }
 
-/* ── Tshue Results ─────────────────────────────── */
+/* ── Chhe Results ─────────────────────────────── */
 .search-bar { padding-block: 16px; border-bottom: 1px solid var(--border-soft); }
 
 .results-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
@@ -137,7 +137,7 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 .page-btn:hover { border-color: var(--fg-2); color: var(--fg); }
 .page-btn.active { background: var(--surface-warm); color: var(--fg); border-color: var(--fg-2); font-weight: 500; }
 
-/* ── Tshue Entry ───────────────────────────────── */
+/* ── Chhe Entry ───────────────────────────────── */
 .entry-header { padding-block: clamp(32px, 6vw, 64px); }
 .entry-header-inner { display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
 .entry-char { font-family: var(--font-display); font-size: clamp(64px, 10vw, 96px); font-weight: 500; line-height: 1; letter-spacing: -0.02em; }
@@ -360,5 +360,33 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
   .article-type { text-align: left; }
   .phrase-row { grid-template-columns: 1fr; gap: 4px; }
   .phrase-teochew, .phrase-puj { white-space: normal; }
-  .ocr-overlay { padding: 20px; }
+   .ocr-overlay { padding: 20px; }
+}
+.orig-wrap {
+  display: inline;
+  position: relative;
+}
+.orig-mark {
+  color: var(--accent);
+  cursor: help;
+  font-size: 0.75em;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+.orig-mark:hover {
+  opacity: 1;
+}
+.orig-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  font-size: 0.85em;
+  white-space: nowrap;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 10;
+  color: var(--muted);
 }
