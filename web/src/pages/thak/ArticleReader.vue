@@ -29,9 +29,19 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { marked } from 'marked'
+import { Marked } from 'marked'
 import { articlesApi } from '../../api/articles'
 import type { Article } from '../../types/article'
+
+const marked = new Marked()
+marked.use({
+  renderer: {
+    heading({ text, depth }) {
+      const id = text.toLowerCase().replace(/[^\w\u4e00-\u9fff]+/g, '-')
+      return `<h${depth} id="${id}">${text}</h${depth}>`
+    }
+  }
+})
 
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
