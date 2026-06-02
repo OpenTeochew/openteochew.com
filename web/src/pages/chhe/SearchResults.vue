@@ -47,7 +47,7 @@
             </div>
             <div v-show="!collapsedSources.has(group.source.id)">
               <table class="results-table">
-                <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th></tr></thead>
+                <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th><th>原冊</th></tr></thead>
                 <tbody>
                   <tr v-for="entry in group.entries" :key="entry.id">
                     <td class="rt-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></td>
@@ -55,6 +55,17 @@
                     <td class="rt-dp">{{ entry.dp }}</td>
                     <td class="rt-def">{{ entry.en }}<OrigIndicator :orig="entry.en_orig" /></td>
                     <td class="rt-page">{{ entry.page_num ? `p. ${entry.page_num}` : '' }}</td>
+                    <td class="rt-src">
+                      <router-link
+                        v-if="entry.page_num"
+                        :to="{ name: 'SourceViewer', params: { id: group.source.id }, query: { page: entry.page_num } }"
+                        class="src-link"
+                        title="查看原書"
+                        target="_blank"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                      </router-link>
+                    </td>
                   </tr>
                 </tbody>
               </table>

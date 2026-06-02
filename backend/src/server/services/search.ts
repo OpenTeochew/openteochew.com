@@ -53,9 +53,10 @@ export async function searchEntries(
 
   const offset = (params.page - 1) * params.limit
   const entries = await db.prepare(
-    `SELECT e.*, s.name as source_name, s.year as source_year
+    `     SELECT e.*, s.name as source_name, s.year as source_year, sec.title as section_title
      FROM entries e
      JOIN sources s ON e.source_id = s.id
+     LEFT JOIN sections sec ON e.section_id = sec.id
      WHERE ${where}
      ORDER BY ${relevanceOrder}, e.source_id, e.sort_order
      LIMIT ? OFFSET ?`
@@ -82,6 +83,8 @@ export async function searchEntries(
       puj_orig: entry.puj_orig,
       en_orig: entry.en_orig,
       page_num: entry.page_num,
+      source_id: entry.source_id,
+      section_title: entry.section_title,
     })
   }
 

@@ -253,7 +253,24 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 .page-image { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); aspect-ratio: 3/4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; color: var(--muted); overflow: hidden; }
 .page-image-icon { width: 48px; height: 48px; opacity: 0.3; }
 .page-image-text { font-size: 14px; text-align: center; line-height: 1.5; }
-.ocr-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(245, 244, 237, 0.95); border-radius: var(--radius-lg); padding: 40px; font-family: var(--font-display); font-size: 14px; line-height: 2; color: var(--fg-2); overflow-y: auto; display: none; }
+.ocr-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(245, 244, 237, 0.95); border-radius: var(--radius-lg); padding: 40px; font-family: var(--font-display); font-size: 16px; line-height: 2; color: var(--fg-2); overflow-y: auto; display: none; }
+.ocr-overlay.visible { display: block; }
+.ocr-text { position: relative; }
+.ocr-toggle { position: absolute; top: -28px; right: 0; display: flex; border-radius: 4px; overflow: hidden; background: var(--surface); }
+.ocr-toggle-btn { padding: 2px 8px; font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; transition: all 150ms; }
+.ocr-toggle-btn.active { background: var(--muted); color: var(--bg); font-weight: 500; }
+.ocr-toggle-btn:hover:not(.active) { color: var(--fg-2); }
+.ocr-text h3 { font-size: 18px; margin: 20px 0 8px; color: var(--fg); }
+.ocr-text h4 { font-size: 17px; margin: 16px 0 6px; color: var(--fg); }
+.ocr-text ul { padding-left: 20px; margin: 0; }
+.ocr-text li { margin-bottom: 2px; }
+.ocr-text strong { font-weight: 600; color: var(--fg); }
+u.ocr-corr { text-decoration: underline var(--accent, #c0392b) wavy 2px; text-underline-offset: 3px; font-weight: 500; cursor: help; position: relative; }
+u.ocr-corr:hover { background: rgba(192, 57, 43, 0.08); border-radius: 2px; }
+u.ocr-corr::after { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding: 3px 8px; background: var(--muted); color: var(--bg); font-size: 11px; font-weight: 400; white-space: nowrap; border-radius: 4px; opacity: 0; pointer-events: none; transition: opacity 120ms; text-decoration: none; }
+u.ocr-corr-mod::after { content: "原文：" attr(data-orig); }
+u.ocr-corr-orig::after { content: "校訂：" attr(data-mod); }
+u.ocr-corr:hover::after { opacity: 1; }
 .ocr-overlay.visible { display: block; }
 .ocr-entry { margin-bottom: 16px; }
 .ocr-char { font-weight: 500; color: var(--fg); font-size: 18px; }
@@ -377,6 +394,11 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
   .phrase-teochew, .phrase-puj { white-space: normal; }
    .ocr-overlay { padding: 20px; }
 }
+.rt-src { width: 40px; text-align: center; }
+.src-link { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); transition: all 150ms; }
+.src-link:hover { border-color: var(--fg-2); color: var(--fg); background: var(--surface); }
+.src-link-inline { font-size: 12px; color: var(--accent); margin-left: 8px; }
+.src-link-inline:hover { text-decoration: underline; }
 .orig {
   color: var(--muted);
   font-size: 0.7em;

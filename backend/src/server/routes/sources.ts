@@ -53,7 +53,7 @@ routes.get('/sources/:id/pages', async (c) => {
   const sourceId = Number(c.req.param('id'))
   const pageNum = c.req.query('page_num')
 
-  let sql = 'SELECT * FROM pages WHERE section_id IN (SELECT id FROM sections WHERE source_id = ?)'
+  let sql = 'SELECT * FROM pages WHERE source_id = ?'
   const params: any[] = [sourceId]
 
   if (pageNum) { sql += ' AND page_num = ?'; params.push(Number(pageNum)) }

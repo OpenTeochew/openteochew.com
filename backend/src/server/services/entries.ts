@@ -1,8 +1,9 @@
 export async function getEntryById(db: D1Database, id: number) {
   const entry = await db.prepare(
-    `SELECT e.*, s.name as source_name, s.year as source_year
+    `SELECT e.*, s.name as source_name, s.year as source_year, sec.title as section_title
      FROM entries e
      JOIN sources s ON e.source_id = s.id
+     LEFT JOIN sections sec ON e.section_id = sec.id
      WHERE e.id = ?`
   ).bind(id).first<any>()
 
@@ -24,6 +25,7 @@ export async function getEntryById(db: D1Database, id: number) {
     puj_orig: entry.puj_orig,
     en_orig: entry.en_orig,
     page_num: entry.page_num,
+    section_title: entry.section_title,
     source: { id: entry.source_id, name: entry.source_name, year: entry.source_year },
     examples: (examples.results as any[]).map((ex) => ({
       teochew: ex.teochew,

@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS examples (
 
 CREATE TABLE IF NOT EXISTS pages (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  section_id INTEGER NOT NULL REFERENCES sections(id),
+  source_id INTEGER NOT NULL REFERENCES sources(id),
   page_num INTEGER NOT NULL,
   image_url TEXT,
   ocr_text TEXT,
@@ -66,5 +66,5 @@ CREATE INDEX IF NOT EXISTS idx_entries_mandarin ON entries(mandarin);
 CREATE INDEX IF NOT EXISTS idx_entries_ja ON entries(ja);
 CREATE INDEX IF NOT EXISTS idx_entries_page ON entries(source_id, page_num);
 CREATE INDEX IF NOT EXISTS idx_sections_source ON sections(source_id);
-CREATE INDEX IF NOT EXISTS idx_pages_section ON pages(section_id);
+CREATE INDEX IF NOT EXISTS idx_pages_source ON pages(source_id, page_num);
 CREATE INDEX IF NOT EXISTS idx_examples_entry ON examples(entry_id);

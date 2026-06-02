@@ -6,13 +6,13 @@ INSERT INTO sources (name, name_zh, author, year, type, level, status, descripti
 ('Primer of the Swatow Dialect', '汕頭方言入門', 'William Ashmore', '1883', 'scan_dict', 'B', 'public_domain', 'Introductory primer for learning Swatow dialect', 5);
 
 INSERT INTO entries (source_id, han, puj, dp, en, mandarin, ja, page_num, sort_order) VALUES
-(1, '食', 'tsia̍h', 'ziah8', 'to eat; to take food; to consume', '吃', '食べる', 42, 1),
-(1, '食飯', 'tsia̍h-pn̄g', 'ziah8-bng7', 'to eat a meal', '吃飯', 'ご飯を食べる', 42, 2),
-(1, '食茶', 'tsia̍h-tê', 'ziah8-de5', 'to drink tea', '喝茶', 'お茶を飲む', 42, 3),
-(2, '食', 'tsia̍h', 'ziah8', 'to eat', '吃', '食べる', 156, 1),
-(2, '食飯', 'tsia̍h-pn̄g', 'ziah8-bng7', 'to eat rice', '吃飯', 'ご飯を食べる', 156, 2),
-(3, '食', 'tsia̍h', 'ziah8', 'to eat; to drink', '吃', '食べる', 28, 1),
-(3, '潮州', 'Tiê-tsiu', 'dio5-ziu1', 'Chaozhou (city/region)', '潮州', '潮州', 12, 1),
+(1, '食', 'tsia̍h', 'ziah8', 'to eat; to take food; to consume', '吃', '食べる', 58, 1),
+(1, '食飯', 'tsia̍h-pn̄g', 'ziah8-bng7', 'to eat a meal', '吃飯', 'ご飯を食べる', 58, 2),
+(1, '食茶', 'tsia̍h-tê', 'ziah8-de5', 'to drink tea', '喝茶', 'お茶を飲む', 58, 3),
+(2, '食', 'tsia̍h', 'ziah8', 'to eat', '吃', '食べる', 172, 1),
+(2, '食飯', 'tsia̍h-pn̄g', 'ziah8-bng7', 'to eat rice', '吃飯', 'ご飯を食べる', 172, 2),
+(3, '食', 'tsia̍h', 'ziah8', 'to eat; to drink', '吃', '食べる', 44, 1),
+(3, '潮州', 'Tiê-tsiu', 'dio5-ziu1', 'Chaozhou (city/region)', '潮州', '潮州', 28, 1),
 (4, '食', 'tsia̍h', 'ziah8', '吃', '吃', '食べる', NULL, 1),
 (4, '食飯', 'tsia̍h-pn̄g', 'ziah8-bng7', '吃飯', '吃飯', 'ご飯を食べる', NULL, 2),
 (5, '食', 'tsia̍h', 'ziah8', 'to eat', '吃', '食べる', 15, 1);

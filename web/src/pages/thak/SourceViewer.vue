@@ -21,11 +21,20 @@
       <div class="viewer-layout">
         <div class="page-viewer">
           <div class="page-image">
-            <svg class="page-image-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4M7 11h10M7 15h6"/></svg>
-            <p class="page-image-text">原書掃描頁面<br><span style="font-size:12px">第 {{ pageNum }} 頁 · {{ source.name }}</span></p>
+            <img v-if="pageImageUrl" :src="pageImageUrl" :alt="`第 ${pageNum} 頁`" style="width:100%;height:100%;object-fit:contain;" @error="imgError = true">
+            <template v-if="!pageImageUrl || imgError">
+              <svg class="page-image-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4M7 11h10M7 15h6"/></svg>
+              <p class="page-image-text">原書掃描頁面<br><span style="font-size:12px">第 {{ pageNum }} 頁 · {{ source?.name }}</span></p>
+            </template>
           </div>
           <div class="ocr-overlay" :class="{ visible: viewMode === 'ocr' }">
-            <div v-if="currentPage?.ocr_text" v-html="currentPage.ocr_text"></div>
+            <div v-if="renderedOcr" class="ocr-text">
+              <div class="ocr-toggle">
+                <button class="ocr-toggle-btn" :class="{ active: ocrVersion === 'original' }" @click="ocrVersion = 'original'">原文</button>
+                <button class="ocr-toggle-btn" :class="{ active: ocrVersion === 'modified' }" @click="ocrVersion = 'modified'">校訂</button>
+              </div>
+              <div v-html="renderedOcr"></div>
+            </div>
             <div v-else>
               <div v-for="e in entries" :key="e.id" class="ocr-entry">
                 <span class="ocr-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span><span class="ocr-puj">{{ e.puj }}</span>
@@ -59,18 +68,41 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { Marked } from 'marked'
 import { sourcesApi } from '../../api/sources'
 import OrigIndicator from '../../components/OrigIndicator.vue'
 
+const marked = new Marked({ gfm: true })
+
+const route = useRoute()
+const router = useRouter()
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const loading = ref(true)
 const source = ref(null)
 const viewMode = ref('scan')
-const pageNum = ref(1)
+const ocrVersion = ref('modified')
+const pageNum = ref(Number(route.query.page) || 1)
+const imgError = ref(false)
 const sidebarQuery = ref('')
 const entries = ref([])
 const pages = ref([])
+
+const ORIG_RE = /~~([^~]+)~~\(([^)]+)\)/g
+
+function escAttr(s) {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+}
+
+function renderOcrVersion(text, version) {
+  const verClass = version === 'original' ? 'ocr-corr-orig' : 'ocr-corr-mod'
+  const processed = text.replace(ORIG_RE, (_, orig, mod) => {
+    const show = version === 'original' ? orig : mod
+    return `<u class="ocr-corr ${verClass}" data-orig="${escAttr(orig)}" data-mod="${escAttr(mod)}">${show}</u>`
+  })
+  return marked.parse(processed)
+}
 
 async function loadData() {
   loading.value = true
@@ -92,6 +124,8 @@ async function loadData() {
 onMounted(loadData)
 
 watch(pageNum, async () => {
+  imgError.value = false
+  router.replace({ query: { ...route.query, page: pageNum.value } })
   try {
     const [entriesResult, pagesResult] = await Promise.all([
       sourcesApi.getEntries(Number(props.id), { page_num: pageNum.value }),
@@ -115,4 +149,15 @@ const filteredEntries = computed(() => {
 })
 
 const currentPage = computed(() => pages.value[0] || null)
+
+const renderedOcr = computed(() => {
+  const text = currentPage.value?.ocr_text
+  if (!text) return ''
+  return renderOcrVersion(text, ocrVersion.value)
+})
+
+const pageImageUrl = computed(() => {
+  if (!source.value) return null
+  return `/scans/${source.value.id}/${String(pageNum.value).padStart(3, '0')}.png`
+})
 </script>

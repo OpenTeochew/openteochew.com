@@ -35,7 +35,7 @@
         </div>
         <div v-for="tab in defTabs" :key="tab.key" class="def-panel" :class="{ active: activeTab === tab.key }">
           <div v-for="d in tab.definitions" :key="d.source" class="def-block">
-            <p class="def-source">{{ d.source }}</p>
+            <p class="def-source">{{ d.source }}<router-link v-if="d.pageNum" :to="{ name: 'SourceViewer', params: { id: d.sourceId }, query: { page: d.pageNum } }" class="src-link-inline" target="_blank">原冊</router-link></p>
             <p class="def-text" v-html="d.text"></p>
           </div>
         </div>
@@ -77,7 +77,9 @@ const defTabs = computed(() => {
 
   const currentDef = {
     source: `${entry.value.source.name}${entry.value.page_num ? ' · p. ' + entry.value.page_num : ''}`,
-    text: `<strong>${entry.value.han || ''} ${entry.value.puj || ''}</strong> — ${entry.value.en || ''}`
+    text: `<strong>${entry.value.han || ''} ${entry.value.puj || ''}</strong> — ${entry.value.en || ''}`,
+    pageNum: entry.value.page_num,
+    sourceId: entry.value.source.id
   }
 
   const tabs = [{
@@ -98,7 +100,9 @@ const defTabs = computed(() => {
     for (const e of group.entries) {
       const def = {
         source: `${group.source.name}${e.page_num ? ' · p. ' + e.page_num : ''}`,
-        text: `<strong>${e.han || ''} ${e.puj || ''}</strong> — ${e.en || ''}`
+        text: `<strong>${e.han || ''} ${e.puj || ''}</strong> — ${e.en || ''}`,
+        pageNum: e.page_num,
+        sourceId: group.source.id
       }
       tabs[0].definitions.push(def)
 

@@ -26,14 +26,14 @@ export function generateSql(sourceId, diffResult, existingSections) {
   for (const row of diffResult.added) {
     const sectionTitle = parseSection(row.source)
     statements.push(
-      `INSERT INTO entries (source_id, section_id, han, puj, en, han_orig, puj_orig, en_orig, sort_order) VALUES (${sourceId}, ${sectionSubquery(sectionTitle)}, ${sqlVal(row.han)}, ${sqlVal(row.puj)}, ${sqlVal(row.en)}, ${sqlVal(row.han_orig)}, ${sqlVal(row.puj_orig)}, ${sqlVal(row.en_orig)}, 0);`
+      `INSERT INTO entries (source_id, section_id, han, puj, en, han_orig, puj_orig, en_orig, page_num, sort_order) VALUES (${sourceId}, ${sectionSubquery(sectionTitle)}, ${sqlVal(row.han)}, ${sqlVal(row.puj)}, ${sqlVal(row.en)}, ${sqlVal(row.han_orig)}, ${sqlVal(row.puj_orig)}, ${sqlVal(row.en_orig)}, ${sqlNum(row.page_num)}, 0);`
     )
   }
 
   for (const row of diffResult.modified) {
     const sectionTitle = parseSection(row.source)
     statements.push(
-      `UPDATE entries SET han = ${sqlVal(row.han)}, puj = ${sqlVal(row.puj)}, en = ${sqlVal(row.en)}, han_orig = ${sqlVal(row.han_orig)}, puj_orig = ${sqlVal(row.puj_orig)}, en_orig = ${sqlVal(row.en_orig)}, section_id = ${sectionSubquery(sectionTitle)} WHERE source_id = ${sourceId} AND puj = ${sqlVal(row.puj)} AND han = ${sqlVal(row.han)} AND en = ${sqlVal(row.en)};`
+      `UPDATE entries SET han = ${sqlVal(row.han)}, puj = ${sqlVal(row.puj)}, en = ${sqlVal(row.en)}, han_orig = ${sqlVal(row.han_orig)}, puj_orig = ${sqlVal(row.puj_orig)}, en_orig = ${sqlVal(row.en_orig)}, page_num = ${sqlNum(row.page_num)}, section_id = ${sectionSubquery(sectionTitle)} WHERE source_id = ${sourceId} AND puj = ${sqlVal(row.puj)} AND han = ${sqlVal(row.han)} AND en = ${sqlVal(row.en)};`
     )
   }
 
@@ -50,6 +50,11 @@ export function generateSql(sourceId, diffResult, existingSections) {
 function sqlVal(val) {
   if (!val) return 'NULL'
   return `'${sqlEscape(val)}'`
+}
+
+function sqlNum(val) {
+  const n = parseInt(val, 10)
+  return isNaN(n) ? 'NULL' : String(n)
 }
 
 function sqlEscape(str) {
