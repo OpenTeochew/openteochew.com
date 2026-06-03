@@ -21,7 +21,8 @@
               <p class="meta-text">{{ s.author }}</p>
               <div class="dict-meta">
                 <span class="dict-tag">{{ typeLabel(s.type) }}</span>
-                <span class="meta-text">{{ s.total_entries ? s.total_entries.toLocaleString() + ' 詞條' : '' }}</span>
+                <span v-if="s.total_entries" class="meta-text">{{ s.total_entries.toLocaleString() }} 詞條</span>
+                <span v-else class="source-pending">收錄中</span>
                 <span class="meta-text">{{ s.total_pages ? s.total_pages + ' 頁' : '' }}</span>
               </div>
             </div>

@@ -40,7 +40,10 @@
             <h3>{{ s.year }}·{{ s.name_zh || s.name }}</h3>
             <p class="meta-text">{{ s.name }}</p>
             <p class="meta-text">{{ s.author }}</p>
-            <span class="source-count">{{ s.total_entries ? s.total_entries.toLocaleString() + ' 詞條' : '—' }}</span>
+            <div class="dict-meta">
+              <span v-if="s.total_entries" class="source-count">{{ s.total_entries.toLocaleString() }} 詞條</span>
+              <span v-else class="source-pending">收錄中</span>
+            </div>
           </router-link>
         </div>
       </div>
