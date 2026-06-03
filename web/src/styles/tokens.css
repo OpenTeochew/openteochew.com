@@ -303,6 +303,8 @@ u.ocr-corr::after { position: absolute; bottom: 100%; left: 50%; transform: tran
 u.ocr-corr-mod::after { content: "原文：" attr(data-orig); }
 u.ocr-corr-orig::after { content: "校訂：" attr(data-mod); }
 u.ocr-corr:hover::after { opacity: 1; }
+ins.ocr-ins { text-decoration: underline var(--fg-2) dashed 1px; text-underline-offset: 3px; font-style: normal; }
+sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-left: 1px; background: var(--surface-warm); padding: 1px 4px; border-radius: 3px; }
 .ocr-entries h3 { font-size: 18px; margin: 20px 0 8px; color: var(--fg); }
 .ocr-entries h4 { font-size: 17px; margin: 16px 0 6px; color: var(--fg); }
 .ocr-entries ul { padding-left: 20px; margin: 0; }
