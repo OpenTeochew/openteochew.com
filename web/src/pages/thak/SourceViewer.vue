@@ -38,26 +38,28 @@
           <div v-else class="ocr-entries">
             <div v-for="e in entries" :key="e.id" class="ocr-entry">
               <div class="ocr-headline">
-                <span class="ocr-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span>
+                <span v-if="e.han" class="ocr-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span>
                 <span class="ocr-puj">{{ e.puj }}</span>
-                <span class="ocr-dp">{{ e.puj }}</span>
               </div>
               <p class="ocr-def">{{ e.en }}</p>
             </div>
           </div>
         </div>
         <aside class="entry-sidebar">
-          <p class="sidebar-title">本頁詞條</p>
-          <div class="sidebar-search"><input v-model="sidebarQuery" type="text" class="sidebar-input" placeholder="在本頁搜索…"></div>
+          <p class="sidebar-title">本頁詞條<span v-if="filteredEntries.length" class="sidebar-count">{{ filteredEntries.length }}</span></p>
+          <div class="sidebar-search"><input v-model="sidebarQuery" type="text" class="sidebar-input" placeholder="在本頁搜索…" @input="sidebarLimit = SIDEBAR_PAGE_SIZE"></div>
           <ul class="entry-list">
-            <li v-for="e in filteredEntries" :key="e.id" class="entry-item">
+            <li v-for="e in visibleEntries" :key="e.id" class="entry-item">
               <router-link :to="{ name: 'EntryDetail', params: { id: e.id } }" class="entry-link">
-                <span class="entry-link-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span>
-                <span class="entry-link-puj">{{ e.puj }}</span>
+                <span v-if="e.han" class="entry-link-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span>
+                <span class="entry-link-puj" :class="{ 'entry-link-puj--head': !e.han }">{{ e.puj }}</span>
                 <span class="entry-link-def">{{ e.en }}</span>
               </router-link>
             </li>
           </ul>
+          <button v-if="filteredEntries.length > sidebarLimit" class="sidebar-more" @click="sidebarLimit = filteredEntries.length">
+            顯示全部 {{ filteredEntries.length }} 條
+          </button>
         </aside>
         <div class="scan-panel" :class="{ open: scanOpen }">
           <div class="scan-panel-inner">
@@ -102,6 +104,8 @@ const ocrVersion = ref('modified')
 const pageNum = ref(Number(route.query.page) || 1)
 const imgError = ref(false)
 const sidebarQuery = ref('')
+const SIDEBAR_PAGE_SIZE = 10
+const sidebarLimit = ref(SIDEBAR_PAGE_SIZE)
 const entries = ref([])
 const pages = ref([])
 
@@ -141,6 +145,7 @@ onMounted(loadData)
 
 watch(pageNum, async () => {
   imgError.value = false
+  sidebarLimit.value = SIDEBAR_PAGE_SIZE
   router.replace({ query: { ...route.query, page: pageNum.value } })
   try {
     const [entriesResult, pagesResult] = await Promise.all([
@@ -171,6 +176,8 @@ const filteredEntries = computed(() => {
     (e.en || '').toLowerCase().includes(q)
   )
 })
+
+const visibleEntries = computed(() => filteredEntries.value.slice(0, sidebarLimit.value))
 
 const currentPage = computed(() => pages.value[0] || null)
 

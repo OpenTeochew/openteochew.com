@@ -280,14 +280,19 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 .scan-image-ph p { font-size: 13px; line-height: 1.5; }
 .entry-sidebar { width: 260px; flex-shrink: 0; border-left: 1px solid var(--border); padding: 24px 0 24px 24px; overflow-y: auto; }
 .dict-split.scan-open .entry-sidebar { display: none; }
-.sidebar-title { font-family: var(--font-mono); font-size: 11px; color: var(--meta); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+.sidebar-title { font-family: var(--font-mono); font-size: 11px; color: var(--meta); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+.sidebar-count { font-size: 10px; background: var(--surface); padding: 1px 6px; border-radius: 10px; }
 .entry-list { list-style: none; padding: 0; margin: 0; }
-.entry-item { margin-bottom: 10px; }
+.entry-item { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border-soft); }
+.entry-item:last-child { border-bottom: none; padding-bottom: 0; }
 .entry-link { display: block; padding: 6px 10px; border-radius: 6px; transition: background 150ms; }
 .entry-link:hover { background: var(--surface); }
 .entry-link-char { font-family: var(--font-display); font-size: 16px; font-weight: 500; }
 .entry-link-puj { font-family: var(--font-mono); font-size: 12px; color: var(--muted); display: inline; margin-left: 6px; }
+.entry-link-puj--head { font-size: 15px; color: var(--fg); font-weight: 500; margin-left: 0; }
 .entry-link-def { font-size: 12px; color: var(--fg-2); display: block; margin-top: 2px; }
+.sidebar-more { display: block; width: 100%; padding: 8px; margin-top: 12px; border: 1px dashed var(--border); border-radius: 6px; font-size: 12px; color: var(--muted); cursor: pointer; transition: all 150ms; }
+.sidebar-more:hover { border-color: var(--fg-2); color: var(--fg-2); }
 .sidebar-search { margin-bottom: 16px; }
 .sidebar-input { width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); font: inherit; font-size: 13px; color: var(--fg); outline: none; }
 .sidebar-input:focus { border-color: var(--fg-2); }
