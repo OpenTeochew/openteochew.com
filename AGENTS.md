@@ -35,7 +35,9 @@ backend/              # Hono + Cloudflare Workers
       services/       # search, entries
       schemas/        # Zod 驗證
       db/             # D1 查詢輔助
-scripts/              # SQL schema + seed data
+scripts/              # SQL schema + seed + sync tools
+  full-sync.py     # 全量同步 CSV + OCR pages → 本地 D1
+  lib/             # csv-parse, sql-gen, diff 等
 docs/                 # 設計規範 + 架構文檔
 tmp/                  # 原型（已忽略）
 ```
@@ -46,19 +48,19 @@ tmp/                  # 原型（已忽略）
 |------|------|-------------|
 | `/` | HomePage | 首頁 hero |
 | `/chhe` | SearchHome | 搜尋表單 + 熱門詞彙 + 來源列表 |
-| `/chhe/results` | SearchResults | 結果表格（按來源分組） |
-| `/chhe/entry/:id` | EntryDetail | 詞條詳情（定義 + 例句） |
+| `/chhe/results` | SearchResults | 結果表格（按來源分組 + 原冊連結） |
+| `/chhe/entry/:id` | EntryDetail | 詞條詳情（定義 + 例句 + 原冊連結） |
 | `/thak` | ReadHome | 字典卡片 + 語料列表 |
 | `/thak/article/:id` | ArticleReader | 文章閱讀（markdown 渲染 + TOC） |
-| `/thak/source/:id` | SourceViewer | 掃描頁 + OCR 詞條列表 |
+| `/thak/source/:id` | SourceViewer | 掃描頁 + OCR 文字（原文/校訂 toggle） |
 
 ## DB Schema (6 tables)
 
 - **sources** — 字典/語料/詞表（type: scan_dict | text_dict | corpus | wordlist）
 - **sections** — 來源下的章節
-- **entries** — 詞條（hanzi, puj, dp, en, mandarin, ja, page_num）
+- **entries** — 詞條（han, puj, en, han_orig, puj_orig, en_orig, page_num）
 - **examples** — 例句（teochew, puj, translation）
-- **pages** — 掃描頁（image_url, ocr_text）
+- **pages** — 掃描頁 OCR（source_id, page_num, image_url, ocr_text）
 - **articles** — 文章（title, content markdown, source_id）
 
 ## API Prefix
@@ -82,12 +84,28 @@ tmp/                  # 原型（已忽略）
 
 完成功能後，審視 `docs/` 下設計文檔是否需要同步更新。
 
+## Data Pipeline
+
+hokkien-writing dataset (`~/Documents/Code/hokkien-writing/dataset`) 提供 CSV + markdown：
+
+1. **`add_page_markers.py`** — 從維基文庫抓取子頁面 HTML，計數 `<dt>` 定位頁碼邊界，在 markdown 插入 `<!-- page:N -->`
+2. **Processor** (`processors/001_*.py`) — 解析 markdown，追蹤 page markers，輸出帶 page_num 的 entry
+3. **`export_csv.py`** — 匯出 CSV（含 page_num 欄位）
+4. **`full-sync.py`**（本 repo）— 讀取 CSV + markdown，全量寫入本地 D1（entries + pages）
+
+```bash
+# 重建本地數據
+python3 scripts/full-sync.py                    # 默認 source 1
+python3 scripts/full-sync.py --entries-only     # 只同步詞條
+python3 scripts/full-sync.py --pages-only       # 只同步 OCR 頁
+```
+
 ## Dev Commands
 
 ```bash
 # Full build
-./build.sh                 # Build frontend → copy to backend/public
+./build.sh                 # Build frontend → copy to backend/public（保留 scans/）
 
-# Backend                   # Start backend server
-./dev.sh
+# Backend
+./dev.sh                   # Start backend server
 ```

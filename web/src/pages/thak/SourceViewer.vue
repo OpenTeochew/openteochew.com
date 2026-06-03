@@ -11,46 +11,44 @@
           <h1>{{ source.name }}</h1>
           <p class="meta-text">{{ [source.author, source.year].filter(Boolean).join(' · ') }}</p>
         </div>
-        <div class="view-toggle">
-          <button class="view-btn" :class="{ active: viewMode === 'scan' }" @click="viewMode = 'scan'">原書掃描</button>
-          <button class="view-btn" :class="{ active: viewMode === 'ocr' }" @click="viewMode = 'ocr'">OCR 文字</button>
-        </div>
       </div>
     </div>
-    <div class="container">
-      <div class="viewer-layout">
-        <div class="page-viewer">
-          <div class="page-image">
-            <img v-if="pageImageUrl" :src="pageImageUrl" :alt="`第 ${pageNum} 頁`" style="width:100%;height:100%;object-fit:contain;" @error="imgError = true">
-            <template v-if="!pageImageUrl || imgError">
-              <svg class="page-image-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4M7 11h10M7 15h6"/></svg>
-              <p class="page-image-text">原書掃描頁面<br><span style="font-size:12px">第 {{ pageNum }} 頁 · {{ source?.name }}</span></p>
-            </template>
-          </div>
-          <div class="ocr-overlay" :class="{ visible: viewMode === 'ocr' }">
-            <div v-if="renderedOcr" class="ocr-text">
-              <div class="ocr-toggle">
-                <button class="ocr-toggle-btn" :class="{ active: ocrVersion === 'original' }" @click="ocrVersion = 'original'">原文</button>
-                <button class="ocr-toggle-btn" :class="{ active: ocrVersion === 'modified' }" @click="ocrVersion = 'modified'">校訂</button>
+    <div class="container dict-toolbar">
+      <div class="dict-page-nav">
+        <button class="dict-page-btn" :disabled="pageNum <= 1" @click="goPrev">← 上一頁</button>
+        <span class="dict-page-num">第 {{ pageNum }} 頁</span>
+        <button class="dict-page-btn" @click="goNext">下一頁 →</button>
+      </div>
+      <div class="dict-toolbar-right">
+        <div v-if="renderedOcr" class="ocr-version-toggle">
+          <button :class="{ active: ocrVersion === 'modified' }" @click="ocrVersion = 'modified'">校訂版</button>
+          <button :class="{ active: ocrVersion === 'original' }" @click="ocrVersion = 'original'">原版</button>
+        </div>
+        <button class="dict-scan-toggle" :class="{ open: scanOpen }" @click="scanOpen = !scanOpen">
+          <svg v-if="!scanOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          {{ scanOpen ? '關閉掃描' : '查看原書掃描' }}
+        </button>
+      </div>
+    </div>
+    <div class="container" style="padding-top:0">
+      <div class="dict-split" :class="{ 'scan-open': scanOpen }">
+        <div class="ocr-main">
+          <div v-if="renderedOcr" class="ocr-entries" v-html="renderedOcr"></div>
+          <div v-else class="ocr-entries">
+            <div v-for="e in entries" :key="e.id" class="ocr-entry">
+              <div class="ocr-headline">
+                <span class="ocr-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span>
+                <span class="ocr-puj">{{ e.puj }}</span>
+                <span class="ocr-dp">{{ e.puj }}</span>
               </div>
-              <div v-html="renderedOcr"></div>
+              <p class="ocr-def">{{ e.en }}</p>
             </div>
-            <div v-else>
-              <div v-for="e in entries" :key="e.id" class="ocr-entry">
-                <span class="ocr-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span><span class="ocr-puj">{{ e.puj }}</span>
-                <p class="ocr-def">{{ e.en }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="page-nav">
-            <button class="page-nav-btn" :disabled="pageNum <= 1" @click="pageNum--">← 上一頁</button>
-            <span class="page-num">第 {{ pageNum }} 頁 / 共 {{ source.total_pages || '—' }} 頁</span>
-            <button class="page-nav-btn" @click="pageNum++">下一頁 →</button>
           </div>
         </div>
         <aside class="entry-sidebar">
           <p class="sidebar-title">本頁詞條</p>
-          <div class="sidebar-search"><input v-model="sidebarQuery" type="text" class="sidebar-input" placeholder="在詞條中搜索…"></div>
+          <div class="sidebar-search"><input v-model="sidebarQuery" type="text" class="sidebar-input" placeholder="在本頁搜索…"></div>
           <ul class="entry-list">
             <li v-for="e in filteredEntries" :key="e.id" class="entry-item">
               <router-link :to="{ name: 'EntryDetail', params: { id: e.id } }" class="entry-link">
@@ -61,6 +59,24 @@
             </li>
           </ul>
         </aside>
+        <div class="scan-panel" :class="{ open: scanOpen }">
+          <div class="scan-panel-inner">
+            <div class="scan-image">
+              <img v-if="pageImageUrl" :src="pageImageUrl" :alt="`第 ${pageNum} 頁`" style="max-width:100%;max-height:100%;object-fit:contain;" @error="imgError = true">
+              <div v-if="!pageImageUrl || imgError" class="scan-image-ph">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <p>原書掃描頁面<br><span style="font-size:12px;color:var(--meta)">第 {{ pageNum }} 頁 · {{ source?.name }}</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dict-toolbar" style="border-top:1px solid var(--border);border-bottom:none">
+        <div class="dict-page-nav">
+          <button class="dict-page-btn" :disabled="pageNum <= 1" @click="goPrev">← 上一頁</button>
+          <span class="dict-page-num">第 {{ pageNum }} 頁</span>
+          <button class="dict-page-btn" @click="goNext">下一頁 →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -81,7 +97,7 @@ const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const loading = ref(true)
 const source = ref(null)
-const viewMode = ref('scan')
+const scanOpen = ref(false)
 const ocrVersion = ref('modified')
 const pageNum = ref(Number(route.query.page) || 1)
 const imgError = ref(false)
@@ -137,6 +153,14 @@ watch(pageNum, async () => {
     console.error('Failed to load page data:', e)
   }
 })
+
+function goPrev() {
+  if (pageNum.value > 1) pageNum.value--
+}
+
+function goNext() {
+  pageNum.value++
+}
 
 const filteredEntries = computed(() => {
   const q = sidebarQuery.value.trim().toLowerCase()
