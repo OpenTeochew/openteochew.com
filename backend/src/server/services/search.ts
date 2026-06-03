@@ -53,7 +53,7 @@ export async function searchEntries(
 
   const offset = (params.page - 1) * params.limit
   const entries = await db.prepare(
-    `     SELECT e.*, s.name as source_name, s.year as source_year, sec.title as section_title
+    `     SELECT e.*, s.name as source_name, s.name_zh as source_name_zh, s.year as source_year, sec.title as section_title
      FROM entries e
      JOIN sources s ON e.source_id = s.id
      LEFT JOIN sections sec ON e.section_id = sec.id
@@ -66,7 +66,7 @@ export async function searchEntries(
   for (const entry of entries.results as any[]) {
     if (!groups.has(entry.source_id)) {
       groups.set(entry.source_id, {
-        source: { id: entry.source_id, name: entry.source_name, year: entry.source_year },
+        source: { id: entry.source_id, name: entry.source_name, name_zh: entry.source_name_zh, year: entry.source_year },
         count: sourceTotalMap.get(entry.source_id) || 0,
         entries: []
       })

@@ -4,7 +4,7 @@ export interface Source {
   name_zh: string | null
   author: string | null
   year: string | null
-  type: 'scan_dict' | 'text_dict' | 'corpus' | 'wordlist'
+  type: 'dictionary' | 'textbook'
   level: string | null
   status: string | null
   description: string | null

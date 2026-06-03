@@ -7,7 +7,8 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-DB_PATH = REPO / "backend" / ".wrangler" / "state" / "v3" / "d1" / "miniflare-D1DatabaseObject"
+DEFAULT_DB = REPO / "tmp" / "openteochew.db"
+WRANGLER_DB_DIR = REPO / "backend" / ".wrangler" / "state" / "v3" / "d1" / "miniflare-D1DatabaseObject"
 HW_DEFAULT = Path.home() / "Documents" / "Code" / "hokkien-writing" / "dataset"
 
 SOURCE_CONFIG = {
@@ -22,11 +23,13 @@ PAGE_RE = re.compile(r"<!-- page:(\d+) -->")
 
 
 def find_db():
-    if DB_PATH.is_dir():
-        for f in DB_PATH.glob("*.sqlite"):
+    if DEFAULT_DB.exists():
+        return DEFAULT_DB
+    if WRANGLER_DB_DIR.is_dir():
+        for f in WRANGLER_DB_DIR.glob("*.sqlite"):
             if f.name != "metadata.sqlite":
                 return f
-    print("ERROR: local D1 database not found. Run `./dev.sh` first.", file=sys.stderr)
+    print("ERROR: local D1 database not found. Run `./init_dev_db.sh` first.", file=sys.stderr)
     sys.exit(1)
 
 

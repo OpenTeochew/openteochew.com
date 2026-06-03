@@ -9,7 +9,7 @@
       <div class="read-layout">
         <article class="read-main">
           <div class="read-meta">
-            <span class="read-tag" v-if="article.source">{{ article.source.type }}</span>
+            <span class="read-tag" v-if="article.source">{{ article.source.type === 'dictionary' ? '辭書' : '教材' }}</span>
           </div>
           <h1 class="read-title">{{ article.title }}</h1>
           <div class="markdown-body" v-html="renderedContent"></div>

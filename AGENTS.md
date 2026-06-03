@@ -56,7 +56,7 @@ tmp/                  # 原型（已忽略）
 
 ## DB Schema (6 tables)
 
-- **sources** — 字典/語料/詞表（type: scan_dict | text_dict | corpus | wordlist）
+- **sources** — 字典/語料/詞表（type: dictionary | textbook）
 - **sections** — 來源下的章節
 - **entries** — 詞條（han, puj, en, han_orig, puj_orig, en_orig, page_num）
 - **examples** — 例句（teochew, puj, translation）
@@ -83,6 +83,10 @@ tmp/                  # 原型（已忽略）
 4. **Goal-Driven Execution** — 先定義成功標準，循環直到驗證通過。
 
 完成功能後，審視 `docs/` 下設計文檔是否需要同步更新。
+
+## External Resources
+
+- **Wiki**：`~/.wiki`
 
 ## Data Pipeline
 

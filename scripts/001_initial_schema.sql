@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS sources (
   name_zh TEXT,
   author TEXT,
   year TEXT,
-  type TEXT NOT NULL DEFAULT 'text_dict',
+  type TEXT NOT NULL DEFAULT 'dictionary',
   level TEXT,
   status TEXT DEFAULT 'pending',
   description TEXT,
@@ -33,6 +33,9 @@ CREATE TABLE IF NOT EXISTS entries (
   en TEXT,
   mandarin TEXT,
   ja TEXT,
+  puj_orig TEXT,
+  han_orig TEXT,
+  en_orig TEXT,
   page_num INTEGER,
   sort_order INTEGER DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
@@ -56,6 +59,15 @@ CREATE TABLE IF NOT EXISTS pages (
   sort_order INTEGER DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS articles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  source_id INTEGER NOT NULL REFERENCES sources(id),
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now')),
+  updated_at TEXT DEFAULT (datetime('now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_entries_source ON entries(source_id);
 CREATE INDEX IF NOT EXISTS idx_entries_section ON entries(section_id);
 CREATE INDEX IF NOT EXISTS idx_entries_han ON entries(han);
@@ -68,3 +80,4 @@ CREATE INDEX IF NOT EXISTS idx_entries_page ON entries(source_id, page_num);
 CREATE INDEX IF NOT EXISTS idx_sections_source ON sections(source_id);
 CREATE INDEX IF NOT EXISTS idx_pages_source ON pages(source_id, page_num);
 CREATE INDEX IF NOT EXISTS idx_examples_entry ON examples(entry_id);
+CREATE INDEX IF NOT EXISTS idx_articles_source ON articles(source_id);

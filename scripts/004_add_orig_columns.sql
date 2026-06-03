@@ -1,3 +1,0 @@
-ALTER TABLE entries ADD COLUMN puj_orig TEXT;
-ALTER TABLE entries ADD COLUMN han_orig TEXT;
-ALTER TABLE entries ADD COLUMN en_orig TEXT;

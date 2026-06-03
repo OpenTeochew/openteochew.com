@@ -3,7 +3,7 @@
     <section class="section hero-search">
       <div class="container" style="max-width: 760px;">
         <h1>查潮州話</h1>
-        <p class="lead">匯集所有潮州話字典、詞典與語料，支持多條件檢索。</p>
+        <p class="lead">匯集潮州話辭書與教材詞條，支持多條件檢索。</p>
         <form class="query-form" autocomplete="off" @submit.prevent="handleSubmit">
           <div class="query-rows">
             <div v-for="(row, i) in queryRows" :key="i" class="query-row">
@@ -33,15 +33,15 @@
     </section>
     <section class="section">
       <div class="container">
-        <h2>收錄來源</h2>
+        <h2>收錄來源（TOP 5）</h2>
         <div v-if="sourcesLoading" class="source-grid"><p>載入中…</p></div>
         <div v-else class="source-grid">
-          <div v-for="s in sources" :key="s.id" class="source-card">
-            <span class="source-badge">{{ s.level || '—' }}</span>
-            <h3>{{ s.name }}</h3>
-            <p class="meta-text">{{ [s.author, s.year].filter(Boolean).join(' · ') }}</p>
-            <p>{{ s.description }}</p>
-          </div>
+          <router-link v-for="s in topSources" :key="s.id" :to="{ name: 'SourceViewer', params: { id: s.id } }" class="source-card">
+            <h3>{{ s.year }}·{{ s.name_zh || s.name }}</h3>
+            <p class="meta-text">{{ s.name }}</p>
+            <p class="meta-text">{{ s.author }}</p>
+            <span class="source-count">{{ s.total_entries ? s.total_entries.toLocaleString() + ' 詞條' : '—' }}</span>
+          </router-link>
         </div>
       </div>
     </section>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import { useSearch } from '../../composables/useSearch'
 import { sourcesApi } from '../../api/sources'
 
@@ -103,6 +103,10 @@ function handleSubmit() {
 
 const sources = ref([])
 const sourcesLoading = ref(true)
+
+const topSources = computed(() =>
+  [...sources.value].sort((a, b) => (b.total_entries || 0) - (a.total_entries || 0)).slice(0, 5)
+)
 
 onMounted(async () => {
   try {

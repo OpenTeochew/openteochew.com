@@ -42,7 +42,7 @@
           <div v-for="group in filteredGroups" :key="group.source.id" class="source-group">
             <div class="source-group-head" @click="toggleCollapse(group.source.id)">
               <svg class="collapse-arrow" :class="{ collapsed: collapsedSources.has(group.source.id) }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-              <span class="source-group-title">{{ group.source.name }}</span>
+              <span class="source-group-title">{{ group.source.year ? group.source.year + '·' : '' }}{{ group.source.name_zh || group.source.name }}</span>
               <span class="source-group-count">{{ group.count }} 筆</span>
             </div>
             <div v-show="!collapsedSources.has(group.source.id)">
@@ -138,12 +138,12 @@ const groups = computed(() => {
     const allEntries = [...g.entries, ...extra]
     const hasMore = allEntries.length < g.count
     return { ...g, entries: allEntries, hasMore }
-  })
+  }).sort((a, b) => (a.source.year || '').localeCompare(b.source.year || ''))
 })
 const total = computed(() => store.result?.total || 0)
 
 const filters = computed(() => {
-  const names = groups.value.map(g => g.source.name)
+  const names = groups.value.map(g => `${g.source.year ? g.source.year + '·' : ''}${g.source.name_zh || g.source.name}`)
   return ['全部來源', ...names]
 })
 
