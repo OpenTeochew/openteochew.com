@@ -73,9 +73,9 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-body); font-weight:
 .search-icon { width: 20px; height: 20px; margin-left: 14px; color: var(--muted); flex-shrink: 0; }
 .search-input { flex: 1; border: none; background: transparent; font: inherit; font-size: 18px; padding: 12px 14px; color: var(--fg); outline: none; }
 .search-input::placeholder { color: var(--meta); }
-.search-btn { padding: 12px 28px; background: var(--accent); color: var(--accent-on); border-radius: 8px; font-size: 16px; font-weight: 500; letter-spacing: 0.04em; transition: background 150ms; }
+.search-btn { padding: 12px 28px; background: var(--accent); color: var(--accent-on); border-radius: 8px; font-size: 16px; font-weight: 400; letter-spacing: 0.04em; transition: background 150ms; }
 .search-btn:hover { background: var(--accent-active); }
-.search-bar-btn { padding: 6px 14px; background: var(--accent); color: var(--accent-on); border-radius: 6px; font-size: 13px; font-weight: 500; transition: background 150ms; }
+.search-bar-btn { padding: 6px 14px; background: var(--accent); color: var(--accent-on); border-radius: 6px; font-size: 13px; font-weight: 400; transition: background 150ms; }
 .search-bar-btn:hover { background: var(--accent-active); }
 
 .word-chips { display: flex; flex-wrap: wrap; gap: 10px; }
