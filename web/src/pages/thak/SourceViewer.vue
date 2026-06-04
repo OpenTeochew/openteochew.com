@@ -112,22 +112,34 @@ const pages = ref([])
 const ORIG_RE = /~~([^~]+)~~\(([^)]+)\)/g
 const INS_RE = /\+\+([^+]+)\+\+/g
 const ANNO_RE = /\[([^\]\d]+)\]/g
+const ATTR_RE = /\b(data-orig|data-mod)="[^"]*"/g
 
 function escAttr(s) {
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
 }
 
+function renderAnno(text) {
+  return text.replace(ANNO_RE, '<sup class="ocr-anno">$1</sup>')
+}
+
 function renderOcrVersion(text, version) {
-  const verClass = version === 'original' ? 'ocr-corr-orig' : 'ocr-corr-mod'
+  const isOrig = version === 'original'
+  const verClass = isOrig ? 'ocr-corr-orig' : 'ocr-corr-mod'
   let processed = text.replace(ORIG_RE, (_, orig, mod) => {
-    const show = version === 'original' ? orig : mod
-    return `<u class="ocr-corr ${verClass}" data-orig="${escAttr(orig)}" data-mod="${escAttr(mod)}">${show}</u>`
+    const show = isOrig ? orig : mod
+    const showHtml = isOrig ? show : renderAnno(show)
+    return `<u class="ocr-corr ${verClass}" data-orig="${escAttr(orig)}" data-mod="${escAttr(mod)}">${showHtml}</u>`
   })
   processed = processed.replace(INS_RE, (_, ins) => {
-    if (version === 'original') return ''
+    if (isOrig) return ''
     return `<ins class="ocr-ins">${ins}</ins>`
   })
-  processed = processed.replace(ANNO_RE, version === 'original' ? '' : '<sup class="ocr-anno">$1</sup>')
+  if (!isOrig) {
+    const saved = []
+    processed = processed.replace(ATTR_RE, (m) => { saved.push(m); return `\x00${saved.length - 1}\x00` })
+    processed = renderAnno(processed)
+    processed = processed.replace(/\x00(\d+)\x00/g, (_, i) => saved[i])
+  }
   return marked.parse(processed)
 }
 
