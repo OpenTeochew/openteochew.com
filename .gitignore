@@ -1,3 +1,5 @@
 tmp
 backend/public/scans/
 .DS_Store
+node_modules/
+.wrangler/
