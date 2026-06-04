@@ -33,19 +33,16 @@
     </section>
     <section class="section">
       <div class="container">
-        <h2>收錄來源（TOP 5）</h2>
-        <div v-if="sourcesLoading" class="source-grid"><p>載入中…</p></div>
-        <div v-else class="source-grid">
-          <router-link v-for="s in topSources" :key="s.id" :to="{ name: 'SourceViewer', params: { id: s.id } }" class="source-card">
-            <h3>{{ s.year }}·{{ s.name_zh || s.name }}</h3>
-            <p class="meta-text">{{ s.name }}</p>
-            <p class="meta-text">{{ s.author }}</p>
-            <div class="dict-meta">
-              <span v-if="s.total_entries" class="source-count">{{ s.total_entries.toLocaleString() }} 詞條</span>
-              <span v-else class="source-pending">收錄中</span>
-            </div>
-          </router-link>
-        </div>
+        <h2>收錄來源</h2>
+        <div v-if="sourcesLoading"><p>載入中…</p></div>
+        <ul v-else class="source-list">
+          <li v-for="(s, i) in topSources" :key="s.id">
+            <span class="source-idx">{{ i + 1 }}.</span>
+            <router-link :to="{ name: 'SourceViewer', params: { id: s.id } }">
+              {{ s.author ? s.author + ', ' : '' }}{{ s.year ? s.year + ', ' : '' }}<em>{{ s.name }}</em>{{ s.name_zh ? '（' + s.name_zh + '）' : '' }}{{ s.total_entries ? ', ' + s.total_entries.toLocaleString() + ' entries' : '' }}
+            </router-link>
+          </li>
+        </ul>
       </div>
     </section>
 

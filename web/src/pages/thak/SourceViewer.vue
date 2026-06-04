@@ -3,12 +3,12 @@
   <div v-else-if="!source" style="text-align:center;padding:80px 0;color:var(--muted)">來源未找到</div>
   <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">字典原書</router-link> › <span style="color:var(--fg)">{{ source.name }}</span>
+      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">字典原書</router-link> › <span style="color:var(--fg)">{{ source.name }}{{ source.name_zh ? '（' + source.name_zh + '）' : '' }}</span>
     </div>
     <div class="container dict-header">
       <div class="dict-header-inner">
         <div>
-          <h1>{{ source.name }}</h1>
+          <h1>{{ source.name }}{{ source.name_zh ? '（' + source.name_zh + '）' : '' }}</h1>
           <p class="meta-text">{{ [source.author, source.year].filter(Boolean).join(' · ') }}</p>
         </div>
       </div>
@@ -67,7 +67,7 @@
               <img v-if="pageImageUrl" :src="pageImageUrl" :alt="`第 ${pageNum} 頁`" style="max-width:100%;max-height:100%;object-fit:contain;" @error="imgError = true">
               <div v-if="!pageImageUrl || imgError" class="scan-image-ph">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <p>原書掃描頁面<br><span style="font-size:12px;color:var(--meta)">第 {{ pageNum }} 頁 · {{ source?.name }}</span></p>
+                <p>原書掃描頁面<br><span style="font-size:12px;color:var(--meta)">第 {{ pageNum }} 頁 · {{ source?.name }}{{ source?.name_zh ? '（' + source.name_zh + '）' : '' }}</span></p>
               </div>
             </div>
           </div>
@@ -195,7 +195,6 @@ const renderedOcr = computed(() => {
 })
 
 const pageImageUrl = computed(() => {
-  if (!source.value) return null
-  return `/scans/${source.value.id}/${String(pageNum.value).padStart(3, '0')}.png`
+  return currentPage.value?.image_url || null
 })
 </script>

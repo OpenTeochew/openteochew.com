@@ -15,6 +15,7 @@ SOURCE_CONFIG = {
     1: {
         "csv": "001_Handbook_of_the_Swatow_Vernacular.csv",
         "md": "001_Handbook_of_the_Swatow_Vernacular.md",
+        "slug": "Handbook_of_the_Swatow_Vernacular",
     },
 }
 
@@ -93,7 +94,7 @@ def sync_entries(cur, source_id, csv_path):
     return len(rows)
 
 
-def sync_pages(cur, source_id, md_path):
+def sync_pages(cur, source_id, md_path, slug):
     content = md_path.read_text(encoding="utf-8")
     markers = list(PAGE_RE.finditer(content))
     if not markers:
@@ -108,7 +109,7 @@ def sync_pages(cur, source_id, md_path):
         start = markers[i].end()
         end = markers[i + 1].start() if i + 1 < len(markers) else len(content)
         ocr_text = content[start:end].strip()
-        image_url = f"/scans/{source_id}/{str(page_num).zfill(3)}.png"
+        image_url = f"https://static.openteochew.com/{slug}/{str(page_num).zfill(4)}.webp"
 
         cur.execute(
             "INSERT INTO pages (source_id, page_num, image_url, ocr_text, sort_order) VALUES (?, ?, ?, ?, ?)",
@@ -138,6 +139,7 @@ def main():
     cfg = SOURCE_CONFIG.get(args.source_id)
     hw = args.hw
 
+    slug = cfg.get("slug", str(args.source_id)) if cfg else str(args.source_id)
     csv_path = args.csv or (hw / "export" / "books" / cfg["csv"] if cfg else None)
     md_path = args.md or (hw / "books" / cfg["md"] if cfg else None)
 
@@ -161,7 +163,7 @@ def main():
             if md_path and md_path.exists():
                 print(f"  MD:  {md_path}")
                 print("  syncing pages...")
-                sync_pages(cur, args.source_id, md_path)
+                sync_pages(cur, args.source_id, md_path, slug)
             else:
                 print(f"  MD:  not found, skipping pages")
 

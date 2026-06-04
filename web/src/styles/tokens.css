@@ -93,14 +93,12 @@ h1, h2, h3, h4 { text-wrap: balance; font-family: var(--font-display); font-weig
 .word-chip:hover { border-color: var(--fg-2); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .word-hanzi { font-family: var(--font-display); font-size: 20px; font-weight: 500; }
 .word-puj { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-top: 2px; }
-.source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 24px; }
-.source-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 8px; transition: box-shadow 200ms ease; }
-.source-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
-.source-badge { display: inline-flex; padding: 2px 8px; background: var(--surface-warm); color: var(--muted); border-radius: 4px; font-family: var(--font-mono); font-size: 11px; font-weight: 500; width: fit-content; }
-.source-count { font-size: 13px; color: var(--muted); }
-.source-pending { font-size: 12px; color: var(--surface); background: #8B7355; border-radius: 4px; padding: 1px 7px; display: inline-block; }
-.source-card p { color: var(--muted); font-size: 14px; }
-.source-card .meta-text { font-size: 12px; }
+.source-list { margin-top: 20px; padding-left: 0; list-style: none; font-size: 14px; line-height: 2.2; }
+.source-list li { display: flex; gap: 8px; }
+.source-idx { color: var(--muted); font-family: var(--font-mono); font-size: 13px; min-width: 24px; flex-shrink: 0; }
+.source-list a { color: var(--fg-2); text-decoration: none; }
+.source-list a:hover { color: var(--fg); text-decoration: underline; }
+.source-list em { font-style: italic; }
 
 
 /* ── Chhe Results ─────────────────────────────── */
@@ -379,7 +377,7 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
 
 /* ── Responsive ────────────────────────────────── */
 @media (max-width: 920px) {
-  .source-grid, .dict-grid { grid-template-columns: 1fr 1fr; }
+  .dict-grid { grid-template-columns: 1fr 1fr; }
   .read-layout { grid-template-columns: 1fr; }
   .toc-sidebar { position: static; border-top: 1px solid var(--border); padding-top: 24px; order: -1; }
   .entry-sidebar { display: none; }
@@ -396,7 +394,7 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
   .rt-def { max-width: 100%; }
 }
 @media (max-width: 640px) {
-  .sites-grid, .source-grid, .dict-grid { grid-template-columns: 1fr; }
+  .sites-grid, .dict-grid { grid-template-columns: 1fr; }
   .foot-stats { flex-direction: column; gap: 12px; align-items: flex-start; }
   .foot-stat { align-items: flex-start; }
   .foot-inner { flex-direction: column; }
