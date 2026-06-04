@@ -26,7 +26,7 @@
             </button>
           </div>
           <div class="query-actions">
-            <button type="submit" class="search-btn">查 Chhe</button>
+            <button type="submit" class="search-btn">查 Chhê</button>
           </div>
         </form>
       </div>
@@ -60,12 +60,12 @@ const FIELD_ORDER = ['hanzi', 'puj', 'dp', 'zh', 'en', 'ja']
 const MUTEX = { puj: 'dp', dp: 'puj' }
 
 const placeholders = {
-  hanzi: '例：食, 潮州, 飯',
-  puj: '例：tsia̍h, tsuí, hó',
-  dp: '例：ziah8, zui3, ho3',
-  zh: '例：吃, 潮州, 你好',
-  en: '例：eat, water, good',
-  ja: '例：食べる, お茶, 方言'
+  hanzi: '例：食, 睇書',
+  puj: '例：tsia̍h, thóiⁿ-tsṳ',
+  dp: '例：ziah8, toin2 ze1',
+  zh: '例：吃, 看書',
+  en: 'Example: eat, read',
+  ja: '例：食べる, 本を読む'
 }
 
 const queryRows = reactive([
