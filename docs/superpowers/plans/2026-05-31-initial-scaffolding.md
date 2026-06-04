@@ -338,10 +338,10 @@ const router = createRouter({
 
 const titles = {
   Home: '開放潮州話 OpenTeochew',
-  SearchHome: '查 Chhe — 開放潮州話',
+  SearchHome: '查 Chhê — 開放潮州話',
   SearchResults: '搜尋結果 — 開放潮州話',
   EntryDetail: '詞條 — 開放潮州話',
-  ReadHome: '讀 Thak — 開放潮州話',
+  ReadHome: '讀 Tha̍k — 開放潮州話',
   ArticleReader: '閱讀 — 開放潮州話',
   SourceViewer: '來源 — 開放潮州話'
 }
@@ -388,12 +388,12 @@ import TopNav from './components/TopNav.vue'
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
       <router-link to="/chhe"
         class="block p-8 bg-ivory rounded-kami-lg border border-kami-border hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
-        <h2 class="font-display text-2xl font-medium text-fg">查 Chhe</h2>
+        <h2 class="font-display text-2xl font-medium text-fg">查 Chhê</h2>
         <p class="text-muted mt-2">多欄位字典搜尋</p>
       </router-link>
       <router-link to="/thak"
         class="block p-8 bg-ivory rounded-kami-lg border border-kami-border hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
-        <h2 class="font-display text-2xl font-medium text-fg">讀 Thak</h2>
+        <h2 class="font-display text-2xl font-medium text-fg">讀 Tha̍k</h2>
         <p class="text-muted mt-2">閱讀字典與語料</p>
       </router-link>
     </div>
@@ -405,7 +405,7 @@ import TopNav from './components/TopNav.vue'
 ```vue
 <template>
   <div class="max-w-container mx-auto px-8 py-16">
-    <h1 class="font-display text-2xl font-medium text-fg mb-8">查 Chhe</h1>
+    <h1 class="font-display text-2xl font-medium text-fg mb-8">查 Chhê</h1>
     <p class="text-muted">搜尋首頁（待實現）</p>
   </div>
 </template>
@@ -439,7 +439,7 @@ defineProps({ id: { type: [String, Number], required: true } })
 ```vue
 <template>
   <div class="max-w-container mx-auto px-8 py-16">
-    <h1 class="font-display text-2xl font-medium text-fg mb-8">讀 Thak</h1>
+    <h1 class="font-display text-2xl font-medium text-fg mb-8">讀 Tha̍k</h1>
     <p class="text-muted">閱讀首頁（待實現）</p>
   </div>
 </template>
@@ -486,12 +486,12 @@ defineProps({ id: { type: [String, Number], required: true } })
         <router-link to="/chhe"
           class="px-3 py-1.5 rounded-kami text-sm transition-colors"
           :class="isChheActive ? 'bg-warm-sand text-fg font-medium' : 'text-muted hover:text-fg'">
-          查 Chhe
+          查 Chhê
         </router-link>
         <router-link to="/thak"
           class="px-3 py-1.5 rounded-kami text-sm transition-colors"
           :class="isThakActive ? 'bg-warm-sand text-fg font-medium' : 'text-muted hover:text-fg'">
-          讀 Thak
+          讀 Tha̍k
         </router-link>
       </nav>
     </div>
