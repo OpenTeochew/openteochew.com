@@ -99,10 +99,10 @@ const MUTEX = { puj: 'dp', dp: 'puj' }
 
 const placeholders = {
   hanzi: '例：食, 睇書',
-  puj: '例：tsia̍h, thóiⁿ-tsṳ',
-  dp: '例：ziah8, toin2 ze1',
+  puj: 'Lī: tsia̍h, thóiⁿ-tsṳ',
+  dp: 'Li7: ziah8, toin2 ze1',
   zh: '例：吃, 看書',
-  en: 'Example: eat, read',
+  en: 'Ex. eat, read',
   ja: '例：食べる, 本を読む'
 }
 
