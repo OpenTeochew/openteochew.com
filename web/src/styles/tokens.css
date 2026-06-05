@@ -25,6 +25,7 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-body); font
 .section + .section { border-top: 1px solid var(--border); }
 .lead { font-family: var(--font-body); font-size: 18px; line-height: 1.55; color: var(--muted); max-width: 52ch; }
 .meta-text { font-family: var(--font-mono); font-size: 13px; color: var(--meta); }
+.dict-name-en { font-family: var(--font-body); font-size: 15px; color: var(--muted); margin-bottom: 2px; }
 
 .topnav { position: sticky; top: 0; z-index: 10; background: rgba(245,244,237,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
 .nav-inner { display: flex; align-items: center; justify-content: space-between; padding-block: 14px; gap: 16px; }

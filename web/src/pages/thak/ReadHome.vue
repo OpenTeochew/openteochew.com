@@ -14,10 +14,10 @@
         <div v-if="loading" style="color:var(--muted)">載入中…</div>
         <div v-else class="dict-grid">
           <router-link v-for="s in filtered" :key="s.id" :to="{ name: 'SourceViewer', params: { id: s.id } }" class="dict-card">
-            <div class="dict-cover">{{ s.year }}<br>{{ s.name_zh || s.name }}</div>
+            <div v-if="s.cover_url" class="dict-cover"><img :src="s.cover_url" :alt="s.name_zh || s.name" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);" /></div>
             <div class="dict-info">
-              <h3>{{ s.year }}·{{ s.name_zh || s.name }}</h3>
-              <p class="meta-text">{{ s.name }}</p>
+              <h3>{{ s.year }}·{{ s.name_zh ? `《${s.name_zh}》` : s.name }}</h3>
+              <p class="dict-name-en">{{ s.name }}</p>
               <p class="meta-text">{{ s.author }}</p>
               <div class="dict-meta">
                 <span class="dict-tag">{{ typeLabel(s.type) }}</span>
