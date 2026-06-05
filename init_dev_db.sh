@@ -3,9 +3,9 @@ set -e
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 DB="$ROOT/tmp/openteochew.db"
+HW="${HW:-$ROOT/../dataset}"
 
 mkdir -p "$ROOT/tmp"
-
 rm -f "$DB"
 
 for sql in "$ROOT"/scripts/[0-9]*.sql; do
@@ -13,9 +13,9 @@ for sql in "$ROOT"/scripts/[0-9]*.sql; do
   sqlite3 "$DB" < "$sql"
 done
 
-if [ -d "$HOME/Documents/Code/hokkien-writing/dataset/export/books" ]; then
-  echo "Syncing entries from hokkien-writing..."
-  python3 "$ROOT/scripts/full-sync.py"
+if [ -f "$HW/export/books/001_Handbook_of_the_Swatow_Vernacular.csv" ]; then
+  echo "Syncing from dataset ($HW)..."
+  python3 "$ROOT/scripts/sync-source.py" --source-id 1 --hw "$HW"
 fi
 
 echo "Done: $DB"
