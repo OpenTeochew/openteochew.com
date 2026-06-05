@@ -2,6 +2,7 @@
 import argparse
 import csv
 import hashlib
+import json
 import re
 import sqlite3
 import subprocess
@@ -466,6 +467,66 @@ def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold):
     return stmts
 
 
+def query_remote(sql):
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".sql", delete=False) as f:
+        f.write(sql)
+        tmp_path = f.name
+    try:
+        result = subprocess.run(
+            ["npx", "wrangler", "d1", "execute", D1_NAME, "--remote", "--json", f"--file={tmp_path}"],
+            capture_output=True, text=True, cwd=REPO,
+        )
+        if result.returncode != 0:
+            print(f"ERROR: wrangler query failed:\n{result.stderr}", file=sys.stderr)
+            sys.exit(1)
+        if not result.stdout.strip():
+            return []
+        data = json.loads(result.stdout)
+        rows = []
+        for batch in data:
+            for row in batch.get("results", []):
+                rows.append(row)
+        return rows
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)
+
+
+def db_page_hashes_remote(source_id):
+    rows = query_remote(
+        f"SELECT page_num, content_hash FROM pages WHERE source_id = {source_id};"
+    )
+    return [{"page_num": r["page_num"], "content_hash": r.get("content_hash") or ""} for r in rows]
+
+
+def db_entries_remote(source_id, page_nums=None):
+    if page_nums is not None:
+        pn_list = ",".join(str(pn) for pn in sorted(page_nums))
+        where = f"AND e.page_num IN ({pn_list})"
+    else:
+        where = ""
+    sql = (
+        "SELECT e.id, e.han, e.puj, e.en, e.han_orig, e.puj_orig, e.en_orig, "
+        "e.page_num, s.title as section_title "
+        "FROM entries e LEFT JOIN sections s ON e.section_id = s.id "
+        f"WHERE e.source_id = {source_id} {where};"
+    )
+    rows = query_remote(sql)
+    result = []
+    for r in rows:
+        result.append({
+            "id": r["id"],
+            "han": r.get("han") or "",
+            "puj": r.get("puj") or "",
+            "en": r.get("en") or "",
+            "han_orig": r.get("han_orig") or "",
+            "puj_orig": r.get("puj_orig") or "",
+            "en_orig": r.get("en_orig") or "",
+            "_page_num": r.get("page_num"),
+            "_section": r.get("section_title") or "",
+        })
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description="Unified incremental sync for D1")
     parser.add_argument("--source-id", type=int, required=True)
@@ -489,9 +550,47 @@ def main():
     csv_path = args.csv or (hw / "export" / "books" / cfg["csv"])
     md_path = args.md or (hw / "books" / cfg["md"])
 
-    if args.remote:
-        print("ERROR: remote mode not yet implemented (Task 8)", file=sys.stderr)
+    if not csv_path.exists():
+        print(f"ERROR: CSV not found: {csv_path}", file=sys.stderr)
         sys.exit(1)
+
+    if args.remote:
+        print(f"sync source_id={args.source_id} (remote)")
+        all_stmts = []
+        changed_page_nums = None
+
+        if not args.entries_only and md_path and md_path.exists():
+            print(f"  MD:  {md_path}")
+            new_pages = parse_pages(md_path)
+            if not new_pages:
+                print("  pages: no page markers found, skipping")
+            else:
+                db_hashes = db_page_hashes_remote(args.source_id)
+                added, modified, removed = diff_pages(db_hashes, new_pages)
+                changed_page_nums = (
+                    {p["page_num"] for p in added}
+                    | {p["page_num"] for p in modified}
+                    | set(removed)
+                )
+                print(f"  pages diff: +{len(added)} ~{len(modified)} -{len(removed)}")
+                all_stmts.extend(generate_pages_sql(args.source_id, slug, added, modified, removed))
+
+        if not args.pages_only:
+            target_pages = None if args.entries_only else changed_page_nums
+            if target_pages is not None or args.entries_only:
+                csv_rows = parse_csv(csv_path)
+                db_rows = db_entries_remote(args.source_id, target_pages)
+                inserts, updates, deletes = diff_entries(csv_rows, db_rows, target_pages, args.match_threshold)
+                print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
+                all_stmts.extend(generate_entries_sql(args.source_id, inserts, updates, deletes))
+            elif changed_page_nums is not None and not changed_page_nums:
+                print("  no page changes, skipping entries")
+
+        if all_stmts:
+            execute_remote(all_stmts)
+
+        print("sync complete.")
+        return
 
     db_path = find_db()
     print(f"sync source_id={args.source_id}")
@@ -527,9 +626,6 @@ def main():
                 entries_changed = None
 
             if entries_changed is not None or args.entries_only:
-                if not csv_path.exists():
-                    print(f"ERROR: CSV not found: {csv_path}", file=sys.stderr)
-                    sys.exit(1)
                 entries_stmts = sync_entries_phase(
                     cur, args.source_id, csv_path, entries_changed, args.match_threshold
                 )
