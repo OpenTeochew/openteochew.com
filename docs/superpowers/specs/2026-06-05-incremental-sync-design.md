@@ -134,22 +134,20 @@ CREATE INDEX IF NOT EXISTS idx_pages_hash ON pages(source_id, content_hash);
 
 ```python
 MATCH_FIELDS = [
-    ("han",       1.5),   # 汉字
-    ("han_orig",  1.5),   # 原文汉字
-    ("puj",       2.0),   # 罗马字权重最高——改动少但区分度高
+    ("han",       2.0),   # 汉字
+    ("han_orig",  2.0),   # 原文汉字
+    ("puj",       2.0),   # 罗马字——改动少但区分度高
     ("puj_orig",  2.0),   # 原文罗马字同理
-    ("en",        1.5),   # 英文释义
-    ("en_orig",   1.5),   # 原文英文
+    ("en",        2.0),   # 英文释义
+    ("en_orig",   2.0),   # 原文英文
     # 未来可扩展：dp, mandarin, ja ...
 ]
 ```
 
 权重设计理由：
-- **罗马字（puj/puj_orig）权重最高**：拼音字符串改动通常很小（一个声调符号或字母），但一个字符的差异就意味着不同的词。高权重让算法对拼音变化更敏感，区分"微小的 OCR 修正"和"完全不同的词"。
-- **汉字（han/han_orig）权重适中**：汉字编辑距离天然较大（一个字就是一个 token），无需额外加权。
-- **英文（en/en_orig）权重适中**：英文释义较长，编辑距离波动较大，适中权重避免过度影响总得分。
+- 所有字段统一权重 2.0：OCR 修正通常只改一两个字，任何字段的一个字符差异都可能意味着不同的词。统一权重避免因权重差异导致某些字段的微小变化被淹没。
 
-**匹配阈值**：默认 0.7，可通过 `--match-threshold` 参数调整。
+**匹配阈值**：默认 0.8，可通过 `--match-threshold` 参数调整。
 
 **性能分析**：
 
@@ -204,7 +202,7 @@ python3 scripts/sync-source.py --source-id 1 --remote
 | `--remote` | 否 | 同步到远程 D1 via wrangler |
 | `--pages-only` | 否 | 只同步 pages |
 | `--entries-only` | 否 | 只同步 entries（全量 diff） |
-| `--match-threshold` | 否 | entries 模糊匹配阈值（默认 0.7） |
+| `--match-threshold` | 否 | entries 模糊匹配阈值（默认 0.8） |
 
 ### SOURCE_CONFIG
 
@@ -234,7 +232,7 @@ SOURCE_CONFIG = {
 按页分组后的贪婪匹配流程：
 
 ```python
-def match_entries(csv_group, db_group, threshold=0.7):
+def match_entries(csv_group, db_group, threshold=0.8):
     # 构建得分矩阵
     scores = {}
     for i, csv_row in enumerate(csv_group):
@@ -299,7 +297,7 @@ Pages diff:
   New: 304 pages
   Added: 0, Modified: 3 (pages 12, 45, 67), Deleted: 0
 
-Entries diff (affected pages: [12, 45, 67], threshold: 0.7):
+Entries diff (affected pages: [12, 45, 67], threshold: 0.8):
   Matched: 85, Inserted: 2, Deleted: 1, Unmatched: 1 (score < 0.7)
 
 Executing 9 SQL statements on local DB...
