@@ -15,7 +15,7 @@ DEFAULT_DB = REPO / "tmp" / "openteochew.db"
 WRANGLER_DB_DIR = REPO / "backend" / ".wrangler" / "state" / "v3" / "d1" / "miniflare-D1DatabaseObject"
 HW_DEFAULT = Path(__file__).resolve().parent.parent.parent / "dataset"
 D1_NAME = "openteochew-db-dev"
-BATCH_SIZE = 100
+BATCH_SIZE = 2000
 
 SOURCE_CONFIG = {
     1: {
@@ -468,27 +468,22 @@ def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold):
 
 
 def query_remote(sql):
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".sql", delete=False) as f:
-        f.write(sql)
-        tmp_path = f.name
-    try:
-        result = subprocess.run(
-            ["npx", "wrangler", "d1", "execute", D1_NAME, "--remote", "--json", f"--file={tmp_path}"],
-            capture_output=True, text=True, cwd=REPO,
-        )
-        if result.returncode != 0:
-            print(f"ERROR: wrangler query failed:\n{result.stderr}", file=sys.stderr)
-            sys.exit(1)
-        if not result.stdout.strip():
-            return []
-        data = json.loads(result.stdout)
-        rows = []
-        for batch in data:
-            for row in batch.get("results", []):
-                rows.append(row)
-        return rows
-    finally:
-        Path(tmp_path).unlink(missing_ok=True)
+    result = subprocess.run(
+        ["npx", "wrangler", "d1", "execute", D1_NAME, "--remote", "--json", "--command", sql],
+        capture_output=True, text=True, cwd=REPO,
+    )
+    if result.returncode != 0:
+        print(f"ERROR: wrangler query failed:\n{result.stderr}", file=sys.stderr)
+        sys.exit(1)
+    if not result.stdout.strip():
+        return []
+    json_start = result.stdout.index("[")
+    data = json.loads(result.stdout[json_start:])
+    rows = []
+    for batch in data:
+        for row in batch.get("results", []):
+            rows.append(row)
+    return rows
 
 
 def db_page_hashes_remote(source_id):
