@@ -14,7 +14,7 @@
         <div v-if="loading" style="color:var(--muted)">載入中…</div>
         <div v-else class="dict-grid">
           <router-link v-for="s in filtered" :key="s.id" :to="{ name: 'SourceViewer', params: { id: s.id } }" class="dict-card">
-            <div class="dict-cover">{{ s.year }}<br>{{ (s.name_zh || s.name).slice(0, 4) }}</div>
+            <div class="dict-cover">{{ s.year }}<br>{{ s.name_zh || s.name }}</div>
             <div class="dict-info">
               <h3>{{ s.year }}·{{ s.name_zh || s.name }}</h3>
               <p class="meta-text">{{ s.name }}</p>
