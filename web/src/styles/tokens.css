@@ -42,8 +42,9 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-body); font
 
 .pagefoot { padding-block: 40px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); }
 .foot-inner { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
-.foot-left { display: flex; flex-direction: column; gap: 6px; }
-.foot-links { display: flex; gap: 16px; }
+.foot-logo { height: 96px; width: 96px; margin-top: -8px; }
+.foot-left { display: flex; flex-direction: column; gap: 2px; }
+.foot-links { display: flex; font-size: 12px;}
 .foot-right { flex: 1; display: flex; justify-content: flex-end; }
 .foot-stats { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
 .foot-stat { display: flex; flex-direction: column; align-items: flex-end; }

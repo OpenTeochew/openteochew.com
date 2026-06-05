@@ -4,10 +4,15 @@
   <footer class="pagefoot">
     <div class="container foot-inner">
       <div class="foot-left">
-        <span>&copy; 2026 OpenTeochew · CC0 數據 · MIT 代碼</span>
+        <img class="foot-logo" src="/logo.jpg" alt="OpenTeochew" />
         <span class="foot-links">
-          <a href="https://github.com/OpenTeochew" target="_blank" rel="noopener">GitHub</a>
-          <a href="mailto:contact@openteochew.com">contact@openteochew.com</a>
+          相輔：<a href="https://github.com/OpenTeochew" target="_blank" rel="noopener">GitHub</a>
+        </span>
+        <span class="foot-links">
+          聯絡：<a href="mailto:contact@openteochew.com">contact@openteochew.com</a>
+        </span>
+        <span class="foot-links">
+          <span>&copy; 2026 OpenTeochew · CC0 數據 · MIT 代碼</span>
         </span>
       </div>
       <div class="foot-right">
