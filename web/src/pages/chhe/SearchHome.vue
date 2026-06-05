@@ -10,7 +10,7 @@
               <select v-model="row.field" class="query-select">
                 <option value="hanzi" :disabled="isFieldUsed('hanzi', i)">漢字</option>
                 <option value="puj" :disabled="isFieldUsed('puj', i)">PUJ 白話字</option>
-                <option value="dp" :disabled="isFieldUsed('dp', i)">DP 潮州話拼音</option>
+                <option value="dp" :disabled="isFieldUsed('dp', i)">DP 潮拼</option>
                 <option value="zh" :disabled="isFieldUsed('zh', i)">普通話</option>
                 <option value="en" :disabled="isFieldUsed('en', i)">English</option>
                 <option value="ja" :disabled="isFieldUsed('ja', i)">日本語</option>

@@ -3,6 +3,7 @@ set -e
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
+set -a; source "$ROOT/.env.dev"; set +a
 
 bash build.sh
 
