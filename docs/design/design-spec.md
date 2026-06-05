@@ -8,7 +8,7 @@
 
 ## 1. Project Overview
 
-**OpenTeochew** (開放潮州話) is an open-source platform for Teochew (潮州話) language resources. It aggregates dictionaries, corpora, and texts into a unified digital platform.
+**OpenTeochew** (潮州話資料庫) is an open-source platform for Teochew (潮州話) language resources. It aggregates dictionaries, corpora, and texts into a unified digital platform.
 
 **Two sub-sites:**
 - **Chhe (查)** — Dictionary search engine. Multi-field, multi-script search (PUJ, DP, Hanzi, English, Mandarin, Japanese) with AND-query rows. Results displayed as source-grouped tables. Aggregates all source dictionaries.

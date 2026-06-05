@@ -47,17 +47,17 @@ const router = createRouter({
 })
 
 const titles = {
-  SearchHome: '查 Chhê — 開放潮州話',
-  SearchResults: '搜尋結果 — 開放潮州話',
-  EntryDetail: '詞條 — 開放潮州話',
-  ReadHome: '讀 Tha̍k — 開放潮州話',
-  ArticleReader: '閱讀 — 開放潮州話',
-  SourceViewer: '來源 — 開放潮州話',
-  About: '關於 — 開放潮州話'
+  SearchHome: '查 Chhê — 潮州話資料庫',
+  SearchResults: '搜尋結果 — 潮州話資料庫',
+  EntryDetail: '詞條 — 潮州話資料庫',
+  ReadHome: '讀 Tha̍k — 潮州話資料庫',
+  ArticleReader: '閱讀 — 潮州話資料庫',
+  SourceViewer: '來源 — 潮州話資料庫',
+  About: '關於 — 潮州話資料庫'
 }
 
 router.afterEach((to) => {
-  document.title = titles[to.name] || '開放潮州話 OpenTeochew'
+  document.title = titles[to.name] || '潮州話資料庫 OpenTeochew'
 })
 
 export default router

@@ -211,7 +211,7 @@ module.exports = {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>開放潮州話 OpenTeochew</title>
+  <title>潮州話資料庫 OpenTeochew</title>
 </head>
 <body class="bg-parchment text-fg font-body">
   <div id="app"></div>
@@ -337,17 +337,17 @@ const router = createRouter({
 })
 
 const titles = {
-  Home: '開放潮州話 OpenTeochew',
-  SearchHome: '查 Chhê — 開放潮州話',
-  SearchResults: '搜尋結果 — 開放潮州話',
-  EntryDetail: '詞條 — 開放潮州話',
-  ReadHome: '讀 Tha̍k — 開放潮州話',
-  ArticleReader: '閱讀 — 開放潮州話',
-  SourceViewer: '來源 — 開放潮州話'
+  Home: '潮州話資料庫 OpenTeochew',
+  SearchHome: '查 Chhê — 潮州話資料庫',
+  SearchResults: '搜尋結果 — 潮州話資料庫',
+  EntryDetail: '詞條 — 潮州話資料庫',
+  ReadHome: '讀 Tha̍k — 潮州話資料庫',
+  ArticleReader: '閱讀 — 潮州話資料庫',
+  SourceViewer: '來源 — 潮州話資料庫'
 }
 
 router.afterEach((to) => {
-  document.title = titles[to.name] || '開放潮州話 OpenTeochew'
+  document.title = titles[to.name] || '潮州話資料庫 OpenTeochew'
 })
 
 export default router
@@ -364,7 +364,7 @@ export default router
     </main>
     <footer class="py-6 border-t border-kami-border text-center text-muted text-sm">
       <div class="max-w-container mx-auto px-8">
-        <p>&copy; 2026 OpenTeochew 開放潮州話</p>
+        <p>&copy; 2026 OpenTeochew 潮州話資料庫</p>
       </div>
     </footer>
   </div>
@@ -383,7 +383,7 @@ import TopNav from './components/TopNav.vue'
 ```vue
 <template>
   <div class="max-w-container mx-auto px-8 py-16">
-    <h1 class="font-display text-5xl font-medium text-fg mb-4">開放潮州話</h1>
+    <h1 class="font-display text-5xl font-medium text-fg mb-4">潮州話資料庫</h1>
     <p class="text-muted text-lg">OpenTeochew — 潮州話語言資源平台</p>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
       <router-link to="/chhe"
@@ -480,7 +480,7 @@ defineProps({ id: { type: [String, Number], required: true } })
   <header class="sticky top-0 z-50 bg-parchment/90 backdrop-blur-sm border-b border-kami-border">
     <div class="max-w-container mx-auto px-8 flex items-center justify-between h-14">
       <router-link to="/" class="font-display text-lg font-medium text-ink-blue">
-        開放潮州話
+        潮州話資料庫
       </router-link>
       <nav class="flex items-center gap-1">
         <router-link to="/chhe"
@@ -1482,7 +1482,7 @@ fi
 ```md
 # openteochew.com
 
-開放潮州話 OpenTeochew — 開源潮州話語言資源平台。
+潮州話資料庫 OpenTeochew — 開源潮州話語言資源平台。
 
 ## 技術棧
 

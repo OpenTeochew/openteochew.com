@@ -1,6 +1,6 @@
 # OpenTeochew 系統總體架構設計
 
-> 本文檔定義 OpenTeochew (開放潮州話) 平台的技術架構、數據模型、API 設計和部署方案。
+> 本文檔定義 OpenTeochew (潮州話資料庫) 平台的技術架構、數據模型、API 設計和部署方案。
 > UI 設計規範請參見 [design-spec.md](./design-spec.md)。
 
 ---
