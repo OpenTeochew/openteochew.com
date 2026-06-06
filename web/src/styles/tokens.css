@@ -257,6 +257,7 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-body); font
 .dict-split { display: flex; gap: 0; padding-block: 0; position: relative; }
 .ocr-main { flex: 1; min-width: 0; padding: 24px 32px 24px 0; }
 .ocr-entries { font-family: var(--font-body); line-height: 1.8; }
+.ocr-entries p { line-height: 1.5; margin-bottom: 1.5em; }
 .ocr-entry { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border-soft); }
 .ocr-entry:last-child { border-bottom: none; }
 .ocr-headline { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }

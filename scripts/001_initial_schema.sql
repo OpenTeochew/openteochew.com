@@ -56,7 +56,8 @@ CREATE TABLE IF NOT EXISTS pages (
   page_num INTEGER NOT NULL,
   image_url TEXT,
   ocr_text TEXT,
-  sort_order INTEGER DEFAULT 0
+  sort_order INTEGER DEFAULT 0,
+  content_hash TEXT
 );
 
 CREATE TABLE IF NOT EXISTS articles (
@@ -79,5 +80,6 @@ CREATE INDEX IF NOT EXISTS idx_entries_ja ON entries(ja);
 CREATE INDEX IF NOT EXISTS idx_entries_page ON entries(source_id, page_num);
 CREATE INDEX IF NOT EXISTS idx_sections_source ON sections(source_id);
 CREATE INDEX IF NOT EXISTS idx_pages_source ON pages(source_id, page_num);
+CREATE INDEX IF NOT EXISTS idx_pages_hash ON pages(source_id, content_hash);
 CREATE INDEX IF NOT EXISTS idx_examples_entry ON examples(entry_id);
 CREATE INDEX IF NOT EXISTS idx_articles_source ON articles(source_id);

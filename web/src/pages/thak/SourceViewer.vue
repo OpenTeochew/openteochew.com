@@ -91,7 +91,7 @@ import { Marked } from 'marked'
 import { sourcesApi } from '../../api/sources'
 import OrigIndicator from '../../components/OrigIndicator.vue'
 
-const marked = new Marked({ gfm: true })
+const marked = new Marked({ gfm: true, breaks: true })
 
 const route = useRoute()
 const router = useRouter()
@@ -99,7 +99,7 @@ const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const loading = ref(true)
 const source = ref(null)
-const scanOpen = ref(false)
+const scanOpen = ref(true)
 const ocrVersion = ref('modified')
 const pageNum = ref(Number(route.query.page) || 1)
 const imgError = ref(false)
