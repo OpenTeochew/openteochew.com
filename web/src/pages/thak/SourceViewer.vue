@@ -110,7 +110,7 @@ const entries = ref([])
 const pages = ref([])
 
 const ORIG_RE = /~~([^~]+)~~\(([^)]+)\)/g
-const INS_RE = /\+\+([^+]+)\+\+/g
+const INS_RE = /\+\+([^+]*)\+\+/g
 const ANNO_RE = /\[([^\]\d]+)\]/g
 const ATTR_RE = /\b(data-orig|data-mod)="[^"]*"/g
 
@@ -132,6 +132,7 @@ function renderOcrVersion(text, version) {
   })
   processed = processed.replace(INS_RE, (_, ins) => {
     if (isOrig) return ''
+    if (!ins.trim()) return ''
     return `<ins class="ocr-ins">${ins}</ins>`
   })
   if (!isOrig) {

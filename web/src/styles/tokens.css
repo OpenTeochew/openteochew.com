@@ -257,7 +257,7 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-body); font
 .dict-split { display: flex; gap: 0; padding-block: 0; position: relative; }
 .ocr-main { flex: 1; min-width: 0; padding: 24px 32px 24px 0; }
 .ocr-entries { font-family: var(--font-body); line-height: 1.8; }
-.ocr-entries p { line-height: 1.5; margin-bottom: 1.5em; }
+.ocr-entries p { line-height: 1.4; margin-bottom: 1.4em; }
 .ocr-entry { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border-soft); }
 .ocr-entry:last-child { border-bottom: none; }
 .ocr-headline { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
@@ -270,7 +270,7 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-body); font
 .scan-panel { display: none; width: 0; border-left: 1px solid var(--border); background: var(--surface); overflow: hidden; transition: width 200ms ease; }
 .scan-panel.open { display: block; width: 45%; flex-shrink: 0; }
 .scan-panel-inner { width: 100%; height: 100%; display: flex; flex-direction: column; }
-.scan-image { flex: 1; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 24px; min-height: 400px; }
+.scan-image { flex: 1; background: var(--bg); display: flex; align-items: flex-start; justify-content: center; padding: 24px; min-height: 400px; }
 .scan-image-ph { text-align: center; color: var(--muted); }
 .scan-image-ph svg { width: 56px; height: 56px; opacity: 0.2; margin-bottom: 12px; }
 .scan-image-ph p { font-size: 13px; line-height: 1.5; }

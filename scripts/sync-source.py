@@ -26,7 +26,7 @@ SOURCE_CONFIG = {
     3: {
         "csv": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.csv",
         "md": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.md",
-        "slug": "English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow",
+        "slug": "English_Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow",
     }
 }
 
