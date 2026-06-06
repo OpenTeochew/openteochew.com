@@ -23,6 +23,11 @@ SOURCE_CONFIG = {
         "md": "001_Handbook_of_the_Swatow_Vernacular.md",
         "slug": "Handbook_of_the_Swatow_Vernacular",
     },
+    3: {
+        "csv": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.csv",
+        "md": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.md",
+        "slug": "English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow",
+    }
 }
 
 SECTION_RE = re.compile(r">\s*(.+)$")

@@ -111,5 +111,20 @@ python3 scripts/full-sync.py --pages-only       # 只同步 OCR 頁
 ./build.sh                 # Build frontend → copy to backend/public（保留 scans/）
 
 # Backend
-./dev.sh                   # Start backend server
+./dev.sh                   # Start backend server（DB 空時自動 init）
+
+# 重建本地 SQLite（dev.sh 內部呼叫，平時不需手動跑）
+HW="$HOME/Documents/Code/hokkien-writing/dataset" ./init_dev_db.sh
+
+# 同步 dataset 到 D1（包裝 scripts/sync-source.py）
+./sync_source.sh --local                       # 預設 source 1
+./sync_source.sh --local --source-id 2         # 指定 source
+./sync_source.sh --local --entries-only        # 只同步詞條
+./sync_source.sh --local --pages-only          # 只同步 OCR 頁
+./sync_source.sh --remote                      # 推到遠端 D1（需 .env.dev）
+./sync_source.sh --hw /path/to/dataset         # 自訂 dataset 路徑
+
+# 部署到 dev 環境（會先跑 build.sh）
+./deploy_dev.sh
+```
 ```
