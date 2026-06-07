@@ -62,6 +62,10 @@
           </button>
         </aside>
         <div class="scan-panel" :class="{ open: scanOpen }">
+          <button class="scan-panel-close" @click="scanOpen = false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            關閉
+          </button>
           <div class="scan-panel-inner">
             <div class="scan-image">
               <img v-if="pageImageUrl" :src="pageImageUrl" :alt="`第 ${pageNum} 頁`" style="max-width:100%;max-height:100%;object-fit:contain;" @error="imgError = true">
@@ -85,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Marked } from 'marked'
 import { sourcesApi } from '../../api/sources'
@@ -99,7 +103,7 @@ const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const loading = ref(true)
 const source = ref(null)
-const scanOpen = ref(true)
+const scanOpen = ref(window.innerWidth > 920)
 const ocrVersion = ref('modified')
 const pageNum = ref(Number(route.query.page) || 1)
 const imgError = ref(false)
@@ -162,6 +166,36 @@ async function loadData() {
 }
 
 onMounted(loadData)
+
+watch(scanOpen, (val) => {
+  if (val) {
+    const scrollY = window.scrollY
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.left = '0'
+    document.body.style.right = '0'
+    document.body.style.overflow = 'hidden'
+    document.body.dataset.scrollY = scrollY
+  } else {
+    const scrollY = Number(document.body.dataset.scrollY || 0)
+    document.body.style.position = ''
+    document.body.style.top = ''
+    document.body.style.left = ''
+    document.body.style.right = ''
+    document.body.style.overflow = ''
+    window.scrollTo(0, scrollY)
+  }
+})
+
+onBeforeUnmount(() => {
+  const scrollY = Number(document.body.dataset.scrollY || 0)
+  document.body.style.position = ''
+  document.body.style.top = ''
+  document.body.style.left = ''
+  document.body.style.right = ''
+  document.body.style.overflow = ''
+  window.scrollTo(0, scrollY)
+})
 
 watch(pageNum, async () => {
   imgError.value = false
