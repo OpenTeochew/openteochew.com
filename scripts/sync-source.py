@@ -327,7 +327,11 @@ def generate_clean_entries_sql(source_id, csv_rows):
     stmts = []
     new_sections = set()
 
+    page_nums = set()
     for csv_row in csv_rows:
+        pn = csv_row.get("_page_num")
+        if pn is not None:
+            page_nums.add(pn)
         title = csv_row.get("_section")
         if title and title not in new_sections:
             new_sections.add(title)
@@ -338,9 +342,15 @@ def generate_clean_entries_sql(source_id, csv_rows):
             f"VALUES ({source_id}, '{sql_escape(title)}', 0);"
         )
 
-    stmts.append(
-        f"DELETE FROM entries WHERE source_id = {source_id};"
-    )
+    if page_nums:
+        pn_list = ",".join(str(pn) for pn in sorted(page_nums))
+        stmts.append(
+            f"DELETE FROM entries WHERE source_id = {source_id} AND page_num IN ({pn_list});"
+        )
+    else:
+        stmts.append(
+            f"DELETE FROM entries WHERE source_id = {source_id};"
+        )
 
     for csv_row in csv_rows:
         title = csv_row.get("_section")
@@ -496,10 +506,13 @@ def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold):
     db_rows = db_entries_by_page(cur, source_id, page_nums_list)
     print(f"  DB entries (scoped): {len(db_rows)} rows")
 
-    if len(csv_rows) >= CLEAN_SYNC_THRESHOLD:
-        print(f"  large dataset ({len(csv_rows)} rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
-        stmts = generate_clean_entries_sql(source_id, csv_rows)
-        print(f"  clean sync: delete + insert {len(csv_rows)} entries")
+    if len(db_rows) >= CLEAN_SYNC_THRESHOLD:
+        scoped_csv = csv_rows if page_nums_list is None else [
+            r for r in csv_rows if r.get("_page_num") in changed_page_nums
+        ]
+        print(f"  large change set ({len(db_rows)} db rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
+        stmts = generate_clean_entries_sql(source_id, scoped_csv)
+        print(f"  clean sync: delete + insert {len(scoped_csv)} entries")
     else:
         inserts, updates, deletes = diff_entries(csv_rows, db_rows, changed_page_nums, threshold)
         print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
@@ -618,12 +631,15 @@ def main():
             target_pages = None if args.entries_only else changed_page_nums
             if target_pages is not None or args.entries_only:
                 csv_rows = parse_csv(csv_path)
-                if len(csv_rows) >= CLEAN_SYNC_THRESHOLD:
-                    print(f"  large dataset ({len(csv_rows)} rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
-                    stmts = generate_clean_entries_sql(args.source_id, csv_rows)
-                    print(f"  clean sync: delete + insert {len(csv_rows)} entries")
+                db_rows = db_entries_remote(args.source_id, target_pages)
+                if len(db_rows) >= CLEAN_SYNC_THRESHOLD:
+                    scoped_csv = csv_rows if target_pages is None else [
+                        r for r in csv_rows if r.get("_page_num") in changed_page_nums
+                    ]
+                    print(f"  large change set ({len(db_rows)} db rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
+                    stmts = generate_clean_entries_sql(args.source_id, scoped_csv)
+                    print(f"  clean sync: delete + insert {len(scoped_csv)} entries")
                 else:
-                    db_rows = db_entries_remote(args.source_id, target_pages)
                     inserts, updates, deletes = diff_entries(csv_rows, db_rows, target_pages, args.match_threshold)
                     print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
                     stmts = generate_entries_sql(args.source_id, inserts, updates, deletes)
