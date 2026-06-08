@@ -16,6 +16,7 @@ WRANGLER_DB_DIR = REPO / "backend" / ".wrangler" / "state" / "v3" / "d1" / "mini
 HW_DEFAULT = Path(__file__).resolve().parent.parent.parent / "dataset"
 D1_NAME = "openteochew-db-dev"
 BATCH_SIZE = 2000
+CLEAN_SYNC_THRESHOLD = 5000
 
 SOURCE_CONFIG = {
     1: {
@@ -322,6 +323,40 @@ def db_entries_by_page(cur, source_id, page_nums=None):
     return rows
 
 
+def generate_clean_entries_sql(source_id, csv_rows):
+    stmts = []
+    new_sections = set()
+
+    for csv_row in csv_rows:
+        title = csv_row.get("_section")
+        if title and title not in new_sections:
+            new_sections.add(title)
+
+    for title in new_sections:
+        stmts.append(
+            f"INSERT OR IGNORE INTO sections (source_id, title, sort_order) "
+            f"VALUES ({source_id}, '{sql_escape(title)}', 0);"
+        )
+
+    stmts.append(
+        f"DELETE FROM entries WHERE source_id = {source_id};"
+    )
+
+    for csv_row in csv_rows:
+        title = csv_row.get("_section")
+        stmts.append(
+            f"INSERT INTO entries "
+            f"(source_id, section_id, han, puj, en, han_orig, puj_orig, en_orig, page_num, sort_order) "
+            f"VALUES ({source_id}, {section_subquery(source_id, title)}, "
+            f"{sql_val(csv_row.get('han'))}, {sql_val(csv_row.get('puj'))}, "
+            f"{sql_val(csv_row.get('en'))}, {sql_val(csv_row.get('han_orig'))}, "
+            f"{sql_val(csv_row.get('puj_orig'))}, {sql_val(csv_row.get('en_orig'))}, "
+            f"{sql_num(csv_row.get('page_num'))}, 0);"
+        )
+
+    return stmts
+
+
 def generate_entries_sql(source_id, inserts, updates, deletes):
     stmts = []
     new_sections = set()
@@ -461,10 +496,14 @@ def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold):
     db_rows = db_entries_by_page(cur, source_id, page_nums_list)
     print(f"  DB entries (scoped): {len(db_rows)} rows")
 
-    inserts, updates, deletes = diff_entries(csv_rows, db_rows, changed_page_nums, threshold)
-    print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
-
-    stmts = generate_entries_sql(source_id, inserts, updates, deletes)
+    if len(csv_rows) >= CLEAN_SYNC_THRESHOLD:
+        print(f"  large dataset ({len(csv_rows)} rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
+        stmts = generate_clean_entries_sql(source_id, csv_rows)
+        print(f"  clean sync: delete + insert {len(csv_rows)} entries")
+    else:
+        inserts, updates, deletes = diff_entries(csv_rows, db_rows, changed_page_nums, threshold)
+        print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
+        stmts = generate_entries_sql(source_id, inserts, updates, deletes)
 
     if not stmts:
         print("  entries: no changes")
@@ -579,10 +618,16 @@ def main():
             target_pages = None if args.entries_only else changed_page_nums
             if target_pages is not None or args.entries_only:
                 csv_rows = parse_csv(csv_path)
-                db_rows = db_entries_remote(args.source_id, target_pages)
-                inserts, updates, deletes = diff_entries(csv_rows, db_rows, target_pages, args.match_threshold)
-                print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
-                all_stmts.extend(generate_entries_sql(args.source_id, inserts, updates, deletes))
+                if len(csv_rows) >= CLEAN_SYNC_THRESHOLD:
+                    print(f"  large dataset ({len(csv_rows)} rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
+                    stmts = generate_clean_entries_sql(args.source_id, csv_rows)
+                    print(f"  clean sync: delete + insert {len(csv_rows)} entries")
+                else:
+                    db_rows = db_entries_remote(args.source_id, target_pages)
+                    inserts, updates, deletes = diff_entries(csv_rows, db_rows, target_pages, args.match_threshold)
+                    print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
+                    stmts = generate_entries_sql(args.source_id, inserts, updates, deletes)
+                all_stmts.extend(stmts)
             elif changed_page_nums is not None and not changed_page_nums:
                 print("  no page changes, skipping entries")
 
