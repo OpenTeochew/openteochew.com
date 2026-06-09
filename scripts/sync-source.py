@@ -28,6 +28,11 @@ SOURCE_CONFIG = {
         "csv": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.csv",
         "md": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.md",
         "slug": "English_Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow",
+    },
+    2: {
+        "csv": "003_First_Lessons_in_the_Tie-chiw_Dialect.csv",
+        "md": "003_First_Lessons_in_the_Tie-chiw_Dialect.md",
+        "slug": "First_Lessons_in_the_Tie_chiw_Dialect",
     }
 }
 
@@ -650,6 +655,15 @@ def main():
         if all_stmts:
             execute_remote(all_stmts)
 
+        update_stmt = (
+            f"UPDATE sources SET "
+            f"total_entries = (SELECT COUNT(*) FROM entries WHERE source_id = {args.source_id}), "
+            f"total_pages = (SELECT COUNT(*) FROM pages WHERE source_id = {args.source_id}), "
+            f"updated_at = datetime('now') "
+            f"WHERE id = {args.source_id};"
+        )
+        execute_remote([update_stmt])
+
         print("sync complete.")
         return
 
@@ -696,23 +710,23 @@ def main():
             for stmt in all_stmts:
                 cur.execute(stmt)
 
-            cur.execute(
-                "SELECT COUNT(*) FROM entries WHERE source_id = ?",
-                (args.source_id,),
-            )
-            total_entries = cur.fetchone()[0]
+        cur.execute(
+            "SELECT COUNT(*) FROM entries WHERE source_id = ?",
+            (args.source_id,),
+        )
+        total_entries = cur.fetchone()[0]
 
-            cur.execute(
-                "SELECT COUNT(*) FROM pages WHERE source_id = ?",
-                (args.source_id,),
-            )
-            total_pages = cur.fetchone()[0]
+        cur.execute(
+            "SELECT COUNT(*) FROM pages WHERE source_id = ?",
+            (args.source_id,),
+        )
+        total_pages = cur.fetchone()[0]
 
-            cur.execute(
-                "UPDATE sources SET total_entries = ?, total_pages = ?, updated_at = datetime('now') "
-                "WHERE id = ?",
-                (total_entries, total_pages, args.source_id),
-            )
+        cur.execute(
+            "UPDATE sources SET total_entries = ?, total_pages = ?, updated_at = datetime('now') "
+            "WHERE id = ?",
+            (total_entries, total_pages, args.source_id),
+        )
 
         con.commit()
         print("  done.")
