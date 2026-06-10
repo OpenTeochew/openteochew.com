@@ -3,7 +3,7 @@
   <div v-else-if="!source" style="text-align:center;padding:80px 0;color:var(--muted)">來源未找到</div>
   <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">字典原書</router-link> › <span style="color:var(--fg)">{{ source.name }}{{ source.name_zh ? '（' + source.name_zh + '）' : '' }}</span>
+      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">字典原冊</router-link> › <span style="color:var(--fg)">{{ source.name }}{{ source.name_zh ? '（' + source.name_zh + '）' : '' }}</span>
     </div>
     <div class="container dict-header">
       <div class="dict-header-inner">
@@ -15,9 +15,11 @@
     </div>
     <div class="container dict-toolbar">
       <div class="dict-page-nav">
-        <button class="dict-page-btn" :disabled="pageNum <= 1" @click="goPrev">← 上一頁</button>
-        <span class="dict-page-num">第 {{ pageNum }} 頁</span>
-        <button class="dict-page-btn" @click="goNext">下一頁 →</button>
+        <button class="dict-page-btn" :disabled="pageNum <= 1" @click="goPrev">← <span class="hide-mobile">上一頁</span></button>
+        <span class="dict-page-num">第 {{ pageNum }} / {{ source.total_pages || '?' }} 頁</span>
+        <button class="dict-page-btn" :disabled="pageNum >= (source.total_pages || Infinity)" @click="goNext"><span class="hide-mobile">下一頁</span> →</button>
+        <input class="dict-page-jump" type="number" min="1" :max="source.total_pages || ''" v-model.number="jumpTarget" @keyup.enter="jumpToPage" placeholder="跳頁" />
+        <button class="dict-page-btn" @click="jumpToPage" :disabled="!canJump"><span class="hide-mobile">跳轉</span><span class="show-mobile">Go</span></button>
       </div>
       <div class="dict-toolbar-right">
         <div v-if="renderedOcr" class="ocr-version-toggle">
@@ -27,7 +29,7 @@
         <button class="dict-scan-toggle" :class="{ open: scanOpen }" @click="scanOpen = !scanOpen">
           <svg v-if="!scanOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          {{ scanOpen ? '關閉掃描' : '查看原書掃描' }}
+          {{ scanOpen ? '關閉原冊' : '睇原冊' }}
         </button>
       </div>
     </div>
@@ -63,11 +65,14 @@
         </aside>
         <div class="scan-panel" :class="{ open: scanOpen }">
           <div class="scan-panel-inner">
+            <button class="scan-close" @click="scanOpen = false" aria-label="關閉原冊">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
             <div class="scan-image">
               <img v-if="pageImageUrl" :src="pageImageUrl" :alt="`第 ${pageNum} 頁`" style="max-width:100%;max-height:100%;object-fit:contain;" @error="imgError = true">
               <div v-if="!pageImageUrl || imgError" class="scan-image-ph">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <p>原書掃描頁面<br><span style="font-size:12px;color:var(--meta)">第 {{ pageNum }} 頁 · {{ source?.name }}{{ source?.name_zh ? '（' + source.name_zh + '）' : '' }}</span></p>
+                <p>原冊掃描頁面<br><span style="font-size:12px;color:var(--meta)">第 {{ pageNum }} 頁 · {{ source?.name }}{{ source?.name_zh ? '（' + source.name_zh + '）' : '' }}</span></p>
               </div>
             </div>
           </div>
@@ -75,9 +80,11 @@
       </div>
       <div class="dict-toolbar" style="border-top:1px solid var(--border);border-bottom:none">
         <div class="dict-page-nav">
-          <button class="dict-page-btn" :disabled="pageNum <= 1" @click="goPrev">← 上一頁</button>
-          <span class="dict-page-num">第 {{ pageNum }} 頁</span>
-          <button class="dict-page-btn" @click="goNext">下一頁 →</button>
+          <button class="dict-page-btn" :disabled="pageNum <= 1" @click="goPrev">← <span class="hide-mobile">上一頁</span></button>
+          <span class="dict-page-num">第 {{ pageNum }} / {{ source.total_pages || '?' }} 頁</span>
+          <button class="dict-page-btn" :disabled="pageNum >= (source.total_pages || Infinity)" @click="goNext"><span class="hide-mobile">下一頁</span> →</button>
+          <input class="dict-page-jump" type="number" min="1" :max="source.total_pages || ''" v-model.number="jumpTarget" @keyup.enter="jumpToPage" placeholder="跳頁" />
+          <button class="dict-page-btn" @click="jumpToPage" :disabled="!canJump"><span class="hide-mobile">跳轉</span><span class="show-mobile">Go</span></button>
         </div>
       </div>
     </div>
@@ -99,7 +106,7 @@ const props = defineProps({ id: { type: [String, Number], required: true } })
 
 const loading = ref(true)
 const source = ref(null)
-const scanOpen = ref(true)
+const scanOpen = ref(window.innerWidth > 920)
 const ocrVersion = ref('modified')
 const pageNum = ref(Number(route.query.page) || 1)
 const imgError = ref(false)
@@ -108,6 +115,19 @@ const SIDEBAR_PAGE_SIZE = 10
 const sidebarLimit = ref(SIDEBAR_PAGE_SIZE)
 const entries = ref([])
 const pages = ref([])
+const jumpTarget = ref(null)
+
+const canJump = computed(() => {
+  const v = jumpTarget.value
+  const max = source.value?.total_pages
+  return Number.isFinite(v) && v >= 1 && v <= (max || Infinity) && v !== pageNum.value
+})
+
+function jumpToPage() {
+  if (!canJump.value) return
+  pageNum.value = jumpTarget.value
+  jumpTarget.value = null
+}
 
 const ORIG_RE = /~~([^~]+)~~\(([^)]+)\)/g
 const INS_RE = /\+\+([^+]*)\+\+/g
