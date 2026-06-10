@@ -1,3 +1,11 @@
+import OpenCC from 'opencc-js'
+
+const s2t = OpenCC.Converter({ from: 'cn', to: 'tw' })
+
+function toTraditional(s?: string): string | undefined {
+  return s ? s2t(s) : s
+}
+
 export async function searchEntries(
   db: D1Database,
   params: {
@@ -12,14 +20,17 @@ export async function searchEntries(
     limit: number
   }
 ) {
+  const q_han = toTraditional(params.q_han)
+  const q_mandarin = toTraditional(params.q_mandarin)
+
   const conditions: string[] = []
   const values: any[] = []
 
-  if (params.q_han) { conditions.push('(e.han LIKE ? OR e.han_orig LIKE ?)'); values.push(`%${params.q_han}%`, `%${params.q_han}%`) }
+  if (q_han) { conditions.push('(e.han LIKE ? OR e.han_orig LIKE ?)'); values.push(`%${q_han}%`, `%${q_han}%`) }
   if (params.q_puj) { conditions.push('(e.puj LIKE ? OR e.puj_orig LIKE ?)'); values.push(`%${params.q_puj}%`, `%${params.q_puj}%`) }
   if (params.q_dp) { conditions.push('e.dp LIKE ?'); values.push(`%${params.q_dp}%`) }
   if (params.q_en) { conditions.push('(e.en LIKE ? OR e.en_orig LIKE ?)'); values.push(`%${params.q_en}%`, `%${params.q_en}%`) }
-  if (params.q_mandarin) { conditions.push('e.mandarin LIKE ?'); values.push(`%${params.q_mandarin}%`) }
+  if (q_mandarin) { conditions.push('e.mandarin LIKE ?'); values.push(`%${q_mandarin}%`) }
   if (params.q_ja) { conditions.push('e.ja LIKE ?'); values.push(`%${params.q_ja}%`) }
   if (params.source_id) { conditions.push('e.source_id = ?'); values.push(params.source_id) }
 
@@ -40,11 +51,11 @@ export async function searchEntries(
   for (const row of sourceCounts.results as any[]) {
     sourceTotalMap.set(row.source_id, row.total)
   }
-  const primaryField = (params.q_han && 'e.han')
+  const primaryField = (q_han && 'e.han')
     || (params.q_puj && 'e.puj')
     || (params.q_dp && 'e.dp')
     || (params.q_en && 'e.en')
-    || (params.q_mandarin && 'e.mandarin')
+    || (q_mandarin && 'e.mandarin')
     || (params.q_ja && 'e.ja')
     || null
   const relevanceOrder = primaryField
