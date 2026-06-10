@@ -37,32 +37,8 @@
       <div class="dict-split" :class="{ 'scan-open': scanOpen }">
         <div class="ocr-main">
           <div v-if="renderedOcr" class="ocr-entries" v-html="renderedOcr"></div>
-          <div v-else class="ocr-entries">
-            <div v-for="e in entries" :key="e.id" class="ocr-entry">
-              <div class="ocr-headline">
-                <span v-if="e.han" class="ocr-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span>
-                <span class="ocr-puj">{{ e.puj }}</span>
-              </div>
-              <p class="ocr-def">{{ e.en }}</p>
-            </div>
-          </div>
+          <div v-else class="ocr-entries" style="text-align:center;padding:60px 0;color:var(--muted)">此頁無 OCR 文字</div>
         </div>
-        <aside class="entry-sidebar">
-          <p class="sidebar-title">本頁詞條<span v-if="filteredEntries.length" class="sidebar-count">{{ filteredEntries.length }}</span></p>
-          <div class="sidebar-search"><input v-model="sidebarQuery" type="text" class="sidebar-input" placeholder="在本頁搜索…" @input="sidebarLimit = SIDEBAR_PAGE_SIZE"></div>
-          <ul class="entry-list">
-            <li v-for="e in visibleEntries" :key="e.id" class="entry-item">
-              <router-link :to="{ name: 'EntryDetail', params: { id: e.id } }" class="entry-link">
-                <span v-if="e.han" class="entry-link-char">{{ e.han }}<OrigIndicator :orig="e.han_orig" /></span>
-                <span class="entry-link-puj" :class="{ 'entry-link-puj--head': !e.han }">{{ e.puj }}</span>
-                <span class="entry-link-def">{{ e.en }}</span>
-              </router-link>
-            </li>
-          </ul>
-          <button v-if="filteredEntries.length > sidebarLimit" class="sidebar-more" @click="sidebarLimit = filteredEntries.length">
-            顯示全部 {{ filteredEntries.length }} 條
-          </button>
-        </aside>
         <div class="scan-panel" :class="{ open: scanOpen }">
           <button class="scan-panel-close" @click="scanOpen = false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -100,7 +76,6 @@ import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Marked } from 'marked'
 import { sourcesApi } from '../../api/sources'
-import OrigIndicator from '../../components/OrigIndicator.vue'
 
 const marked = new Marked({ gfm: true, breaks: true })
 
@@ -114,10 +89,6 @@ const scanOpen = ref(window.innerWidth > 920)
 const ocrVersion = ref('modified')
 const pageNum = ref(Number(route.query.page) || 1)
 const imgError = ref(false)
-const sidebarQuery = ref('')
-const SIDEBAR_PAGE_SIZE = 10
-const sidebarLimit = ref(SIDEBAR_PAGE_SIZE)
-const entries = ref([])
 const pages = ref([])
 const jumpTarget = ref(null)
 
@@ -173,12 +144,11 @@ function renderOcrVersion(text, version) {
 async function loadData() {
   loading.value = true
   try {
-    source.value = await sourcesApi.getById(Number(props.id))
-    const [entriesResult, pagesResult] = await Promise.all([
-      sourcesApi.getEntries(Number(props.id), { page_num: pageNum.value }),
+    const [sourceResult, pagesResult] = await Promise.all([
+      sourcesApi.getById(Number(props.id)),
       sourcesApi.getPages(Number(props.id), { page_num: pageNum.value })
     ])
-    entries.value = entriesResult
+    source.value = sourceResult
     pages.value = pagesResult
   } catch (e) {
     console.error('Failed to load source:', e)
@@ -221,14 +191,9 @@ onBeforeUnmount(() => {
 
 watch(pageNum, async () => {
   imgError.value = false
-  sidebarLimit.value = SIDEBAR_PAGE_SIZE
   router.replace({ query: { ...route.query, page: pageNum.value } })
   try {
-    const [entriesResult, pagesResult] = await Promise.all([
-      sourcesApi.getEntries(Number(props.id), { page_num: pageNum.value }),
-      sourcesApi.getPages(Number(props.id), { page_num: pageNum.value })
-    ])
-    entries.value = entriesResult
+    const pagesResult = await sourcesApi.getPages(Number(props.id), { page_num: pageNum.value })
     pages.value = pagesResult
   } catch (e) {
     console.error('Failed to load page data:', e)
@@ -242,18 +207,6 @@ function goPrev() {
 function goNext() {
   pageNum.value++
 }
-
-const filteredEntries = computed(() => {
-  const q = sidebarQuery.value.trim().toLowerCase()
-  if (!q) return entries.value
-  return entries.value.filter(e =>
-    (e.han || '').toLowerCase().includes(q) ||
-    (e.puj || '').toLowerCase().includes(q) ||
-    (e.en || '').toLowerCase().includes(q)
-  )
-})
-
-const visibleEntries = computed(() => filteredEntries.value.slice(0, sidebarLimit.value))
 
 const currentPage = computed(() => pages.value[0] || null)
 

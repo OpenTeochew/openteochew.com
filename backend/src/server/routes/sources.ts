@@ -19,13 +19,20 @@ routes.get('/sources/:id', async (c) => {
   const source = await c.env.DB.prepare('SELECT * FROM sources WHERE id = ?').bind(id).first()
   if (!source) return c.json({ success: false, error: 'Source not found' }, 404)
 
-  const sections = await c.env.DB.prepare(
-    'SELECT * FROM sections WHERE source_id = ? ORDER BY sort_order'
-  ).bind(id).all()
+  const include = c.req.query('include') || ''
+  const needSections = include.includes('sections')
+
+  let sections: any[] | undefined
+  if (needSections) {
+    const result = await c.env.DB.prepare(
+      'SELECT * FROM sections WHERE source_id = ? ORDER BY sort_order'
+    ).bind(id).all()
+    sections = result.results
+  }
 
   return c.json({
     success: true,
-    data: { ...source, sections: sections.results }
+    data: { ...source, ...(sections !== undefined ? { sections } : {}) }
   })
 })
 

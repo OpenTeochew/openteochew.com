@@ -15,7 +15,7 @@ export interface Source {
 }
 
 export interface SourceDetail extends Source {
-  sections: Section[]
+  sections?: Section[]
 }
 
 export interface Section {
