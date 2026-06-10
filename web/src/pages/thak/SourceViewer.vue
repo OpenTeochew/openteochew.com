@@ -160,7 +160,7 @@ async function loadData() {
 onMounted(loadData)
 
 watch(scanOpen, (val) => {
-  if (val) {
+  if (val && window.innerWidth <= 920) {
     const scrollY = window.scrollY
     document.body.style.position = 'fixed'
     document.body.style.top = `-${scrollY}px`
@@ -175,7 +175,8 @@ watch(scanOpen, (val) => {
     document.body.style.left = ''
     document.body.style.right = ''
     document.body.style.overflow = ''
-    window.scrollTo(0, scrollY)
+    delete document.body.dataset.scrollY
+    if (scrollY) window.scrollTo(0, scrollY)
   }
 })
 
@@ -186,7 +187,8 @@ onBeforeUnmount(() => {
   document.body.style.left = ''
   document.body.style.right = ''
   document.body.style.overflow = ''
-  window.scrollTo(0, scrollY)
+  delete document.body.dataset.scrollY
+  if (scrollY) window.scrollTo(0, scrollY)
 })
 
 watch(pageNum, async () => {

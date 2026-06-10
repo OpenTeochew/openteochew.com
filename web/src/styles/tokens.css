@@ -364,7 +364,7 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
   .dict-grid { grid-template-columns: 1fr 1fr; }
   .read-layout { grid-template-columns: 1fr; }
   .toc-sidebar { position: static; border-top: 1px solid var(--border); padding-top: 24px; order: -1; }
-  .scan-panel.open { width: 100%; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--surface); }
+  .scan-panel.open { width: 100%; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 50; background: var(--surface); overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .scan-panel-inner { position: relative; }
   .scan-close { display: flex; }
   .scan-panel-close { display: flex; align-items: center; gap: 6px; position: sticky; top: 0; z-index: 51; padding: 12px 16px; border: none; background: var(--surface); color: var(--fg); font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--border); }
