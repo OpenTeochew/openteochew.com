@@ -7,7 +7,7 @@ set -a; source "$ROOT/.env.dev"; set +a
 
 bash build.sh
 
-echo "Deploying to dev..."
+echo "Deploying..."
 cd backend
 npx wrangler deploy
-echo "Done: https://dev.openteochew.com"
+echo "Done: https://openteochew.com"

@@ -72,7 +72,8 @@ tmp/                  # 原型（已忽略）
 - UI 語言：繁體中文，不用 vue-i18n
 - CSS：只用 tokens.css 中的類名和變量，不引入 Tailwind 工具類
 - `.vue` 頁面組件使用 `<script setup>`（純 JS），不用 `lang="ts"`
-- `backend/wrangler.jsonc` 中 D1 database_id 為 `TODO_FILL_IN`
+- `backend/wrangler.jsonc` 中 D1 database_id 為 `c2f28963-15db-42a9-9c18-75a79d846086`
+- Worker name: `openteochew`，custom domain: `openteochew.com` + `www.openteochew.com`
 - 原型參考：`tmp/index.html`（已 gitignore）
 
 ## Coding Principles
@@ -125,7 +126,7 @@ HW="$HOME/Documents/Code/hokkien-writing/dataset" ./init_dev_db.sh
 ./sync_source.sh --remote                      # 推到遠端 D1（需 .env.dev）
 ./sync_source.sh --hw /path/to/dataset         # 自訂 dataset 路徑
 
-# 部署到 dev 環境（會先跑 build.sh）
-./deploy_dev.sh
+# 部署
+./deploy.sh                    # Build + deploy to openteochew.com
 ```
 ```
