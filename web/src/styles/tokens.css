@@ -395,12 +395,13 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
 }
 @media (max-width: 768px) {
   .results-table { font-size: 13px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .results-table thead, .results-table tbody, .results-table tr, .results-table th, .results-table td { display: block; }
-  .results-table thead { display: none; }
-  .results-table tr { padding: 12px 0; border-bottom: 1px solid var(--border-soft); }
-  .results-table td { padding: 2px 0; border: none; }
-  .results-table td::before { display: none; }
-  .rt-def { max-width: 100%; }
+  .results-table th { font-size: 10px; padding: 6px 8px; }
+  .results-table td { padding: 8px; }
+  .rt-char { max-width: 100px; font-size: 15px; }
+  .rt-puj { max-width: 120px; }
+  .rt-def { max-width: 200px; }
+  .rt-dp { max-width: 80px; }
+  .rt-src { width: 32px; }
 }
 @media (max-width: 640px) {
   .sites-grid, .dict-grid { grid-template-columns: 1fr; }
