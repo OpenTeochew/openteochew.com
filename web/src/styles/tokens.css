@@ -292,7 +292,7 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
 .ocr-entries h5 { font-size: 15px; margin: 14px 0 4px; color: var(--fg); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
 .ocr-entries ul { padding-left: 20px; margin: 0; }
 .ocr-entries li { margin-bottom: 2px; }
-.ocr-entries strong { font-weight: 700; color: var(--fg); }
+.ocr-entries strong { font-weight: 400; color: #000; }
 
 /* ── Compact query rows ─────────────────────────── */
 
