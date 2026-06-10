@@ -81,6 +81,7 @@ tmp/                  # 原型（已忽略）
 2. **Simplicity First** — 只寫解決問題的最少代碼，不做投機性設計。
 3. **Surgical Changes** — 只改必須改的，只清理自己弄亂的。
 4. **Goal-Driven Execution** — 先定義成功標準，循環直到驗證通過。
+5. **Performance Awareness** — 每次改動都評估性能影響，尤其 SQL 查詢和前端渲染。記錄結論，不自欺。
 
 完成功能後，審視 `docs/` 下設計文檔是否需要同步更新。
 
