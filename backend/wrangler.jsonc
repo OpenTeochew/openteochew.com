@@ -12,7 +12,7 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "openteochew-db-dev",
+      "database_name": "openteochew-db",
       "database_id": "c2f28963-15db-42a9-9c18-75a79d846086"
     }
   ]
