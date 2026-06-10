@@ -122,7 +122,6 @@ function isFieldUsed(field, excludeIndex) {
 
 const activeFilter = ref(0)
 const moreLoading = ref(null)
-const groupPages = reactive({})
 const groupMoreData = reactive({})
 const collapsedSources = reactive(new Set())
 
@@ -155,8 +154,7 @@ const filteredGroups = computed(() => {
 async function loadMore(group) {
   const sourceId = group.source.id
   moreLoading.value = sourceId
-  const nextPage = (groupPages[sourceId] || 1) + 1
-  groupPages[sourceId] = nextPage
+  const nextPage = Math.floor(group.entries.length / 20) + 1
   try {
     const result = await searchApi.search({ ...store.params, source_id: sourceId, page: nextPage, limit: 20 })
     if (result.groups.length > 0) {
@@ -205,6 +203,7 @@ function restoreFromQuery(query) {
 
 function runSearch(query) {
   restoreFromQuery(query)
+  Object.keys(groupMoreData).forEach(k => delete groupMoreData[k])
   const { buildParams } = useSearch()
   const params = buildParams(queryRows)
   store.search(params)
