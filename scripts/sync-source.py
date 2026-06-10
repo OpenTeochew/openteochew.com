@@ -16,6 +16,7 @@ WRANGLER_DB_DIR = REPO / "backend" / ".wrangler" / "state" / "v3" / "d1" / "mini
 HW_DEFAULT = Path(__file__).resolve().parent.parent.parent / "dataset"
 D1_NAME = "openteochew-db-dev"
 BATCH_SIZE = 2000
+CLEAN_SYNC_THRESHOLD = 5000
 
 SOURCE_CONFIG = {
     1: {
@@ -27,6 +28,11 @@ SOURCE_CONFIG = {
         "csv": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.csv",
         "md": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.md",
         "slug": "English_Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow",
+    },
+    2: {
+        "csv": "003_First_Lessons_in_the_Tie-chiw_Dialect.csv",
+        "md": "003_First_Lessons_in_the_Tie-chiw_Dialect.md",
+        "slug": "First_Lessons_in_the_Tie_chiw_Dialect",
     }
 }
 
@@ -322,6 +328,50 @@ def db_entries_by_page(cur, source_id, page_nums=None):
     return rows
 
 
+def generate_clean_entries_sql(source_id, csv_rows):
+    stmts = []
+    new_sections = set()
+
+    page_nums = set()
+    for csv_row in csv_rows:
+        pn = csv_row.get("_page_num")
+        if pn is not None:
+            page_nums.add(pn)
+        title = csv_row.get("_section")
+        if title and title not in new_sections:
+            new_sections.add(title)
+
+    for title in new_sections:
+        stmts.append(
+            f"INSERT OR IGNORE INTO sections (source_id, title, sort_order) "
+            f"VALUES ({source_id}, '{sql_escape(title)}', 0);"
+        )
+
+    if page_nums:
+        pn_list = ",".join(str(pn) for pn in sorted(page_nums))
+        stmts.append(
+            f"DELETE FROM entries WHERE source_id = {source_id} AND page_num IN ({pn_list});"
+        )
+    else:
+        stmts.append(
+            f"DELETE FROM entries WHERE source_id = {source_id};"
+        )
+
+    for csv_row in csv_rows:
+        title = csv_row.get("_section")
+        stmts.append(
+            f"INSERT INTO entries "
+            f"(source_id, section_id, han, puj, en, han_orig, puj_orig, en_orig, page_num, sort_order) "
+            f"VALUES ({source_id}, {section_subquery(source_id, title)}, "
+            f"{sql_val(csv_row.get('han'))}, {sql_val(csv_row.get('puj'))}, "
+            f"{sql_val(csv_row.get('en'))}, {sql_val(csv_row.get('han_orig'))}, "
+            f"{sql_val(csv_row.get('puj_orig'))}, {sql_val(csv_row.get('en_orig'))}, "
+            f"{sql_num(csv_row.get('page_num'))}, 0);"
+        )
+
+    return stmts
+
+
 def generate_entries_sql(source_id, inserts, updates, deletes):
     stmts = []
     new_sections = set()
@@ -461,10 +511,17 @@ def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold):
     db_rows = db_entries_by_page(cur, source_id, page_nums_list)
     print(f"  DB entries (scoped): {len(db_rows)} rows")
 
-    inserts, updates, deletes = diff_entries(csv_rows, db_rows, changed_page_nums, threshold)
-    print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
-
-    stmts = generate_entries_sql(source_id, inserts, updates, deletes)
+    if len(db_rows) >= CLEAN_SYNC_THRESHOLD:
+        scoped_csv = csv_rows if page_nums_list is None else [
+            r for r in csv_rows if r.get("_page_num") in changed_page_nums
+        ]
+        print(f"  large change set ({len(db_rows)} db rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
+        stmts = generate_clean_entries_sql(source_id, scoped_csv)
+        print(f"  clean sync: delete + insert {len(scoped_csv)} entries")
+    else:
+        inserts, updates, deletes = diff_entries(csv_rows, db_rows, changed_page_nums, threshold)
+        print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
+        stmts = generate_entries_sql(source_id, inserts, updates, deletes)
 
     if not stmts:
         print("  entries: no changes")
@@ -580,14 +637,32 @@ def main():
             if target_pages is not None or args.entries_only:
                 csv_rows = parse_csv(csv_path)
                 db_rows = db_entries_remote(args.source_id, target_pages)
-                inserts, updates, deletes = diff_entries(csv_rows, db_rows, target_pages, args.match_threshold)
-                print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
-                all_stmts.extend(generate_entries_sql(args.source_id, inserts, updates, deletes))
+                if len(db_rows) >= CLEAN_SYNC_THRESHOLD:
+                    scoped_csv = csv_rows if target_pages is None else [
+                        r for r in csv_rows if r.get("_page_num") in changed_page_nums
+                    ]
+                    print(f"  large change set ({len(db_rows)} db rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
+                    stmts = generate_clean_entries_sql(args.source_id, scoped_csv)
+                    print(f"  clean sync: delete + insert {len(scoped_csv)} entries")
+                else:
+                    inserts, updates, deletes = diff_entries(csv_rows, db_rows, target_pages, args.match_threshold)
+                    print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
+                    stmts = generate_entries_sql(args.source_id, inserts, updates, deletes)
+                all_stmts.extend(stmts)
             elif changed_page_nums is not None and not changed_page_nums:
                 print("  no page changes, skipping entries")
 
         if all_stmts:
             execute_remote(all_stmts)
+
+        update_stmt = (
+            f"UPDATE sources SET "
+            f"total_entries = (SELECT COUNT(*) FROM entries WHERE source_id = {args.source_id}), "
+            f"total_pages = (SELECT COUNT(*) FROM pages WHERE source_id = {args.source_id}), "
+            f"updated_at = datetime('now') "
+            f"WHERE id = {args.source_id};"
+        )
+        execute_remote([update_stmt])
 
         print("sync complete.")
         return
@@ -635,23 +710,23 @@ def main():
             for stmt in all_stmts:
                 cur.execute(stmt)
 
-            cur.execute(
-                "SELECT COUNT(*) FROM entries WHERE source_id = ?",
-                (args.source_id,),
-            )
-            total_entries = cur.fetchone()[0]
+        cur.execute(
+            "SELECT COUNT(*) FROM entries WHERE source_id = ?",
+            (args.source_id,),
+        )
+        total_entries = cur.fetchone()[0]
 
-            cur.execute(
-                "SELECT COUNT(*) FROM pages WHERE source_id = ?",
-                (args.source_id,),
-            )
-            total_pages = cur.fetchone()[0]
+        cur.execute(
+            "SELECT COUNT(*) FROM pages WHERE source_id = ?",
+            (args.source_id,),
+        )
+        total_pages = cur.fetchone()[0]
 
-            cur.execute(
-                "UPDATE sources SET total_entries = ?, total_pages = ?, updated_at = datetime('now') "
-                "WHERE id = ?",
-                (total_entries, total_pages, args.source_id),
-            )
+        cur.execute(
+            "UPDATE sources SET total_entries = ?, total_pages = ?, updated_at = datetime('now') "
+            "WHERE id = ?",
+            (total_entries, total_pages, args.source_id),
+        )
 
         con.commit()
         print("  done.")

@@ -1,6 +1,6 @@
 # openteochew.com
 
-潮州話資料庫 OpenTeochew — 開源潮州話語言資源平台。
+潮州話開放資料庫 OpenTeochew — 開源潮州話語言資源平台。
 
 ## 技術棧
 

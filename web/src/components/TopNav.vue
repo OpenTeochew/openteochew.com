@@ -3,7 +3,7 @@
     <div class="container nav-inner">
       <router-link to="/" class="logo">
         <span class="logo-main">OpenTeochew<span class="beta-badge">BETA</span></span>
-        <span class="logo-sub">潮州話資料庫</span>
+        <span class="logo-sub">潮州話開放資料庫</span>
       </router-link>
       <nav class="nav-tabs">
         <router-link to="/" class="nav-tab" :class="{ active: isChheActive }">Chhê 查</router-link>
