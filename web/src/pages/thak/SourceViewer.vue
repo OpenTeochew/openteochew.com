@@ -140,6 +140,8 @@ function renderOcrVersion(text, version) {
     processed = processed.replace(ATTR_RE, (m) => { saved.push(m); return `\x00${saved.length - 1}\x00` })
     processed = renderAnno(processed)
     processed = processed.replace(/\x00(\d+)\x00/g, (_, i) => saved[i])
+  } else {
+    processed = processed.replace(ANNO_RE, '')
   }
   return marked.parse(processed)
 }

@@ -3,16 +3,16 @@
   <div v-else-if="!entry" style="text-align:center;padding:80px 0;color:var(--muted)">詞條未找到</div>
   <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'SearchHome' }">Chhe</router-link> › <router-link :to="{ name: 'SearchResults' }">搜索「{{ entry.han }}」</router-link> › 詞條詳情
+      <router-link :to="{ name: 'SearchHome' }">Chhe</router-link> › <router-link :to="{ name: 'SearchResults' }">搜索「{{ entry.han_orig ? stripAnno(entry.han_orig) : (entry.han || '') }}」</router-link> › 詞條詳情
     </div>
     <main>
       <section class="entry-header container">
         <div class="entry-header-inner">
-          <div class="entry-char">{{ entry.han }}</div>
+          <div class="entry-char" v-html="formatField(entry.han, entry.han_orig)"></div>
           <div class="entry-info">
-            <div class="entry-puj">{{ entry.puj }}</div>
+            <div class="entry-puj" v-html="formatField(entry.puj, entry.puj_orig)"></div>
             <div class="entry-readings">
-              <div class="reading-row"><span class="reading-label">PUJ</span><span class="reading-value">{{ entry.puj }}</span></div>
+              <div class="reading-row"><span class="reading-label">PUJ</span><span class="reading-value" v-html="formatField(entry.puj, entry.puj_orig)"></span></div>
               <div class="reading-row"><span class="reading-label">DP</span><span class="reading-value">{{ entry.dp }}</span></div>
             </div>
             <div class="entry-actions">
@@ -58,6 +58,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { entriesApi } from '../../api/entries'
 import { searchApi } from '../../api/search'
+import { formatField, renderAnno, stripAnno, esc } from '../../composables/formatField'
 
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
@@ -75,9 +76,18 @@ const activeTab = ref('all')
 const defTabs = computed(() => {
   if (!entry.value) return []
 
+  const fmt = (val, orig) => {
+    if (!val && !orig) return ''
+    if (!orig) return esc(val || '')
+    return `${stripAnno(esc(orig))}<span class="orig">(${renderAnno(esc(val || ''))})</span>`
+  }
+  const fmtHan = (e) => fmt(e.han, e.han_orig)
+  const fmtPuj = (e) => fmt(e.puj, e.puj_orig)
+  const fmtEn = (e) => fmt(e.en, e.en_orig)
+
   const currentDef = {
     source: `${entry.value.source.name}${entry.value.page_num ? ' · p. ' + entry.value.page_num : ''}`,
-    text: `<strong>${entry.value.han || ''} ${entry.value.puj || ''}</strong> — ${entry.value.en || ''}`,
+    text: `<strong>${fmtHan(entry.value)} ${fmtPuj(entry.value)}</strong> — ${fmtEn(entry.value)}`,
     pageNum: entry.value.page_num,
     sourceId: entry.value.source.id
   }
@@ -100,7 +110,7 @@ const defTabs = computed(() => {
     for (const e of group.entries) {
       const def = {
         source: `${group.source.name}${e.page_num ? ' · p. ' + e.page_num : ''}`,
-        text: `<strong>${e.han || ''} ${e.puj || ''}</strong> — ${e.en || ''}`,
+        text: `<strong>${fmtHan(e)} ${fmtPuj(e)}</strong> — ${fmtEn(e)}`,
         pageNum: e.page_num,
         sourceId: group.source.id
       }

@@ -50,10 +50,10 @@
                 <thead><tr><th>漢字</th><th>PUJ</th><th>DP</th><th>釋義</th><th>頁碼</th><th>原冊</th></tr></thead>
                 <tbody>
                   <tr v-for="entry in group.entries" :key="entry.id">
-                    <td class="rt-char">{{ entry.han }}<OrigIndicator :orig="entry.han_orig" /></td>
-                    <td class="rt-puj">{{ entry.puj }}<OrigIndicator :orig="entry.puj_orig" /></td>
+                    <td class="rt-char" v-html="formatField(entry.han, entry.han_orig)"></td>
+                    <td class="rt-puj" v-html="formatField(entry.puj, entry.puj_orig)"></td>
                     <td class="rt-dp">{{ entry.dp }}</td>
-                    <td class="rt-def">{{ entry.en }}<OrigIndicator :orig="entry.en_orig" /></td>
+                    <td class="rt-def" v-html="formatField(entry.en, entry.en_orig)"></td>
                     <td class="rt-page">{{ entry.page_num ? `p. ${entry.page_num}` : '' }}</td>
                     <td class="rt-src">
                       <router-link
@@ -88,7 +88,7 @@ import { useRoute } from 'vue-router'
 import { useSearchStore } from '../../stores/search'
 import { useSearch } from '../../composables/useSearch'
 import { searchApi } from '../../api/search'
-import OrigIndicator from '../../components/OrigIndicator.vue'
+import { formatField } from '../../composables/formatField'
 
 const route = useRoute()
 const store = useSearchStore()

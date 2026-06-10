@@ -15,10 +15,10 @@ export async function searchEntries(
   const conditions: string[] = []
   const values: any[] = []
 
-  if (params.q_han) { conditions.push('e.han LIKE ?'); values.push(`%${params.q_han}%`) }
-  if (params.q_puj) { conditions.push('e.puj LIKE ?'); values.push(`%${params.q_puj}%`) }
+  if (params.q_han) { conditions.push('(e.han LIKE ? OR e.han_orig LIKE ?)'); values.push(`%${params.q_han}%`, `%${params.q_han}%`) }
+  if (params.q_puj) { conditions.push('(e.puj LIKE ? OR e.puj_orig LIKE ?)'); values.push(`%${params.q_puj}%`, `%${params.q_puj}%`) }
   if (params.q_dp) { conditions.push('e.dp LIKE ?'); values.push(`%${params.q_dp}%`) }
-  if (params.q_en) { conditions.push('e.en LIKE ?'); values.push(`%${params.q_en}%`) }
+  if (params.q_en) { conditions.push('(e.en LIKE ? OR e.en_orig LIKE ?)'); values.push(`%${params.q_en}%`, `%${params.q_en}%`) }
   if (params.q_mandarin) { conditions.push('e.mandarin LIKE ?'); values.push(`%${params.q_mandarin}%`) }
   if (params.q_ja) { conditions.push('e.ja LIKE ?'); values.push(`%${params.q_ja}%`) }
   if (params.source_id) { conditions.push('e.source_id = ?'); values.push(params.source_id) }
