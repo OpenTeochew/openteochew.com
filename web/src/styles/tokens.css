@@ -137,10 +137,10 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-display); f
 .revised-badge { display: inline-flex; align-items: center; padding: 0 5px; border-radius: 3px; background: var(--accent-soft); color: var(--accent); font-family: var(--font-mono); font-size: 10px; font-weight: 400; line-height: 1.6; flex-shrink: 0; letter-spacing: 0.02em; }
 .rt-revised { display: flex; font-size: 13px; color: var(--muted); margin-top: 2px; align-items: center; gap: 4px; font-family: var(--font-body); }
 .entry-puj .rt-revised, .reading-value .rt-revised { display: inline-flex; font-size: inherit; margin-top: 0; }
-.rt-char { font-family: "Iansui", var(--font-body); font-size: 17px; font-weight: 400; color: var(--fg); max-width: 120px; overflow-wrap: break-word; }
+.rt-char { font-family: "Iansui", var(--font-body); font-size: 17px; font-weight: 400; color: var(--fg); max-width: 200px; overflow-wrap: break-word; }
 .rt-puj { font-family: "Iansui", var(--font-body); font-size: 13px; color: var(--fg-2); max-width: 160px; overflow-wrap: break-word; }
 .rt-dp { font-family: var(--font-mono); font-size: 12px; color: var(--muted); max-width: 120px; overflow-wrap: break-word; }
-.rt-def { font-family: "Iansui", var(--font-body); color: var(--fg-2); font-size: 13px; line-height: 1.45; max-width: 380px; }
+.rt-def { font-family: "Iansui", var(--font-body); color: var(--fg-2); font-size: 13px; line-height: 1.45; max-width: 260px; }
 .rt-page { font-family: var(--font-mono); font-size: 11px; color: var(--meta); white-space: nowrap; }
 .rt-audio { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 50%; color: var(--muted); transition: all 150ms; }
 .rt-audio:hover { border-color: var(--fg-2); color: var(--fg); }
@@ -398,9 +398,9 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
   .results-table { font-size: 13px; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .results-table th { font-size: 10px; padding: 6px 8px; }
   .results-table td { padding: 8px; }
-  .rt-char { max-width: 100px; font-size: 15px; }
+  .rt-char { max-width: 180px; font-size: 15px; }
   .rt-puj { max-width: 120px; }
-  .rt-def { max-width: 200px; }
+  .rt-def { max-width: 120px; }
   .rt-dp { max-width: 80px; }
   .rt-src { width: 32px; }
 }
