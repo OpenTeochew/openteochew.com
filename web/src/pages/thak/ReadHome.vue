@@ -2,8 +2,8 @@
   <main>
     <section class="section thak-hero">
       <div class="container" style="max-width: 680px;">
-        <h1>讀潮州話</h1>
-        <p class="lead">瀏覽潮州話辭書與教材，所有資料標明出處，開放使用。</p>
+        <h1>{{ t2s('讀潮州話') }}</h1>
+        <p class="lead">{{ t2s('瀏覽潮州話辭書與教材，所有資料標明出處，開放使用。') }}</p>
         <div class="cat-tabs">
           <button v-for="(t, i) in catTabs" :key="t.key" class="cat-tab" :class="{ active: activeCat === i }" @click="activeCat = i">{{ t.label }}</button>
         </div>
@@ -11,7 +11,7 @@
     </section>
     <section class="section">
       <div class="container">
-        <div v-if="loading" style="color:var(--muted)">載入中…</div>
+        <div v-if="loading" style="color:var(--muted)">{{ t2s('載入中…') }}</div>
         <div v-else class="dict-grid">
           <router-link v-for="s in filtered" :key="s.id" :to="{ name: 'SourceViewer', params: { id: s.id } }" class="dict-card">
             <div v-if="s.cover_url" class="dict-cover"><img :src="s.cover_url" :alt="s.name_zh || s.name" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);" /></div>
@@ -21,9 +21,9 @@
               <p class="meta-text">{{ s.author }}</p>
               <div class="dict-meta">
                 <span class="dict-tag">{{ typeLabel(s.type) }}</span>
-                <span v-if="s.total_entries" class="meta-text">{{ s.total_entries.toLocaleString() }} 詞條</span>
-                <span v-else class="source-pending">收錄中</span>
-                <span class="meta-text">{{ s.total_pages ? s.total_pages + ' 頁' : '' }}</span>
+                <span v-if="s.total_entries" class="meta-text">{{ s.total_entries.toLocaleString() }} {{ t2s('詞條') }}</span>
+                <span v-else class="source-pending">{{ t2s('收錄中') }}</span>
+                <span class="meta-text">{{ s.total_pages ? s.total_pages + ' ' + t2s('頁') : '' }}</span>
               </div>
             </div>
           </router-link>
@@ -36,12 +36,15 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { sourcesApi } from '../../api/sources'
+import { useSimplified } from '../../composables/useSimplified'
+
+const { t2s } = useSimplified()
 
 const activeCat = ref(0)
 const catTabs = [
-  { key: 'all', label: '全部' },
-  { key: 'dictionary', label: '辭書' },
-  { key: 'textbook', label: '教材' },
+  { key: 'all', label: t2s('全部') },
+  { key: 'dictionary', label: t2s('辭書') },
+  { key: 'textbook', label: t2s('教材') },
 ]
 
 const sources = ref([])
@@ -64,7 +67,7 @@ const filtered = computed(() => {
 })
 
 function typeLabel(type) {
-  const map = { dictionary: '辭書', textbook: '教材' }
+  const map = { dictionary: t2s('辭書'), textbook: t2s('教材') }
   return map[type] || type
 }
 </script>
