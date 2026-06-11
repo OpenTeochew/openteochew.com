@@ -81,10 +81,11 @@ HW="$HOME/Documents/Code/hokkien-writing/dataset" ./init_dev_db.sh
 
 詞條與語料來自以下公開辭書與教材（掃描頁源自維基文庫）：
 
-- Williams, D. (1883). *A Dictionary of the Amoy Vernacular*
-- Giles, H. (1877). *A Dictionary of Colloquial Idioms in the Amoy Dialect*
-- Lim, C. (1934). *潮汕方言十八音* (Chaozhou Dialect 18 Sounds)
-- Dechamps, R. (1886). *Vocabulaire Français-Dialecte Swatow*
+- Lim Hiong Seng（林雄成）. (1886). *Handbook of the Swatow Vernacular*（汕頭話手冊）
+- William Dean（璘為仁）. (1841). *First Lessons in the Tie-chiw Dialect*（潮州話初階）
+- Rudolf Lechler; Samuel Wells Williams; William Duffus. (1883). *English-Chinese Vocabulary of the Vernacular Or Spoken Language of Swatow*（英漢汕頭方言口語詞典）
+- Adele Marion Fielde（斐姑娘）. (1883). *A Pronouncing and Defining Dictionary of the Swatow Dialect*（汕頭方言音義字典）
+- Josiah Goddard（高德）. (1847). *A Chinese and English Vocabulary in the Tie-chiu Dialect*（漢英潮州方言字典）
 - 更多來源持續收錄中
 
 ## 貢獻 / Contributing
