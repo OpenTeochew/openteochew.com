@@ -1,6 +1,6 @@
 # OpenTeochew
 
-**潮州話開放語言資源平台** — An open-source language resource platform for Teochew (潮州話).
+**潮州話開放資料庫** — An open-source language resource platform for Teochew (潮州話).
 
 [openteochew.com](https://openteochew.com)
 
