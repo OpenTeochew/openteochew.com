@@ -88,6 +88,23 @@ HW="$HOME/Documents/Code/hokkien-writing/dataset" ./init_dev_db.sh
 - Josiah Goddard（高德）. (1847). *A Chinese and English Vocabulary in the Tie-chiu Dialect*（漢英潮州方言字典）
 - 更多來源持續收錄中
 
+## 團隊 / Team
+
+- **Tieⁿ Kiang** — 語言學負責人、汕頭大學教師。負責語料的審訂與終審，確保收錄內容的準確可靠。
+- **Lim Tsunhua** — 開發者、某公司 AI 後端工程師。平台架構設計、全棧開發和資料的初步校訂。
+- 期待你的加入：[contact@openteochew.com](mailto:contact@openteochew.com)
+
+## 致謝 / Acknowledgements
+
+本項目中部分核心材料與研究成果源自 Tieⁿ Kiang 老師主導的**「近代域外潮州方言文獻所見詞彙系統及其歷史演變研究(25BYY061)」**項目。本開源團隊對此重要支持表示誠摯感謝。
+
+此外，本項目的建設也受益於：
+
+- [Chhoe Taigi](https://chhoe.taigi.info/) — 網站創建的靈感來源，功能設計的重要參考
+- [Iansui](https://github.com/ButTaiwan/iansui) — 提供了精美的字體，並正確顯示了 PUJ
+- [OpenCode](https://opencode.ai) — AI 輔助開發工具，本站大部分代碼由該工具產生
+- [Cloudflare](https://www.cloudflare.com) — 基礎設施託管，提供了極為慷慨的免費額度
+
 ## 貢獻 / Contributing
 
 歡迎提交 Issue 和 Pull Request。開發前請閱 [AGENTS.md](AGENTS.md) 了解項目約定。

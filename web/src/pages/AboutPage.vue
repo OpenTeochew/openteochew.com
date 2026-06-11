@@ -25,7 +25,7 @@ const { t2s } = useSimplified()
           <ul class="about-list">
             <li>
               <span class="team-name">Tieⁿ Kiang</span>
-              <span class="team-role">{{ t2s('語言學負責人、汕頭大學教師') }}</span>
+              <span class="team-role">{{ t2s('語言學負責人、汕頭大學文學院教師') }}</span>
               <p>{{ t2s('負責語料的審訂與終審，確保收錄內容的準確可靠。') }}</p>
             </li>
             <li>
@@ -38,6 +38,8 @@ const { t2s } = useSimplified()
         </div>
         <div class="about-section">
           <h2>{{ t2s('致謝') }}</h2>
+          <p class="thanks-funding">{{ t2s('本項目中部分核心材料與研究成果源自 Tieⁿ Kiang 老師主導的') }}<strong>{{ t2s('「近代域外潮州方言文獻所見詞彙系統及其歷史演變研究(25BYY061)」') }}</strong>{{ t2s('項目。本開源團隊對此重要支持表示誠摯感謝。') }}</p>
+          <p class="thanks-funding">{{ t2s('此外，本項目的建設也受益於：') }}</p>
           <ul class="thanks-list">
             <li>
               <a href="https://chhoe.taigi.info/" target="_blank" rel="noopener">Chhoe Taigi</a>

@@ -11,7 +11,12 @@
         <span class="foot-links">
           {{ locale.t2s('聯絡') }}：<a href="mailto:contact@openteochew.com">contact@openteochew.com</a>
         </span>
-        <span class="foot-funding">國家社會科學基金研究項目「近代域外潮州方言文獻所見詞彙系統及其歷史演變研究」（25BYY061）</span>
+        <span class="foot-links">
+          {{ locale.t2s('長期支持單位/項目：') }}
+        </span>
+        <ul class="foot-support-list">
+          <li>{{ locale.t2s('Tieⁿ Kiang 老師主導的「近代域外潮州方言文獻所見詞彙系統及其歷史演變研究(25BYY061)」') }}</li>
+        </ul>
         <span class="foot-links">
           <span>&copy; 2026 OpenTeochew · CC0 {{ locale.t2s('數據') }} · MIT {{ locale.t2s('代碼') }}</span>
         </span>
