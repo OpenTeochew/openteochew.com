@@ -1,21 +1,21 @@
 <template>
-  <div v-if="loading" style="text-align:center;padding:80px 0;color:var(--muted)">載入中…</div>
-  <div v-else-if="!article" style="text-align:center;padding:80px 0;color:var(--muted)">文章未找到</div>
+  <div v-if="loading" style="text-align:center;padding:80px 0;color:var(--muted)">{{ t2s('載入中…') }}</div>
+  <div v-else-if="!article" style="text-align:center;padding:80px 0;color:var(--muted)">{{ t2s('文章未找到') }}</div>
   <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › 語料與文本 › <span style="color:var(--fg)">{{ article.title }}</span>
+      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › {{ t2s('語料與文本') }} › <span style="color:var(--fg)">{{ article.title }}</span>
     </div>
     <div class="container">
       <div class="read-layout">
         <article class="read-main">
           <div class="read-meta">
-            <span class="read-tag" v-if="article.source">{{ article.source.type === 'dictionary' ? '辭書' : '教材' }}</span>
+            <span class="read-tag" v-if="article.source">{{ article.source.type === 'dictionary' ? t2s('辭書') : t2s('教材') }}</span>
           </div>
           <h1 class="read-title">{{ article.title }}</h1>
           <div class="markdown-body" v-html="renderedContent"></div>
         </article>
         <aside v-if="tocItems.length" class="toc-sidebar">
-          <p class="toc-title">目錄</p>
+          <p class="toc-title">{{ t2s('目錄') }}</p>
           <ul class="toc-list">
             <li v-for="item in tocItems" :key="item.id">
               <a :href="'#' + item.id" class="toc-link" :class="{ active: activeSection === item.id }" @click.prevent="scrollTo(item.id)">{{ item.text }}</a>
@@ -31,6 +31,9 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Marked } from 'marked'
 import { articlesApi } from '../../api/articles'
+import { useSimplified } from '../../composables/useSimplified'
+
+const { t2s } = useSimplified()
 
 const marked = new Marked()
 marked.use({
