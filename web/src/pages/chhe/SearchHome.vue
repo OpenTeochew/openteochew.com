@@ -62,12 +62,12 @@ const FIELD_ORDER = ['hanzi', 'puj', 'dp', 'zh', 'en', 'ja']
 const MUTEX = { puj: 'dp', dp: 'puj' }
 
 const placeholders = computed(() => ({
-  hanzi: t2s('例：食, 睇書'),
-  puj: 'Lī: tsia̍h, thóiⁿ-tsṳ',
-  dp: 'Li7: ziah8, toin2 ze1',
-  zh: t2s('例：吃, 看書'),
-  en: 'Ex. eat, read',
-  ja: '例：食べる, 本を読む'
+  hanzi: '例：時日、时日',
+  puj: '例: sî-ji̍t',
+  dp: '例: si5 zig8',
+  zh: '例：时间',
+  en: 'Ex. time, days',
+  ja: '例：時間'
 }))
 
 const queryRows = reactive([
