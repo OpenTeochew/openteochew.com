@@ -39,7 +39,7 @@
           <li v-for="(s, i) in topSources" :key="s.id">
             <span class="source-idx">{{ i + 1 }}.</span>
             <router-link :to="{ name: 'SourceViewer', params: { id: s.id } }">
-              {{ s.year ? s.year + ', ' : '' }}<em>{{ s.name }}</em>{{ s.name_zh ? ' (' + s.name_zh + ')' : '' }}{{ s.author ? ', ' + s.author : '' }} <span v-if="s.total_entries" class="source-count">{{ s.total_entries.toLocaleString() }} {{ t2s('項') }}</span>
+              {{ s.year ? s.year + ', ' : '' }}<em>{{ s.name }}</em>{{ s.name_zh ? ' (' + t2s(s.name_zh) + ')' : '' }}{{ s.author ? ', ' + s.author : '' }} <span v-if="s.total_entries" class="source-count">{{ s.total_entries.toLocaleString() }} {{ t2s('項') }}</span>
             </router-link>
           </li>
         </ul>
@@ -61,14 +61,14 @@ const { t2s } = useSimplified()
 const FIELD_ORDER = ['hanzi', 'puj', 'dp', 'zh', 'en', 'ja']
 const MUTEX = { puj: 'dp', dp: 'puj' }
 
-const placeholders = {
+const placeholders = computed(() => ({
   hanzi: t2s('例：食, 睇書'),
   puj: 'Lī: tsia̍h, thóiⁿ-tsṳ',
   dp: 'Li7: ziah8, toin2 ze1',
   zh: t2s('例：吃, 看書'),
   en: 'Ex. eat, read',
   ja: '例：食べる, 本を読む'
-}
+}))
 
 const queryRows = reactive([
   { field: 'hanzi', value: '' }

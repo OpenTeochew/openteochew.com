@@ -3,7 +3,7 @@
   <div v-else-if="!source" style="text-align:center;padding:80px 0;color:var(--muted)">{{ t2s('來源未找到') }}</div>
   <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">{{ t2s('字典原冊') }}</router-link> › <span style="color:var(--fg)">{{ source.name }}{{ source.name_zh ? '（' + source.name_zh + '）' : '' }}</span>
+      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">{{ t2s('字典原冊') }}</router-link> › <span style="color:var(--fg)">{{ source.name }}{{ source.name_zh ? '（' + t2s(source.name_zh) + '）' : '' }}</span>
     </div>
     <div class="container dict-header">
       <div class="dict-header-inner">

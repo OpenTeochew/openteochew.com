@@ -19,5 +19,6 @@ export function formatField(val: string | null, orig: string | null) {
   if (!orig) return esc(val || '')
   const stripped = stripAnno(esc(orig))
   const revised = renderAnno(esc(val || ''))
-  return `${stripped}<span class="orig">(${revised})</span>`
+  const revisedText = revised.replace(/<[^>]*>/g, '').trim()
+  return revisedText ? `${stripped}<span class="rt-revised"><span class="revised-badge">校</span>${revised}</span>` : stripped
 }

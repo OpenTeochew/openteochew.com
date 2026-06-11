@@ -10,7 +10,7 @@
         <div class="entry-header-inner">
           <div>
             <div class="entry-char" v-html="formatField(entry.han, entry.han_orig)"></div>
-            <div v-if="simplified && entry.han" class="entry-simplified">{{ t2s(entry.han) }}</div>
+            <div v-if="isDifferent(entry.han)" class="entry-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.han) }}</div>
           </div>
           <div class="entry-info">
             <div class="entry-puj" v-html="formatField(entry.puj, entry.puj_orig)"></div>
@@ -47,7 +47,7 @@
         <h2>{{ t2s('例句') }}</h2>
         <div class="example-list">
           <div v-for="ex in examples" :key="ex.teochew" class="example-item">
-            <p class="example-teochew">{{ ex.teochew }}<span v-if="simplified" class="rt-simplified">{{ t2s(ex.teochew) }}</span></p>
+            <p class="example-teochew">{{ ex.teochew }}<span v-if="isDifferent(ex.teochew)" class="rt-simplified"><span class="simplified-badge">简</span>{{ t2s(ex.teochew) }}</span></p>
             <p class="example-puj">{{ ex.puj }}</p>
             <p class="example-translation">{{ ex.translation }}</p>
           </div>
@@ -63,7 +63,7 @@ import { entriesApi } from '../../api/entries'
 import { searchApi } from '../../api/search'
 import { formatField, renderAnno, stripAnno, esc } from '../../composables/formatField'
 import { useSimplified } from '../../composables/useSimplified'
-const { simplified, t2s } = useSimplified()
+const { simplified, t2s, isDifferent } = useSimplified()
 
 const props = defineProps({ id: { type: [String, Number], required: true } })
 
@@ -84,7 +84,10 @@ const defTabs = computed(() => {
   const fmt = (val, orig) => {
     if (!val && !orig) return ''
     if (!orig) return esc(val || '')
-    return `${stripAnno(esc(orig))}<span class="orig">(${renderAnno(esc(val || ''))})</span>`
+    const stripped = stripAnno(esc(orig))
+    const revised = renderAnno(esc(val || ''))
+    const revisedText = revised.replace(/<[^>]*>/g, '').trim()
+    return revisedText ? `${stripped}<span class="rt-revised"><span class="revised-badge">校</span>${revised}</span>` : stripped
   }
   const fmtHan = (e) => fmt(e.han, e.han_orig)
   const fmtPuj = (e) => fmt(e.puj, e.puj_orig)

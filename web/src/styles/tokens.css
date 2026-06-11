@@ -126,7 +126,11 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-body); font
 .results-table tbody tr { transition: background 100ms; }
 .results-table tbody tr:hover { background: var(--surface); }
 .results-table tbody tr:last-child td { border-bottom: none; }
-.rt-simplified { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.rt-simplified { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+.simplified-badge { display: inline-flex; align-items: center; padding: 0 5px; border-radius: 3px; background: var(--surface-warm); color: var(--meta); font-family: var(--font-mono); font-size: 10px; font-weight: 400; line-height: 1.6; flex-shrink: 0; letter-spacing: 0.02em; }
+.revised-badge { display: inline-flex; align-items: center; padding: 0 5px; border-radius: 3px; background: var(--accent-soft); color: var(--accent); font-family: var(--font-mono); font-size: 10px; font-weight: 400; line-height: 1.6; flex-shrink: 0; letter-spacing: 0.02em; }
+.rt-revised { display: flex; font-size: 13px; color: var(--muted); margin-top: 2px; align-items: center; gap: 4px; }
+.entry-puj .rt-revised, .reading-value .rt-revised { display: inline-flex; font-size: inherit; margin-top: 0; }
 .rt-char { font-family: var(--font-body); font-size: 17px; font-weight: 400; color: var(--fg); max-width: 120px; overflow-wrap: break-word; }
 .rt-puj { font-family: var(--font-body); font-size: 13px; color: var(--fg-2); max-width: 160px; overflow-wrap: break-word; }
 .rt-dp { font-family: var(--font-mono); font-size: 12px; color: var(--muted); max-width: 120px; overflow-wrap: break-word; }
@@ -418,7 +422,7 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
 .src-link:hover { border-color: var(--fg-2); color: var(--fg); background: var(--surface); }
 .src-link-inline { font-size: 12px; color: var(--accent); margin-left: 8px; }
 .src-link-inline:hover { text-decoration: underline; }
-.entry-simplified { font-size: 20px; color: var(--muted); margin-top: 4px; }
+.entry-simplified { font-size: 20px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
 .orig {
   color: var(--muted);
   font-size: 0.7em;

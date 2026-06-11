@@ -73,10 +73,11 @@ actions:
 ### 2. useSimplified composable (`composables/useSimplified.js`)
 
 ```js
-// 暴露兩個東西
+// 暴露三個東西
 return {
-  simplified,  // ref<boolean>，是否簡體模式
-  t2s(text)    // 若 simplified && converter，返回轉換後文字；否則原樣返回
+  simplified,   // ref<boolean>，是否簡體模式
+  t2s(text),    // 若 simplified && converter，返回轉換後文字；否則原樣返回
+  isDifferent(text) // simplified 模式下轉換後與原文不同才返回 true
 }
 ```
 
@@ -131,25 +132,25 @@ return {
 
 「釋義」列對應數據中的 `en` 和 `mandarin` 欄位（英文或普通話釋義，含中文內容）。簡體模式開啟時，在繁體原文下方加一行簡體。
 
-**漢字欄**：在 `<td class="rt-char">` 內部，繁體下方加一行簡體：
+**漢字欄**：在 `<td class="rt-char">` 內部，繁體下方加一行簡體（僅當轉換後與原文不同時顯示）：
 ```html
 <td class="rt-char">
   <span v-html="formatField(entry.han, entry.han_orig)"></span>
-  <span v-if="simplified && entry.han" class="rt-simplified">{{ t2s(entry.han) }}</span>
+  <span v-if="isDifferent(entry.han)" class="rt-simplified">{{ t2s(entry.han) }}</span>
 </td>
 ```
 
-**釋義欄**：在 `<td class="rt-def">` 內部，繁體下方加一行簡體：
+**釋義欄**：在 `<td class="rt-def">` 內部，繁體下方加一行簡體（僅當轉換後與原文不同時顯示）：
 ```html
 <td class="rt-def">
   <span v-html="formatField(entry.en, entry.en_orig)"></span>
-  <span v-if="simplified && entry.en" class="rt-simplified">{{ t2s(stripHtml(entry.en)) }}</span>
+  <span v-if="isDifferent(entry.en)" class="rt-simplified">{{ t2s(entry.en) }}</span>
 </td>
 ```
 
 注意：`entry.en` 可能含 HTML 標記（來自 `formatField` 的原文註解），簡體行需要 strip HTML 後再轉換。
 
-**簡體行只在簡體模式開啟時顯示。**
+**簡體行只在簡體模式開啟且轉換結果與原文不同時顯示。**
 
 ### 6. 詞條詳情簡體行（EntryDetail.vue）
 

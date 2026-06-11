@@ -42,7 +42,7 @@
           <div v-for="group in filteredGroups" :key="group.source.id" class="source-group">
             <div class="source-group-head" @click="toggleCollapse(group.source.id)">
               <svg class="collapse-arrow" :class="{ collapsed: collapsedSources.has(group.source.id) }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-              <span class="source-group-title">{{ group.source.year ? group.source.year + '·' : '' }}{{ group.source.name_zh || group.source.name }}</span>
+              <span class="source-group-title">{{ group.source.year ? group.source.year + '·' : '' }}{{ t2s(group.source.name_zh || group.source.name) }}</span>
               <span class="source-group-count">{{ group.count }} {{ t2s('筆') }}</span>
             </div>
             <div v-show="!collapsedSources.has(group.source.id)">
@@ -52,13 +52,13 @@
                   <tr v-for="entry in group.entries" :key="entry.id">
                     <td class="rt-char">
                       <span v-html="formatField(entry.han, entry.han_orig)"></span>
-                      <span v-if="simplified && entry.han" class="rt-simplified">{{ t2s(entry.han) }}</span>
+                      <span v-if="isDifferent(entry.han)" class="rt-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.han) }}</span>
                     </td>
                     <td class="rt-puj" v-html="formatField(entry.puj, entry.puj_orig)"></td>
                     <td class="rt-dp">{{ entry.dp }}</td>
                     <td class="rt-def">
                       <span v-html="formatField(entry.en, entry.en_orig)"></span>
-                      <span v-if="simplified && entry.en" class="rt-simplified">{{ t2s(entry.en) }}</span>
+                      <span v-if="isDifferent(entry.en)" class="rt-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.en) }}</span>
                     </td>
                     <td class="rt-page">{{ entry.page_num ? `p. ${entry.page_num}` : '' }}</td>
                     <td class="rt-src">
@@ -96,7 +96,7 @@ import { useSearch } from '../../composables/useSearch'
 import { searchApi } from '../../api/search'
 import { formatField } from '../../composables/formatField'
 import { useSimplified } from '../../composables/useSimplified'
-const { simplified, t2s } = useSimplified()
+const { simplified, t2s, isDifferent } = useSimplified()
 
 const route = useRoute()
 const store = useSearchStore()
@@ -105,14 +105,14 @@ const { doSearch } = useSearch()
 const FIELD_ORDER = ['hanzi', 'puj', 'dp', 'zh', 'en', 'ja']
 const MUTEX = { puj: 'dp', dp: 'puj' }
 
-const placeholders = {
+const placeholders = computed(() => ({
   hanzi: t2s('例：食, 睇書'),
   puj: 'Lī: tsia̍h, thóiⁿ-tsṳ',
   dp: 'Li7: ziah8, toin2 ze1',
   zh: t2s('例：吃, 看書'),
   en: 'Ex. eat, read',
   ja: '例：食べる, 本を読む'
-}
+}))
 
 const queryRows = reactive([
   { field: 'hanzi', value: '' }
@@ -150,7 +150,7 @@ const groups = computed(() => {
 const total = computed(() => store.result?.total || 0)
 
 const filters = computed(() => {
-  const names = groups.value.map(g => `${g.source.year ? g.source.year + '·' : ''}${g.source.name_zh || g.source.name}`)
+  const names = groups.value.map(g => `${g.source.year ? g.source.year + '·' : ''}${t2s(g.source.name_zh || g.source.name)}`)
   return [t2s('全部來源'), ...names]
 })
 

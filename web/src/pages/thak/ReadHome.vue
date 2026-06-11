@@ -16,7 +16,7 @@
           <router-link v-for="s in filtered" :key="s.id" :to="{ name: 'SourceViewer', params: { id: s.id } }" class="dict-card">
             <div v-if="s.cover_url" class="dict-cover"><img :src="s.cover_url" :alt="s.name_zh || s.name" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);" /></div>
             <div class="dict-info">
-              <h3>{{ s.year }}·{{ s.name_zh ? `《${s.name_zh}》` : s.name }}</h3>
+              <h3>{{ s.year }}·{{ s.name_zh ? `《${t2s(s.name_zh)}》` : s.name }}</h3>
               <p class="dict-name-en">{{ s.name }}</p>
               <p class="meta-text">{{ s.author }}</p>
               <div class="dict-meta">
@@ -38,14 +38,14 @@ import { ref, computed, onMounted } from 'vue'
 import { sourcesApi } from '../../api/sources'
 import { useSimplified } from '../../composables/useSimplified'
 
-const { t2s } = useSimplified()
+const { simplified, t2s } = useSimplified()
 
 const activeCat = ref(0)
-const catTabs = [
+const catTabs = computed(() => [
   { key: 'all', label: t2s('全部') },
   { key: 'dictionary', label: t2s('辭書') },
   { key: 'textbook', label: t2s('教材') },
-]
+])
 
 const sources = ref([])
 const loading = ref(true)
@@ -61,7 +61,7 @@ onMounted(async () => {
 })
 
 const filtered = computed(() => {
-  const key = catTabs[activeCat.value].key
+  const key = catTabs.value[activeCat.value].key
   if (key === 'all') return sources.value
   return sources.value.filter(s => s.type === key)
 })
