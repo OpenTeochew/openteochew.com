@@ -132,15 +132,15 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-display); f
 .results-table tbody tr { transition: background 100ms; }
 .results-table tbody tr:hover { background: var(--surface); }
 .results-table tbody tr:last-child td { border-bottom: none; }
-.rt-simplified { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+.rt-simplified { display: block; font-size: 13px; color: var(--muted); margin-top: 2px; display: flex; align-items: center; gap: 4px; font-family: var(--font-body); }
 .simplified-badge { display: inline-flex; align-items: center; padding: 0 5px; border-radius: 3px; background: var(--surface-warm); color: var(--meta); font-family: var(--font-mono); font-size: 10px; font-weight: 400; line-height: 1.6; flex-shrink: 0; letter-spacing: 0.02em; }
 .revised-badge { display: inline-flex; align-items: center; padding: 0 5px; border-radius: 3px; background: var(--accent-soft); color: var(--accent); font-family: var(--font-mono); font-size: 10px; font-weight: 400; line-height: 1.6; flex-shrink: 0; letter-spacing: 0.02em; }
-.rt-revised { display: flex; font-size: 13px; color: var(--muted); margin-top: 2px; align-items: center; gap: 4px; }
+.rt-revised { display: flex; font-size: 13px; color: var(--muted); margin-top: 2px; align-items: center; gap: 4px; font-family: var(--font-body); }
 .entry-puj .rt-revised, .reading-value .rt-revised { display: inline-flex; font-size: inherit; margin-top: 0; }
-.rt-char { font-family: var(--font-body); font-size: 17px; font-weight: 400; color: var(--fg); max-width: 120px; overflow-wrap: break-word; }
-.rt-puj { font-family: var(--font-body); font-size: 13px; color: var(--fg-2); max-width: 160px; overflow-wrap: break-word; }
+.rt-char { font-family: "Iansui", var(--font-body); font-size: 17px; font-weight: 400; color: var(--fg); max-width: 120px; overflow-wrap: break-word; }
+.rt-puj { font-family: "Iansui", var(--font-body); font-size: 13px; color: var(--fg-2); max-width: 160px; overflow-wrap: break-word; }
 .rt-dp { font-family: var(--font-mono); font-size: 12px; color: var(--muted); max-width: 120px; overflow-wrap: break-word; }
-.rt-def { color: var(--fg-2); font-size: 13px; line-height: 1.45; max-width: 380px; }
+.rt-def { font-family: "Iansui", var(--font-body); color: var(--fg-2); font-size: 13px; line-height: 1.45; max-width: 380px; }
 .rt-page { font-family: var(--font-mono); font-size: 11px; color: var(--meta); white-space: nowrap; }
 .rt-audio { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 50%; color: var(--muted); transition: all 150ms; }
 .rt-audio:hover { border-color: var(--fg-2); color: var(--fg); }
@@ -164,7 +164,7 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-display); f
 .entry-header-inner { display: flex; align-items: flex-start; gap: 32px; flex-wrap: wrap; }
 .entry-char { font-family: var(--font-display); font-size: clamp(64px, 10vw, 96px); font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
 .entry-info { flex: 1; min-width: 240px; }
-.entry-puj { font-family: var(--font-body); font-size: clamp(24px, 3vw, 32px); color: var(--fg-2); margin-bottom: 12px; }
+.entry-puj { font-family: "Iansui", var(--font-body); font-size: clamp(24px, 3vw, 32px); color: var(--fg-2); margin-bottom: 12px; }
 .entry-readings { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
 .reading-row { display: flex; align-items: baseline; gap: 12px; }
 .reading-label { font-family: var(--font-mono); font-size: 12px; color: var(--meta); text-transform: uppercase; letter-spacing: 0.04em; min-width: 40px; }
@@ -428,7 +428,7 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
 .src-link:hover { border-color: var(--fg-2); color: var(--fg); background: var(--surface); }
 .src-link-inline { font-size: 12px; color: var(--accent); margin-left: 8px; }
 .src-link-inline:hover { text-decoration: underline; }
-.entry-simplified { font-size: 20px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+.entry-simplified { font-size: 20px; color: var(--muted); margin-top: 4px; display: flex; align-items: center; gap: 4px; font-family: var(--font-body); }
 .orig {
   color: var(--muted);
   font-size: 0.7em;
