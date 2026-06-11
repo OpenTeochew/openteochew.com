@@ -1,30 +1,103 @@
-# openteochew.com
+# OpenTeochew
 
-潮州話開放資料庫 OpenTeochew — 開源潮州話語言資源平台。
+**潮州話開放語言資源平台** — An open-source language resource platform for Teochew (潮州話).
 
-## 技術棧
+[openteochew.com](https://openteochew.com)
 
-| 層級 | 技術 |
-|------|------|
-| 前端 | Vue 3 + Vite + Vue Router + Pinia + Tailwind CSS |
-| 後端 | Hono + TypeScript + Cloudflare Workers |
-| 數據庫 | Cloudflare D1 (SQLite) |
-| 部署 | Cloudflare Workers + Assets |
+---
 
-## 開發
+## 關於 / About
 
-```bash
-cd web && npm install && npm run dev     # 前端
-cd backend && npm install && npm run dev # 後端
+OpenTeochew 匯集潮州話辭書、教材的詞條與語料，提供多條件搜索、原文掃描頁面瀏覽，所有資料標明出處，開放使用。支持繁簡中文切換。
+
+OpenTeochew aggregates entries and texts from Teochew dictionaries and textbooks, offering multi-field search, scanned page viewing, and open access to all sources with proper attribution. Supports Traditional/Simplified Chinese toggle.
+
+### 功能 / Features
+
+- **詞條搜索** — 按漢字、PUJ 白話字、DP 潮州話拼音、普通話、English、日本語多條件檢索，結果按來源分組顯示
+- **原文掃描** — 逐頁瀏覽字典原冊掃描影像，並附 OCR 文字（原文/校訂對照）
+- **語料閱讀** — Markdown 格式的潮州話語料文章，附目錄導航
+- **繁簡切換** — 全站 UI 文字與詞條漢字動態轉換為簡體中文
+- **開源數據** — 數據 CC0，代碼 MIT
+
+## 技術棧 / Tech Stack
+
+| Layer | Tech |
+|-------|------|
+| Frontend | Vue 3 + Vite 5 + Vue Router (hash mode) + Pinia |
+| CSS | Custom design system (CSS variables, `tokens.css`) |
+| Backend | Hono + TypeScript + Cloudflare Workers |
+| Database | Cloudflare D1 (SQLite) |
+| Deploy | Cloudflare Workers (custom domain: openteochew.com) |
+| Font | [Iansui](https://github.com/ButTaiwan/iansui) (Traditional Chinese) · Noto Sans SC (Simplified Chinese) |
+
+## 項目結構 / Project Structure
+
+```
+web/                  # Vue 3 前端
+  src/
+    pages/            # 頁面組件
+    components/       # TopNav
+    styles/tokens.css # 全站樣式（CSS 變量 + 響應式）
+    router/           # hash-based 路由
+    api/              # API client
+    stores/           # Pinia stores (search, locale)
+    composables/      # useSearch, useSimplified, formatField
+backend/              # Hono + Cloudflare Workers
+  src/
+    index.tsx         # /api/v1 路由 + SPA fallback
+    server/
+      routes/         # search, entries, sources, articles
+      services/       # search, entries
+      schemas/        # Zod 驗證
+scripts/              # SQL schema + seed + 數據同步
+  full-sync.py        # 全量同步 CSV + OCR pages → 本地 D1
 ```
 
-## 構建
+## 開發 / Development
 
 ```bash
-./build.sh
+# 前端
+cd web && npm install && npm run dev
+
+# 後端（自動初始化本地 SQLite）
+./dev.sh
+
+# 重建本地數據庫
+HW="$HOME/Documents/Code/hokkien-writing/dataset" ./init_dev_db.sh
+
+# 同步數據
+./sync_source.sh --local --source-id 1
 ```
 
-## 文檔
+## 構建與部署 / Build & Deploy
 
-- [設計規範](docs/design/design-spec.md)
-- [系統架構](docs/design/architecture.md)
+```bash
+./build.sh      # Build frontend → copy to backend/public
+./deploy.sh     # Build + deploy to Cloudflare Workers
+```
+
+## 數據來源 / Data Sources
+
+詞條與語料來自以下公開辭書與教材（掃描頁源自維基文庫）：
+
+- Williams, D. (1883). *A Dictionary of the Amoy Vernacular*
+- Giles, H. (1877). *A Dictionary of Colloquial Idioms in the Amoy Dialect*
+- Lim, C. (1934). *潮汕方言十八音* (Chaozhou Dialect 18 Sounds)
+- Dechamps, R. (1886). *Vocabulaire Français-Dialecte Swatow*
+- 更多來源持續收錄中
+
+## 貢獻 / Contributing
+
+歡迎提交 Issue 和 Pull Request。開發前請閱 [AGENTS.md](AGENTS.md) 了解項目約定。
+
+Contributions are welcome via Issues and Pull Requests. Please read [AGENTS.md](AGENTS.md) for project conventions before development.
+
+## 授權 / License
+
+- **代碼**：[MIT](LICENSE)
+- **數據**：CC0
+
+---
+
+Built with care for the Teochew language community.
