@@ -6,24 +6,24 @@
       <div class="foot-left">
         <img class="foot-logo" src="/logo.jpg" alt="OpenTeochew" />
         <span class="foot-links">
-          相輔：<a href="https://github.com/OpenTeochew" target="_blank" rel="noopener">GitHub</a>
+          {{ locale.t2s('相輔') }}：<a href="https://github.com/OpenTeochew" target="_blank" rel="noopener">GitHub</a>
         </span>
         <span class="foot-links">
-          聯絡：<a href="mailto:contact@openteochew.com">contact@openteochew.com</a>
+          {{ locale.t2s('聯絡') }}：<a href="mailto:contact@openteochew.com">contact@openteochew.com</a>
         </span>
         <span class="foot-links">
-          <span>&copy; 2026 OpenTeochew · CC0 數據 · MIT 代碼</span>
+          <span>&copy; 2026 OpenTeochew · CC0 {{ locale.t2s('數據') }} · MIT {{ locale.t2s('代碼') }}</span>
         </span>
       </div>
       <div class="foot-right">
         <div class="foot-stats">
           <div class="foot-stat">
             <span class="foot-stat-num">{{ totalEntries || '—' }}</span>
-            <span class="foot-stat-label">收錄詞條</span>
+            <span class="foot-stat-label">{{ locale.t2s('收錄詞條') }}</span>
           </div>
           <div class="foot-stat">
             <span class="foot-stat-num">{{ sourceCount || '—' }}</span>
-            <span class="foot-stat-label">資料來源</span>
+            <span class="foot-stat-label">{{ locale.t2s('資料來源') }}</span>
           </div>
         </div>
       </div>
@@ -35,11 +35,14 @@
 import { ref, onMounted } from 'vue'
 import TopNav from './components/TopNav.vue'
 import { sourcesApi } from './api/sources'
+import { useLocaleStore } from './stores/locale'
 
 const totalEntries = ref(0)
 const sourceCount = ref(0)
+const locale = useLocaleStore()
 
 onMounted(async () => {
+  locale.init()
   try {
     const sources = await sourcesApi.getAll()
     sourceCount.value = sources.length
