@@ -1,5 +1,5 @@
 <script setup>
-import { useSimplified } from '../../composables/useSimplified'
+import { useSimplified } from '../composables/useSimplified'
 const { t2s } = useSimplified()
 </script>
 
