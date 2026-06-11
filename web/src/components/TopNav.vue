@@ -6,8 +6,8 @@
         <span class="logo-sub">{{ locale.t2s('潮州話開放資料庫') }}</span>
       </router-link>
       <nav class="nav-tabs">
-        <router-link to="/" class="nav-tab" :class="{ active: isChheActive }">Chhê {{ locale.t2s('查') }}</router-link>
-        <router-link to="/thak" class="nav-tab" :class="{ active: isThakActive }">Tha̍k {{ locale.t2s('讀') }}</router-link>
+        <router-link to="/" class="nav-tab" :class="{ active: isChheActive }">Chhê <span class="nav-tab-cn">{{ locale.t2s('查') }}</span></router-link>
+        <router-link to="/thak" class="nav-tab" :class="{ active: isThakActive }">Tha̍k <span class="nav-tab-cn">{{ locale.t2s('讀') }}</span></router-link>
         <router-link to="/about" class="nav-tab" :class="{ active: isAboutActive }">{{ locale.t2s('關於') }}</router-link>
       </nav>
       <button class="lang-toggle" :class="{ active: locale.simplified }" @click="locale.toggle()" aria-label="切换简体">

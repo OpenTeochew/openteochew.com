@@ -13,12 +13,17 @@ export const useLocaleStore = defineStore('locale', () => {
     converter.value = OpenCC.Converter({ from: 'tw', to: 'cn' })
   }
 
+  function applyFont() {
+    document.documentElement.classList.toggle('lang-simplified', simplified.value)
+  }
+
   async function init() {
     const pref = localStorage.getItem(STORAGE_KEY)
     if (pref === 'simplified') {
       simplified.value = true
       await loadConverter()
     }
+    applyFont()
   }
 
   async function toggle() {
@@ -35,6 +40,7 @@ export const useLocaleStore = defineStore('locale', () => {
     } else {
       document.title = document.documentElement.dataset.origTitle || document.title
     }
+    applyFont()
   }
 
   function t2s(text) {

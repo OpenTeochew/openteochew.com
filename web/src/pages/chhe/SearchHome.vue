@@ -39,7 +39,7 @@
           <li v-for="(s, i) in topSources" :key="s.id">
             <span class="source-idx">{{ i + 1 }}.</span>
             <router-link :to="{ name: 'SourceViewer', params: { id: s.id } }">
-              {{ s.year ? s.year + ', ' : '' }}<em>{{ s.name }}</em>{{ s.name_zh ? ' (' + t2s(s.name_zh) + ')' : '' }}{{ s.author ? ', ' + s.author : '' }} <span v-if="s.total_entries" class="source-count">{{ s.total_entries.toLocaleString() }} {{ t2s('項') }}</span>
+              {{ s.year ? s.year + ', ' : '' }}<em>{{ s.name }}</em>{{ s.name_zh ? ' (' + t2s(s.name_zh) + ')' : '' }}{{ s.author ? ', ' + s.author : '' }} <span v-if="s.total_entries" class="source-count">{{ s.total_entries.toLocaleString() }} {{ t2s('詞條') }}</span>
             </router-link>
           </li>
         </ul>
