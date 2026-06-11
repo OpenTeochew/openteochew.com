@@ -1,0 +1,38 @@
+import { ref } from 'vue'
+import { defineStore } from 'pinia'
+
+const STORAGE_KEY = 'openteochew-locale'
+
+export const useLocaleStore = defineStore('locale', () => {
+  const simplified = ref(false)
+  const converter = ref(null)
+
+  async function loadConverter() {
+    if (converter.value) return
+    const OpenCC = await import('opencc-js')
+    converter.value = OpenCC.Converter({ from: 'tw', to: 'cn' })
+  }
+
+  async function init() {
+    const pref = localStorage.getItem(STORAGE_KEY)
+    if (pref === 'simplified') {
+      simplified.value = true
+      await loadConverter()
+    }
+  }
+
+  async function toggle() {
+    simplified.value = !simplified.value
+    localStorage.setItem(STORAGE_KEY, simplified.value ? 'simplified' : 'traditional')
+    if (simplified.value && !converter.value) {
+      await loadConverter()
+    }
+  }
+
+  function t2s(text) {
+    if (!simplified.value || !converter.value || !text) return text
+    return converter.value(text)
+  }
+
+  return { simplified, converter, init, toggle, t2s }
+})
