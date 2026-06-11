@@ -329,11 +329,11 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
 .query-select:focus { border-color: var(--accent); }
 .query-input {
   flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius);
-  background: var(--surface); font-family: var(--font-body); font-size: 15px; color: var(--fg);
+  background: var(--surface); font-family: "Iansui", var(--font-body); font-size: 15px; color: var(--fg);
   outline: none; transition: border-color 200ms, box-shadow 200ms;
 }
 .query-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.query-input::placeholder { color: var(--meta); font-family: var(--font-body); }
+.query-input::placeholder { color: var(--meta); font-family: "Iansui", var(--font-body); }
 .query-remove {
   width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--border);
   border-radius: 6px; color: var(--muted); font-size: 16px; transition: all 150ms; flex-shrink: 0;
