@@ -60,7 +60,7 @@
                       <span v-html="formatField(entry.en, entry.en_orig)"></span>
                       <span v-if="isDifferent(entry.en)" class="rt-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.en) }}</span>
                     </td>
-                    <td class="rt-page">{{ entry.page_num ? `p. ${entry.page_num}` : '' }}</td>
+                    <td class="rt-page">{{ entry.page_num ? `p.${entry.page_num}` : '' }}</td>
                     <td class="rt-src">
                       <router-link
                         v-if="entry.page_num"
