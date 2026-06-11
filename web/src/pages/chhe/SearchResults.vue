@@ -47,7 +47,7 @@
             </div>
             <div v-show="!collapsedSources.has(group.source.id)">
               <table class="results-table">
-                <thead><tr><th>{{ t2s('漢字') }}</th><th>PUJ</th><th>DP</th><th>{{ t2s('釋義') }}</th><th>{{ t2s('頁碼') }}</th><th>{{ t2s('原冊') }}</th></tr></thead>
+                <thead><tr><th>{{ t2s('漢字') }}</th><th>PUJ</th><th v-if="group.hasDp">DP</th><th>{{ t2s('釋義') }}</th><th>{{ t2s('頁碼') }}</th><th>{{ t2s('原冊') }}</th></tr></thead>
                 <tbody>
                   <tr v-for="entry in group.entries" :key="entry.id">
                     <td class="rt-char">
@@ -55,7 +55,7 @@
                       <span v-if="isDifferent(entry.han)" class="rt-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.han) }}</span>
                     </td>
                     <td class="rt-puj" v-html="formatField(entry.puj, entry.puj_orig)"></td>
-                    <td class="rt-dp">{{ entry.dp }}</td>
+                    <td v-if="group.hasDp" class="rt-dp">{{ entry.dp }}</td>
                     <td class="rt-def">
                       <span v-html="formatField(entry.en, entry.en_orig)"></span>
                       <span v-if="isDifferent(entry.en)" class="rt-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.en) }}</span>
@@ -144,7 +144,8 @@ const groups = computed(() => {
     const extra = groupMoreData[g.source.id] || []
     const allEntries = [...g.entries, ...extra]
     const hasMore = allEntries.length < g.count
-    return { ...g, entries: allEntries, hasMore }
+    const hasDp = allEntries.some(e => e.dp)
+    return { ...g, entries: allEntries, hasMore, hasDp }
   }).sort((a, b) => (a.source.year || '').localeCompare(b.source.year || ''))
 })
 const total = computed(() => store.result?.total || 0)
