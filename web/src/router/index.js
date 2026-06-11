@@ -56,8 +56,22 @@ const titles = {
   About: '關於 — 潮州話開放資料庫'
 }
 
-router.afterEach((to) => {
-  document.title = titles[to.name] || '潮州話開放資料庫 OpenTeochew'
+const t2sSimple = (() => {
+  let converter = null
+  return async (text) => {
+    if (localStorage.getItem('openteochew-locale') !== 'simplified') return text
+    if (!converter) {
+      const OpenCC = await import('opencc-js')
+      converter = OpenCC.Converter({ from: 'tw', to: 'cn' })
+    }
+    return converter(text)
+  }
+})()
+
+router.afterEach(async (to) => {
+  let title = titles[to.name] || '潮州話開放資料庫 OpenTeochew'
+  title = await t2sSimple(title)
+  document.title = title
 })
 
 export default router

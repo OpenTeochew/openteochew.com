@@ -27,6 +27,14 @@ export const useLocaleStore = defineStore('locale', () => {
     if (simplified.value && !converter.value) {
       await loadConverter()
     }
+    if (simplified.value) {
+      if (!document.documentElement.dataset.origTitle) {
+        document.documentElement.dataset.origTitle = document.title
+      }
+      document.title = t2s(document.documentElement.dataset.origTitle)
+    } else {
+      document.title = document.documentElement.dataset.origTitle || document.title
+    }
   }
 
   function t2s(text) {
