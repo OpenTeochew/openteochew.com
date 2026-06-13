@@ -57,7 +57,7 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-display); f
 .foot-logo { height: 96px; width: 96px; margin-top: -8px; }
 .foot-left { display: flex; flex-direction: column; gap: 2px; }
 .foot-links { display: flex; font-size: 12px;}
-.foot-support-list { list-style: disc; padding-left: 16px; margin: 2px 0 0 0; color: var(--muted); display: block; }
+.foot-support-list { list-style: disc; padding-left: 16px; margin: 2px 0 0 0; color: var(--muted); display: block; font-size: 11px; }
 .foot-right { flex: 1; display: flex; justify-content: flex-end; }
 .foot-stats { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
 .foot-stat { display: flex; flex-direction: column; align-items: flex-end; }
@@ -74,6 +74,7 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; font-family: var(--font-display); f
 .about-section h2 { font-size: 22px; margin-bottom: 24px; }
 .about-list { list-style: disc; padding-left: 24px; margin: 0; display: flex; flex-direction: column; gap: 16px; }
 .about-list li .team-name { font-family: "Iansui", var(--font-body); font-size: 17px; font-weight: 400; }
+html.lang-simplified .about-list li .team-name { font-family: var(--font-body); }
 .about-list li strong { font-weight: 400; font-size: 17px; }
 .about-list .team-role { color: var(--muted); font-size: 13px; margin-left: 8px; }
 .about-list li p { color: var(--muted); font-size: 15px; margin-top: 4px; }
