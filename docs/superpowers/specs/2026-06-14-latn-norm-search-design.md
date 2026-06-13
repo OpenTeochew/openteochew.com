@@ -46,19 +46,71 @@ CREATE INDEX IF NOT EXISTS idx_entries_latn_norm ON entries(latn_norm);
 
 `puj` 和 `dp` 欄位 + 索引已存在於 `001_initial_schema.sql`，無需改動。
 
-### 2. 資料管線
+#### 既有數據 backfill
 
-`scripts/full-sync.py` 的 `sync_entries()` 新增寫入 `latn_norm` 和 `dp`。
+加欄位後既有 entries 的 `latn_norm` 全為 NULL。Backfill 方式：對每個 source 執行一次 `--entries-only` 全量同步。sync-source.py 的 diff 邏輯會偵測到 `latn_norm` 差異（DB 為 NULL，CSV 有值），將所有 entry 視為 modified 並 UPDATE。
 
-dataset 的 `teochew.csv` 表頭已包含 `latn_norm, puj, dp, han, ...`，直接從 CSV 讀取對應欄位即可，無需新增轉換步驟。
+同步前須確保 dataset 是最新代碼且已構建（生成含 `latn_norm` 的 CSV）：
 
-```python
-# full-sync.py sync_entries() 中的 INSERT 語句改為：
-INSERT INTO entries (source_id, section_id, han, puj, dp, latn_norm, en, han_orig, puj_orig, en_orig, page_num, sort_order)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+```bash
+# 1. 更新 dataset
+cd ../dataset
+git checkout main && git pull
+bash build.sh
+cd ../openteochew.com
+
+# 2. local dev backfill
+./sync_source.sh --local --source-id 1 --entries-only
+./sync_source.sh --local --source-id 2 --entries-only
+./sync_source.sh --local --source-id 3 --entries-only
+
+# 3. remote production backfill
+./sync_source.sh --remote --source-id 1 --entries-only
+./sync_source.sh --remote --source-id 2 --entries-only
+./sync_source.sh --remote --source-id 3 --entries-only
 ```
 
-同時更新 `scripts/lib/sql-gen.mjs` 的 `generateSql()` 以包含新欄位。
+無需額外 migration 腳本——重用既有 sync 流程，確保轉換邏輯一致。
+
+### 2. 資料管線
+
+主要 sync 腳本是 `scripts/sync-source.py`（增量同步，含 local + remote）。資料來源是 dataset 的書籍 CSV（`dataset/export/books/*.csv`），欄位為：`puj, puj_orig, poj, poj_orig, han, han_orig, en, en_orig, zh_TW, zh_CN, source, page_num`。
+
+**CSV 沒有 `latn_norm`**——需在 sync 時用 dataset 的 latn 轉換器生成。現有書籍只有 `puj`，但未來可能有只有 `dp` 的書籍，因此從兩者擇一生成：
+
+```python
+import sys
+sys.path.insert(0, str(hw_path))  # dataset 根目錄
+from scripts.latn import create_translator
+
+puj_to_norm = create_translator("PUJ", "LATN_NORM")
+dp_to_norm = create_translator("DP", "LATN_NORM")
+
+for row in csv_rows:
+    puj = row.get("puj")
+    dp = row.get("dp")
+    if puj:
+        row["latn_norm"] = puj_to_norm.translate(puj)
+    elif dp:
+        row["latn_norm"] = dp_to_norm.translate(dp)
+```
+
+`dp` 欄位：CSV 有就寫入，沒有就 NULL（不從 `puj` 生成）。
+
+需更新的 `sync-source.py` 函數：
+
+| 函數 | 改動 |
+|------|------|
+| `parse_csv()` | 對每行從 `puj` 或 `dp` 生成 `latn_norm` |
+| `generate_clean_entries_sql()` | INSERT 加入 `latn_norm, dp` |
+| `generate_entries_sql()` | INSERT + UPDATE 加入 `latn_norm, dp` |
+| `db_entries_by_page()` | SELECT 加入 `latn_norm, dp`（供 diff 比對） |
+| `db_entries_remote()` | 同上 |
+| `MATCH_FIELDS` | 加入 `("latn_norm", 2.0)` |
+
+`scripts/lib/sql-gen.mjs` 的 `generateSql()` 也需加入新欄位（此檔案被 `sync-csv.py` 使用）。
+
+`scripts/full-sync.py` 是舊的全量同步腳本，一併更新 INSERT 語句以保持一致。
 
 ### 3. 標準化函數（TypeScript）
 
@@ -151,6 +203,8 @@ WHERE 條件:
   (latn_norm LIKE '%sur1%' OR latn_norm LIKE '%se1%' OR dp LIKE '%se1%')
 ```
 
+`dp LIKE` 在 `dp` 為 NULL 時不影響結果（LIKE 對 NULL 返回 NULL，等同 false）。未來有 `dp` 資料的書籍匯入後自動生效。
+
 #### 排序（匹配度優先）
 
 在 `ORDER BY` 前加 `CASE WHEN` 分級。tier 數字越小越優先：
@@ -168,7 +222,7 @@ ORDER BY
   source_id, sort_order
 ```
 
-DP 查詢同理，把 `puj` 換成 `dp`。多候選時取最低 tier。
+DP 查詢的 tier 結構相同，tier 3 為 `dp LIKE`（`dp` 為 NULL 時自動跳過）。多候選時取最低 tier。
 
 #### primaryField 調整
 
@@ -181,17 +235,7 @@ DP 查詢同理，把 `puj` 換成 `dp`。多候選時取最低 tier。
 
 ### 5. 前端
 
-`SearchHome.vue` 已有 PUJ 和 DP 選項，無需結構改動。
-
-placeholders 更新為鍵盤體範例：
-
-```javascript
-placeholders = {
-  puj: '例: tsa5、chin5',
-  dp: '例: zang1、bang5',
-  // ...
-}
-```
+無需改動。`SearchHome.vue` 已有 PUJ 和 DP 選項，placeholders 保持不變。
 
 ### 6. 不在範圍內
 
