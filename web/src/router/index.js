@@ -38,6 +38,11 @@ const routes = [
     path: '/about',
     name: 'About',
     component: () => import('../pages/AboutPage.vue')
+  },
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: () => import('../pages/PrivacyPage.vue')
   }
 ]
 
@@ -53,7 +58,8 @@ const titles = {
   ReadHome: '讀 Tha̍k — 潮州話開放資料庫',
   ArticleReader: '閱讀 — 潮州話開放資料庫',
   SourceViewer: '來源 — 潮州話開放資料庫',
-  About: '關於 — 潮州話開放資料庫'
+  About: '關於 — 潮州話開放資料庫',
+  Privacy: '隱私條款 — 潮州話開放資料庫'
 }
 
 const t2sSimple = (() => {
