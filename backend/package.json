@@ -5,7 +5,9 @@
     "dev": "npx wrangler dev",
     "build": "npx wrangler build",
     "deploy": "npx wrangler deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.5",
@@ -19,6 +21,7 @@
     "@types/node": "^25.5.0",
     "typescript": "^5.9.3",
     "vite": "^6.3.5",
+    "vitest": "^4.1.8",
     "wrangler": "^4.17.0"
   }
 }

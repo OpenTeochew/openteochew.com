@@ -46,6 +46,7 @@ MATCH_FIELDS = [
     ("puj_orig", 2.0),
     ("en", 2.0),
     ("en_orig", 2.0),
+    ("latn_norm", 2.0),
 ]
 
 
@@ -95,7 +96,7 @@ def section_subquery(source_id, title):
             f"AND title = '{sql_escape(title)}' LIMIT 1)")
 
 
-def parse_csv(csv_path):
+def parse_csv(csv_path, hw_path=None):
     rows = []
     with open(csv_path, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
@@ -103,6 +104,20 @@ def parse_csv(csv_path):
             page_num = row.get("page_num", "").strip()
             row["_page_num"] = int(page_num) if page_num else None
             rows.append(row)
+
+    if hw_path:
+        sys.path.insert(0, str(hw_path))
+        from scripts.latn import create_translator
+        puj_to_norm = create_translator("PUJ", "LATN_NORM")
+        dp_to_norm = create_translator("DP", "LATN_NORM")
+        for row in rows:
+            puj = row.get("puj")
+            dp = row.get("dp")
+            if puj:
+                row["latn_norm"] = puj_to_norm.translate(puj)
+            elif dp:
+                row["latn_norm"] = dp_to_norm.translate(dp)
+
     return rows
 
 
@@ -298,7 +313,7 @@ def db_entries_by_page(cur, source_id, page_nums=None):
         placeholders = ",".join("?" * len(page_nums))
         cur.execute(
             f"SELECT e.id, e.han, e.puj, e.en, e.han_orig, e.puj_orig, e.en_orig, "
-            f"e.page_num, s.title "
+            f"e.latn_norm, e.page_num, s.title "
             f"FROM entries e LEFT JOIN sections s ON e.section_id = s.id "
             f"WHERE e.source_id = ? AND e.page_num IN ({placeholders})",
             (source_id, *page_nums),
@@ -306,7 +321,7 @@ def db_entries_by_page(cur, source_id, page_nums=None):
     else:
         cur.execute(
             "SELECT e.id, e.han, e.puj, e.en, e.han_orig, e.puj_orig, e.en_orig, "
-            "e.page_num, s.title "
+            "e.latn_norm, e.page_num, s.title "
             "FROM entries e LEFT JOIN sections s ON e.section_id = s.id "
             "WHERE e.source_id = ?",
             (source_id,),
@@ -322,8 +337,9 @@ def db_entries_by_page(cur, source_id, page_nums=None):
             "han_orig": r[4] or "",
             "puj_orig": r[5] or "",
             "en_orig": r[6] or "",
-            "_page_num": r[7],
-            "_section": r[8] or "",
+            "latn_norm": r[7] or "",
+            "_page_num": r[8],
+            "_section": r[9] or "",
         })
     return rows
 
@@ -361,9 +377,10 @@ def generate_clean_entries_sql(source_id, csv_rows):
         title = csv_row.get("_section")
         stmts.append(
             f"INSERT INTO entries "
-            f"(source_id, section_id, han, puj, en, han_orig, puj_orig, en_orig, page_num, sort_order) "
+            f"(source_id, section_id, han, puj, dp, latn_norm, en, han_orig, puj_orig, en_orig, page_num, sort_order) "
             f"VALUES ({source_id}, {section_subquery(source_id, title)}, "
             f"{sql_val(csv_row.get('han'))}, {sql_val(csv_row.get('puj'))}, "
+            f"{sql_val(csv_row.get('dp'))}, {sql_val(csv_row.get('latn_norm'))}, "
             f"{sql_val(csv_row.get('en'))}, {sql_val(csv_row.get('han_orig'))}, "
             f"{sql_val(csv_row.get('puj_orig'))}, {sql_val(csv_row.get('en_orig'))}, "
             f"{sql_num(csv_row.get('page_num'))}, 0);"
@@ -396,9 +413,10 @@ def generate_entries_sql(source_id, inserts, updates, deletes):
         title = csv_row.get("_section")
         stmts.append(
             f"INSERT INTO entries "
-            f"(source_id, section_id, han, puj, en, han_orig, puj_orig, en_orig, page_num, sort_order) "
+            f"(source_id, section_id, han, puj, dp, latn_norm, en, han_orig, puj_orig, en_orig, page_num, sort_order) "
             f"VALUES ({source_id}, {section_subquery(source_id, title)}, "
             f"{sql_val(csv_row.get('han'))}, {sql_val(csv_row.get('puj'))}, "
+            f"{sql_val(csv_row.get('dp'))}, {sql_val(csv_row.get('latn_norm'))}, "
             f"{sql_val(csv_row.get('en'))}, {sql_val(csv_row.get('han_orig'))}, "
             f"{sql_val(csv_row.get('puj_orig'))}, {sql_val(csv_row.get('en_orig'))}, "
             f"{sql_num(csv_row.get('page_num'))}, 0);"
@@ -410,6 +428,8 @@ def generate_entries_sql(source_id, inserts, updates, deletes):
             f"UPDATE entries SET "
             f"han = {sql_val(csv_row.get('han'))}, "
             f"puj = {sql_val(csv_row.get('puj'))}, "
+            f"dp = {sql_val(csv_row.get('dp'))}, "
+            f"latn_norm = {sql_val(csv_row.get('latn_norm'))}, "
             f"en = {sql_val(csv_row.get('en'))}, "
             f"han_orig = {sql_val(csv_row.get('han_orig'))}, "
             f"puj_orig = {sql_val(csv_row.get('puj_orig'))}, "
@@ -499,8 +519,8 @@ def sync_pages_phase(cur, source_id, md_path, slug):
     return changed_page_nums, stmts
 
 
-def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold):
-    csv_rows = parse_csv(csv_path)
+def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold, hw_path=None):
+    csv_rows = parse_csv(csv_path, hw_path=hw_path)
     print(f"  CSV: {len(csv_rows)} rows")
 
     if changed_page_nums is not None:
@@ -563,7 +583,7 @@ def db_entries_remote(source_id, page_nums=None):
         where = ""
     sql = (
         "SELECT e.id, e.han, e.puj, e.en, e.han_orig, e.puj_orig, e.en_orig, "
-        "e.page_num, s.title as section_title "
+        "e.latn_norm, e.page_num, s.title as section_title "
         "FROM entries e LEFT JOIN sections s ON e.section_id = s.id "
         f"WHERE e.source_id = {source_id} {where};"
     )
@@ -578,6 +598,7 @@ def db_entries_remote(source_id, page_nums=None):
             "han_orig": r.get("han_orig") or "",
             "puj_orig": r.get("puj_orig") or "",
             "en_orig": r.get("en_orig") or "",
+            "latn_norm": r.get("latn_norm") or "",
             "_page_num": r.get("page_num"),
             "_section": r.get("section_title") or "",
         })
@@ -635,7 +656,7 @@ def main():
         if not args.pages_only:
             target_pages = None if args.entries_only else changed_page_nums
             if target_pages is not None or args.entries_only:
-                csv_rows = parse_csv(csv_path)
+                csv_rows = parse_csv(csv_path, hw_path=str(hw))
                 db_rows = db_entries_remote(args.source_id, target_pages)
                 if len(db_rows) >= CLEAN_SYNC_THRESHOLD:
                     scoped_csv = csv_rows if target_pages is None else [
@@ -702,7 +723,8 @@ def main():
 
             if entries_changed is not None or args.entries_only:
                 entries_stmts = sync_entries_phase(
-                    cur, args.source_id, csv_path, entries_changed, args.match_threshold
+                    cur, args.source_id, csv_path, entries_changed, args.match_threshold,
+                    hw_path=str(hw),
                 )
                 all_stmts.extend(entries_stmts)
 
