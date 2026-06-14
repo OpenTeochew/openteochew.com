@@ -1,4 +1,5 @@
 import OpenCC from 'opencc-js'
+import { normalizeToLatnNorm } from './normalize'
 
 const s2t = OpenCC.Converter({ from: 'cn', to: 'tw' })
 
@@ -37,8 +38,20 @@ export async function searchEntries(
       values.push(`%${q_han}%`, `%${q_han}%`)
     }
   }
-  if (params.q_puj) { conditions.push('(e.puj LIKE ? OR e.puj_orig LIKE ?)'); values.push(`%${params.q_puj}%`, `%${params.q_puj}%`) }
-  if (params.q_dp) { conditions.push('e.dp LIKE ?'); values.push(`%${params.q_dp}%`) }
+  if (params.q_puj) {
+    const candidates = normalizeToLatnNorm(params.q_puj, 'puj')
+    const latnConds = candidates.map(() => 'e.latn_norm LIKE ?')
+    const latnVals = candidates.map((c) => `%${c}%`)
+    conditions.push(`(${latnConds.join(' OR ')} OR e.puj LIKE ? OR e.puj_orig LIKE ?)`)
+    values.push(...latnVals, `%${params.q_puj}%`, `%${params.q_puj}%`)
+  }
+  if (params.q_dp) {
+    const candidates = normalizeToLatnNorm(params.q_dp, 'dp')
+    const latnConds = candidates.map(() => 'e.latn_norm LIKE ?')
+    const latnVals = candidates.map((c) => `%${c}%`)
+    conditions.push(`(${latnConds.join(' OR ')} OR e.dp LIKE ?)`)
+    values.push(...latnVals, `%${params.q_dp}%`)
+  }
   if (params.q_en) { conditions.push('(e.en LIKE ? OR e.en_orig LIKE ?)'); values.push(`%${params.q_en}%`, `%${params.q_en}%`) }
   if (q_mandarin) {
     if (origMandarin !== q_mandarin) {
@@ -74,18 +87,47 @@ export async function searchEntries(
   }
 
   const primaryField = (q_han && 'e.han')
-    || (params.q_puj && 'e.puj')
-    || (params.q_dp && 'e.dp')
+    || (params.q_puj && 'e.latn_norm')
+    || (params.q_dp && 'e.latn_norm')
     || (params.q_en && 'e.en')
     || (q_mandarin && 'e.mandarin')
     || (params.q_ja && 'e.ja')
     || null
 
+  const latnCandidates = params.q_puj
+    ? normalizeToLatnNorm(params.q_puj, 'puj')
+    : params.q_dp
+      ? normalizeToLatnNorm(params.q_dp, 'dp')
+      : []
+
+  const latnRawField = params.q_puj ? 'e.puj' : params.q_dp ? 'e.dp' : null
+  const latnRawInput = params.q_puj ?? params.q_dp ?? ''
+
+  let tierExpr = '0'
+  if (latnCandidates.length > 0 && latnRawField) {
+    const esc = (s: string) => s.replace(/[%_\\']/g, '\\$&')
+    const parts: string[] = []
+    for (const c of latnCandidates) {
+      parts.push(`e.latn_norm = '${esc(c)}'`)
+    }
+    const exact = parts.join(' OR ')
+
+    const prefixParts = latnCandidates.map((c) => `e.latn_norm LIKE '${esc(c)}%' ESCAPE '\\'`)
+    const prefix = prefixParts.join(' OR ')
+
+    const subParts = latnCandidates.map((c) => `e.latn_norm LIKE '%${esc(c)}%' ESCAPE '\\'`)
+    const sub = subParts.join(' OR ')
+
+    tierExpr = `CASE WHEN ${exact} THEN 0 WHEN ${prefix} THEN 1 WHEN ${sub} THEN 2 WHEN ${latnRawField} LIKE '%${esc(latnRawInput)}%' ESCAPE '\\' THEN 3 ELSE 4 END`
+  }
+
   const boostParts: string[] = []
-  if (origHan && origHan !== q_han && primaryField) {
+  if (tierExpr !== '0') {
+    boostParts.push(tierExpr)
+  } else if (origHan && origHan !== q_han && primaryField) {
     boostParts.push(`CASE WHEN ${primaryField} LIKE '%${escLike(origHan)}%' ESCAPE '\\' THEN 0 ELSE 1 END`)
   }
-  if (primaryField) boostParts.push(`LENGTH(${primaryField})`)
+  if (primaryField) boostParts.push(`LENGTH(COALESCE(${primaryField}, ''))`)
   const relevanceOrder = boostParts.length > 0 ? boostParts.join(', ') : '0'
 
   const offset = (params.page - 1) * params.limit
