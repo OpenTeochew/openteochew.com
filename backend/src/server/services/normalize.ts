@@ -46,11 +46,9 @@ function normalizeDp(input: string): string[] {
 }
 
 function normalizeDpSyllable(syllable: string): string[] {
-  const toneMatch = syllable.match(/^(\D*?)([1-8])$/)
-  if (!toneMatch) return [syllable]
-
-  const base = toneMatch[1]
-  const tone = toneMatch[2]
+  const toneMatch = syllable.match(/^(.*?)([1-8])$/)
+  const base = toneMatch ? toneMatch[1] : syllable
+  const tone = toneMatch ? toneMatch[2] : ''
 
   let initial = ''
   let rest = base

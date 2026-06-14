@@ -82,4 +82,10 @@ describe('normalizeToLatnNorm — DP', () => {
     expect(normalizeToLatnNorm('mang5', 'dp')).toEqual(['mang5'])
     expect(normalizeToLatnNorm('sang5', 'dp')).toEqual(['sang5'])
   })
+
+  it('normalizes without tone number', () => {
+    expect(normalizeToLatnNorm('gong', 'dp')).toEqual(['kong'])
+    expect(normalizeToLatnNorm('bang', 'dp')).toEqual(['pang'])
+    expect(normalizeToLatnNorm('zab', 'dp')).toEqual(['chap'])
+  })
 })
