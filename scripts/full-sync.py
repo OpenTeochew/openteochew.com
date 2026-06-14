@@ -70,13 +70,15 @@ def sync_entries(cur, source_id, csv_path):
         page_num_int = int(page_num) if page_num else None
 
         cur.execute(
-            "INSERT INTO entries (source_id, section_id, han, puj, en, han_orig, puj_orig, en_orig, page_num, sort_order) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO entries (source_id, section_id, han, puj, dp, latn_norm, en, han_orig, puj_orig, en_orig, page_num, sort_order) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 source_id,
                 section_id,
                 row.get("han") or None,
                 row.get("puj") or None,
+                row.get("dp") or None,
+                row.get("latn_norm") or None,
                 row.get("en") or None,
                 row.get("han_orig") or None,
                 row.get("puj_orig") or None,
