@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS sources (
   total_entries INTEGER DEFAULT 0,
   total_pages INTEGER DEFAULT 0,
   sort_order INTEGER DEFAULT 0,
+  original_fields TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
 );

@@ -10,8 +10,9 @@ fi
 cd "$ROOT/backend"
 rm -rf .wrangler/state/v3/d1
 echo "Resetting local D1..."
-npx wrangler d1 execute openteochew-db --local --file "$ROOT/scripts/001_initial_schema.sql"
-npx wrangler d1 execute openteochew-db --local --file "$ROOT/scripts/002_seed_sources.sql"
+for sql in "$ROOT"/scripts/[0-9]*.sql; do
+  npx wrangler d1 execute openteochew-db --local --file "$sql"
+done
 sqlite3 "$ROOT/tmp/openteochew.db" ".dump entries pages examples articles sections" | grep "^INSERT" > /tmp/openteochew-local-seed.sql
 npx wrangler d1 execute openteochew-db --local --file /tmp/openteochew-local-seed.sql
 rm -f /tmp/openteochew-local-seed.sql
