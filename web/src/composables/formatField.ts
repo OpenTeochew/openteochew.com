@@ -14,8 +14,19 @@ export function stripAnno(text: string) {
   return text.replace(ANNO_RE, '')
 }
 
-export function formatField(val: string | null, orig: string | null) {
+export function isFieldAnnotated(originalFields: string | null, fieldName: string): boolean {
+  if (originalFields === null) return false
+  const fields = originalFields.split(',').map(f => f.trim())
+  return !fields.includes(fieldName)
+}
+
+export function formatField(val: string | null, orig: string | null, isAnnotated?: boolean) {
   if (!val && !orig) return ''
+
+  if (isAnnotated) {
+    return `<span class="rt-annotated"><span class="annotated-badge">注</span>${esc(val || '')}</span>`
+  }
+
   if (!orig) return esc(val || '')
   const stripped = stripAnno(esc(orig))
   const revised = renderAnno(esc(val || ''))

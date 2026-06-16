@@ -30,5 +30,7 @@ export interface Example {
 export interface SourceSummary {
   id: number
   name: string
+  name_zh: string | null
   year: string | null
+  original_fields: string | null
 }

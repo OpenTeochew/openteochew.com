@@ -9,14 +9,14 @@
       <section class="entry-header container">
         <div class="entry-header-inner">
           <div>
-            <div class="entry-char" v-html="formatField(entry.han, entry.han_orig)"></div>
+            <div class="entry-char" v-html="formatField(entry.han, entry.han_orig, isFieldAnnotated(entry.source?.original_fields ?? null, 'han'))"></div>
             <div v-if="isDifferent(entry.han)" class="entry-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.han) }}</div>
           </div>
           <div class="entry-info">
-            <div class="entry-puj" v-html="formatField(entry.puj, entry.puj_orig)"></div>
+            <div class="entry-puj" v-html="formatField(entry.puj, entry.puj_orig, isFieldAnnotated(entry.source?.original_fields ?? null, 'puj'))"></div>
             <div class="entry-readings">
-              <div class="reading-row"><span class="reading-label">PUJ</span><span class="reading-value" v-html="formatField(entry.puj, entry.puj_orig)"></span></div>
-              <div class="reading-row"><span class="reading-label">DP</span><span class="reading-value">{{ entry.dp }}</span></div>
+              <div class="reading-row"><span class="reading-label">PUJ</span><span class="reading-value" v-html="formatField(entry.puj, entry.puj_orig, isFieldAnnotated(entry.source?.original_fields ?? null, 'puj'))"></span></div>
+              <div class="reading-row"><span class="reading-label">DP</span><span class="reading-value" v-html="formatField(entry.dp, null, isFieldAnnotated(entry.source?.original_fields ?? null, 'dp'))"></span></div>
             </div>
             <div class="entry-actions">
               <button class="entry-audio-btn" @click="toggleAudio">
@@ -61,7 +61,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { entriesApi } from '../../api/entries'
 import { searchApi } from '../../api/search'
-import { formatField, renderAnno, stripAnno, esc } from '../../composables/formatField'
+import { formatField, renderAnno, stripAnno, esc, isFieldAnnotated } from '../../composables/formatField'
 import { useSimplified } from '../../composables/useSimplified'
 const { simplified, t2s, isDifferent } = useSimplified()
 
@@ -81,21 +81,24 @@ const activeTab = ref('all')
 const defTabs = computed(() => {
   if (!entry.value) return []
 
-  const fmt = (val, orig) => {
+  const fmt = (val, orig, isAnnotated) => {
     if (!val && !orig) return ''
+    if (isAnnotated) {
+      return `<span class="rt-annotated"><span class="annotated-badge">注</span>${esc(val || '')}</span>`
+    }
     if (!orig) return esc(val || '')
     const stripped = stripAnno(esc(orig))
     const revised = renderAnno(esc(val || ''))
     const revisedText = revised.replace(/<[^>]*>/g, '').trim()
     return revisedText ? `${stripped}<span class="rt-revised"><span class="revised-badge">校</span>${revised}</span>` : stripped
   }
-  const fmtHan = (e) => fmt(e.han, e.han_orig)
-  const fmtPuj = (e) => fmt(e.puj, e.puj_orig)
-  const fmtEn = (e) => fmt(e.en, e.en_orig)
+  const fmtHan = (e, src) => fmt(e.han, e.han_orig, isFieldAnnotated(src?.original_fields ?? null, 'han'))
+  const fmtPuj = (e, src) => fmt(e.puj, e.puj_orig, isFieldAnnotated(src?.original_fields ?? null, 'puj'))
+  const fmtEn = (e, src) => fmt(e.en, e.en_orig, isFieldAnnotated(src?.original_fields ?? null, 'en'))
 
   const currentDef = {
     source: `${entry.value.source.name}${entry.value.page_num ? ' · p. ' + entry.value.page_num : ''}`,
-    text: `<strong>${fmtHan(entry.value)} ${fmtPuj(entry.value)}</strong> — ${fmtEn(entry.value)}`,
+    text: `<strong>${fmtHan(entry.value, entry.value.source)} ${fmtPuj(entry.value, entry.value.source)}</strong> — ${fmtEn(entry.value, entry.value.source)}`,
     pageNum: entry.value.page_num,
     sourceId: entry.value.source.id
   }
@@ -118,7 +121,7 @@ const defTabs = computed(() => {
     for (const e of group.entries) {
       const def = {
         source: `${group.source.name}${e.page_num ? ' · p. ' + e.page_num : ''}`,
-        text: `<strong>${fmtHan(e)} ${fmtPuj(e)}</strong> — ${fmtEn(e)}`,
+        text: `<strong>${fmtHan(e, group.source)} ${fmtPuj(e, group.source)}</strong> — ${fmtEn(e, group.source)}`,
         pageNum: e.page_num,
         sourceId: group.source.id
       }

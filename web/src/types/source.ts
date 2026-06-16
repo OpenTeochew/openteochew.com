@@ -12,6 +12,7 @@ export interface Source {
   total_entries: number
   total_pages: number
   sort_order: number
+  original_fields: string | null
 }
 
 export interface SourceDetail extends Source {

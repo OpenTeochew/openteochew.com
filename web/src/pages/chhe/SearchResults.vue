@@ -51,13 +51,13 @@
                 <tbody>
                   <tr v-for="entry in group.entries" :key="entry.id">
                     <td class="rt-char">
-                      <span v-html="formatField(entry.han, entry.han_orig)"></span>
+                      <span v-html="formatField(entry.han, entry.han_orig, isFieldAnnotated(group.source.original_fields, 'han'))"></span>
                       <span v-if="isDifferent(entry.han)" class="rt-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.han) }}</span>
                     </td>
-                    <td class="rt-puj" v-html="formatField(entry.puj, entry.puj_orig)"></td>
-                    <td v-if="group.hasDp" class="rt-dp">{{ entry.dp }}</td>
+                    <td class="rt-puj" v-html="formatField(entry.puj, entry.puj_orig, isFieldAnnotated(group.source.original_fields, 'puj'))"></td>
+                    <td v-if="group.hasDp" class="rt-dp" v-html="formatField(entry.dp, null, isFieldAnnotated(group.source.original_fields, 'dp'))"></td>
                     <td class="rt-def">
-                      <span v-html="formatField(entry.en, entry.en_orig)"></span>
+                      <span v-html="formatField(entry.en, entry.en_orig, isFieldAnnotated(group.source.original_fields, 'en'))"></span>
                       <span v-if="isDifferent(entry.en)" class="rt-simplified"><span class="simplified-badge">简</span>{{ t2s(entry.en) }}</span>
                     </td>
                     <td class="rt-page">{{ entry.page_num ? `p.${entry.page_num}` : '' }}</td>
@@ -94,7 +94,7 @@ import { useRoute } from 'vue-router'
 import { useSearchStore } from '../../stores/search'
 import { useSearch } from '../../composables/useSearch'
 import { searchApi } from '../../api/search'
-import { formatField } from '../../composables/formatField'
+import { formatField, isFieldAnnotated } from '../../composables/formatField'
 import { useSimplified } from '../../composables/useSimplified'
 const { simplified, t2s, isDifferent } = useSimplified()
 
