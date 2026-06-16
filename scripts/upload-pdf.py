@@ -13,6 +13,28 @@ SLUG_RE = re.compile(r"^[A-Za-z0-9_]+$")
 R2_BUCKET = "openteochew-books"
 
 
+def parse_pages(spec, total):
+    """解析页码规范，如 '1,5,8-12' → [1,5,8,9,10,11,12]。1-indexed。"""
+    pages = set()
+    for part in spec.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        if "-" in part:
+            lo_s, hi_s = part.split("-", 1)
+            lo, hi = int(lo_s), int(hi_s)
+            if lo > hi:
+                raise ValueError(f"invalid range '{part}': start > end")
+            pages.update(range(lo, hi + 1))
+        else:
+            pages.add(int(part))
+    result = sorted(pages)
+    for p in result:
+        if p < 1 or p > total:
+            raise ValueError(f"page {p} out of range (1-{total})")
+    return result
+
+
 def split_pdf(pdf_path, slug, dpi, quality):
     import fitz
     from PIL import Image
@@ -97,6 +119,7 @@ def main():
     parser.add_argument("--dpi", type=int, default=300, help="Render DPI (default: 300)")
     parser.add_argument("--quality", type=int, default=85, help="WebP quality 1-100 (default: 85)")
     parser.add_argument("--skip-existing", action="store_true", help="Skip files already in R2")
+    parser.add_argument("--pages", type=str, default=None, help="Specific pages to upload (e.g. 23,187 or 1-10,23). 1-indexed. Default: all")
     args = parser.parse_args()
 
     pdf_path = args.pdf.resolve()
@@ -145,13 +168,25 @@ def main():
     print(f"Access URL:    {url_base}0001.webp .. {url_base}{len(pages):04d}.webp")
     print()
 
+    if args.pages:
+        try:
+            selected = parse_pages(args.pages, len(pages))
+        except ValueError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            sys.exit(1)
+        upload_pages = [p for p in pages if int(p.stem) in set(selected)]
+        print(f"Upload set:   {len(upload_pages)} of {len(pages)} pages (selected: {args.pages})")
+        print()
+    else:
+        upload_pages = pages
+
     answer = input("Upload to R2? [y/N] ").strip().lower()
     if answer != "y":
         print("Cancelled.")
         sys.exit(0)
 
     print()
-    uploaded, skipped, failed = upload_to_r2(pages, args.slug, args.skip_existing)
+    uploaded, skipped, failed = upload_to_r2(upload_pages, args.slug, args.skip_existing)
 
     print()
     print(f"Done: {uploaded} uploaded, {skipped} skipped, {failed} failed")
