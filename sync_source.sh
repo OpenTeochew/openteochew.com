@@ -18,6 +18,7 @@ Options:
   --hw PATH         Dataset root (default: \$ROOT/../dataset)
   --pages-only      Sync only pages
   --entries-only    Sync only entries (full diff)
+  --page-range R    Image-only pages (no OCR/entries). e.g. '1-300' or '300'
   --threshold F     Fuzzy match threshold (default: 0.8)
   --csv PATH        Override CSV path
   --md PATH         Override markdown path
@@ -28,12 +29,14 @@ Examples:
   $0 --remote
   $0 --local --entries-only
   $0 --remote --pages-only
+  $0 --local --source-id 4 --page-range 1-300
 EOF
 }
 
 MODE="--local"
 SOURCE_ID=1
 HW="$ROOT/../dataset"
+PAGE_RANGE_MODE=false
 EXTRA_ARGS=()
 
 while [ $# -gt 0 ]; do
@@ -57,6 +60,11 @@ while [ $# -gt 0 ]; do
         shift
       fi
       shift
+      ;;
+    --page-range)
+      PAGE_RANGE_MODE=true
+      EXTRA_ARGS+=("$1" "$2")
+      shift 2
       ;;
     --threshold)
       EXTRA_ARGS+=("--match-threshold" "$2")
@@ -85,7 +93,7 @@ if [ "$MODE" = "--remote" ]; then
   set +a
 fi
 
-if [ ! -d "$HW" ]; then
+if [ "$PAGE_RANGE_MODE" = false ] && [ ! -d "$HW" ]; then
   echo "ERROR: dataset not found at $HW" >&2
   echo "Use --hw PATH to specify dataset root" >&2
   exit 1
