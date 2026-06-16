@@ -134,7 +134,7 @@ export async function searchEntries(
   let entries
   if (params.source_id) {
     entries = await db.prepare(
-      `SELECT e.*, s.name as source_name, s.name_zh as source_name_zh, s.year as source_year, sec.title as section_title
+      `SELECT e.*, s.name as source_name, s.name_zh as source_name_zh, s.year as source_year, s.original_fields as source_original_fields, sec.title as section_title
        FROM entries e
        JOIN sources s ON e.source_id = s.id
        LEFT JOIN sections sec ON e.section_id = sec.id
@@ -147,7 +147,7 @@ export async function searchEntries(
     for (const sourceId of sourceTotalMap.keys()) {
       const sourceValues = [...values, sourceId]
       const rows = await db.prepare(
-        `SELECT e.*, s.name as source_name, s.name_zh as source_name_zh, s.year as source_year, sec.title as section_title
+        `SELECT e.*, s.name as source_name, s.name_zh as source_name_zh, s.year as source_year, s.original_fields as source_original_fields, sec.title as section_title
          FROM entries e
          JOIN sources s ON e.source_id = s.id
          LEFT JOIN sections sec ON e.section_id = sec.id
@@ -170,7 +170,7 @@ export async function searchEntries(
   for (const entry of entries.results as any[]) {
     if (!groups.has(entry.source_id)) {
       groups.set(entry.source_id, {
-        source: { id: entry.source_id, name: entry.source_name, name_zh: entry.source_name_zh, year: entry.source_year },
+        source: { id: entry.source_id, name: entry.source_name, name_zh: entry.source_name_zh, year: entry.source_year, original_fields: entry.source_original_fields },
         count: sourceTotalMap.get(entry.source_id) || 0,
         entries: []
       })
