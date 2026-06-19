@@ -48,7 +48,37 @@ SOURCE_CONFIG = {
         # "csv": "First_Lessons_in_the_Swatow_Dialect.csv",
         # "md": "First_Lessons_in_the_Swatow_Dialect.md",
         "slug": "First_Lessons_in_the_Swatow_Dialect",
-    }
+    },
+    7: {
+        # "csv": "Handbook_of_the_Swatow_Dialect.csv",
+        # "md": "Handbook_of_the_Swatow_Dialect.md",
+        "slug": "Handbook_of_the_Swatow_Dialect",
+    },
+    8: {
+        # "csv": "Primary_Lessons_in_Swatow_Grammar.csv",
+        # "md": "Primary_Lessons_in_Swatow_Grammar.md",
+        "slug": "Primary_Lessons_in_Swatow_Grammar",
+    },
+    9: {
+        # "csv": "A Swatow Index to the Syllabic Dictionary of Chinese.csv",
+        # "md": "A_Swatow_Index_to_the_Syllabic_Dictionary_of_Chinese.md",
+        "slug": "A_Swatow_Index_to_the_Syllabic_Dictionary_of_Chinese",
+    },
+    10: {
+        # "csv": "Sin-Ieh_Ma-Thai_Hok-Im_Tsur_Tshuan-Tsur.csv",
+        # "md": "Sin-Ieh_Ma-Thai_Hok-Im_Tsur_Tshuan-Tsur.md",
+        "slug": "Sin_Ieh_Ma_Thai_Hok_Im_Tsur_Tshuan_Tsur",
+    },
+    11: {
+        # "csv": "Ku-ieh_Tshang-Si-Ki_Tshuan-Tsur.csv",
+        # "md": "Ku-ieh_Tshang-Si-Ki_Tshuan-Tsur.md",
+        "slug": "Ku_ieh_Tshang_Si_Ki_Tshuan_Tsur",
+    },
+    12: {
+        # "csv": "The Swatow Syllabary with Mandarin Pronunciations.csv",
+        # "md": "The_Swatow_Syllabary_with_Mandarin_Pronunciations.md",
+        "slug": "The_Swatow_Syllabary_with_Mandarin_Pronunciations",
+    },
 }
 
 SECTION_RE = re.compile(r">\s*(.+)$")

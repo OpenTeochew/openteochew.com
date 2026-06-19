@@ -120,6 +120,7 @@ def main():
     parser.add_argument("--quality", type=int, default=85, help="WebP quality 1-100 (default: 85)")
     parser.add_argument("--skip-existing", action="store_true", help="Skip files already in R2")
     parser.add_argument("--pages", type=str, default=None, help="Specific pages to upload (e.g. 23,187 or 1-10,23). 1-indexed. Default: all")
+    parser.add_argument("--yes", action="store_true", help="Skip confirmation prompt")
     args = parser.parse_args()
 
     pdf_path = args.pdf.resolve()
@@ -180,10 +181,11 @@ def main():
     else:
         upload_pages = pages
 
-    answer = input("Upload to R2? [y/N] ").strip().lower()
-    if answer != "y":
-        print("Cancelled.")
-        sys.exit(0)
+    if not args.yes:
+        answer = input("Upload to R2? [y/N] ").strip().lower()
+        if answer != "y":
+            print("Cancelled.")
+            sys.exit(0)
 
     print()
     uploaded, skipped, failed = upload_to_r2(upload_pages, args.slug, args.skip_existing)
