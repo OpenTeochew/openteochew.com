@@ -8,9 +8,9 @@
     <div class="container dict-header">
       <div class="dict-header-inner">
         <div>
-          <h1>{{ source.name }}{{ source.name_zh ? '（' + source.name_zh + '）' : '' }}</h1>
-          <p class="meta-text">{{ [source.author, source.year].filter(Boolean).join(' · ') }}</p>
-          <div v-if="source.description" class="dict-desc" v-html="marked.parse(source.description)"></div>
+          <h1>{{ t2s(source.name) }}{{ source.name_zh ? '（' + t2s(source.name_zh) + '）' : '' }}</h1>
+          <p class="meta-text">{{ [t2s(source.author), source.year].filter(Boolean).join(' · ') }}</p>
+          <div v-if="source.description" class="dict-desc" v-html="marked.parse(t2s(source.description))"></div>
         </div>
       </div>
     </div>
