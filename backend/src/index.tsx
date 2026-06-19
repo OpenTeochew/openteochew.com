@@ -6,9 +6,9 @@ import type { CloudflareBindings } from './server/types/env'
 const app = new Hono<{ Bindings: CloudflareBindings }>()
 
 const CACHE_RULES: [RegExp, number][] = [
-  [/^\/api\/v1\/search/, 300],
-  [/^\/api\/v1\/sources\/\d+\/entries/, 300],
-  [/^\/api\/v1\/sources\/\d+\/pages/, 600],
+  [/^\/api\/v1\/search/, 600],
+  [/^\/api\/v1\/sources\/\d+\/entries/, 600],
+  [/^\/api\/v1\/sources\/\d+\/pages/, 1800],
   [/^\/api\/v1\/entries\/\d+/, 600],
   [/^\/api\/v1\/articles\/\d+/, 1800],
   [/^\/api\/v1\/sources(\/\d+)?\/?$/, 3600],
