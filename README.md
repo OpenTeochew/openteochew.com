@@ -64,10 +64,10 @@ cd web && npm install && npm run dev
 ./dev.sh
 
 # 重建本地數據庫
-HW="$HOME/Documents/Code/hokkien-writing/dataset" ./init_dev_db.sh
+HW="$HOME/Documents/Code/hokkien-writing/dataset" ./scripts/init_dev_db.sh
 
 # 同步數據
-./sync_source.sh --local --source-id 1
+./scripts/sync-entries.sh --local --source-id 1
 ```
 
 ## 構建與部署 / Build & Deploy

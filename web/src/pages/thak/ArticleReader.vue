@@ -9,7 +9,7 @@
       <div class="read-layout">
         <article class="read-main">
           <div class="read-meta">
-            <span class="read-tag" v-if="article.source">{{ article.source.type === 'dictionary' ? t2s('辭書') : t2s('教材') }}</span>
+            <span class="read-tag" v-if="article.source">{{ typeLabel(article.source.type) }}</span>
           </div>
           <h1 class="read-title">{{ article.title }}</h1>
           <div class="markdown-body" v-html="renderedContent"></div>
@@ -34,6 +34,11 @@ import { articlesApi } from '../../api/articles'
 import { useSimplified } from '../../composables/useSimplified'
 
 const { t2s } = useSimplified()
+
+function typeLabel(type) {
+  const map = { dictionary: t2s('辭書'), textbook: t2s('教材'), scripture: t2s('經文') }
+  return map[type] || type
+}
 
 const marked = new Marked()
 marked.use({

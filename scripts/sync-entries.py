@@ -102,7 +102,7 @@ def find_db():
         for f in WRANGLER_DB_DIR.glob("*.sqlite"):
             if f.name != "metadata.sqlite":
                 return f
-    print("ERROR: local D1 database not found. Run `./init_dev_db.sh` first.", file=sys.stderr)
+    print("ERROR: local D1 database not found. Run `./scripts/init_dev_db.sh` first.", file=sys.stderr)
     sys.exit(1)
 
 

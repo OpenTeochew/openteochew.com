@@ -126,7 +126,7 @@ echo "=== Sync source_id=$SOURCE_ID ($MODE) ==="
 echo "  HW:   $HW"
 echo
 
-# Slug mapping (mirrors sync-source.py SOURCE_CONFIG)
+# Slug mapping (mirrors sync-entries.py SOURCE_CONFIG)
 slug_for_id() {
   case "$1" in
     1) echo "Handbook_of_the_Swatow_Vernacular" ;;
@@ -166,7 +166,7 @@ if [ -n "$UPLOAD_PDF" ]; then
 fi
 
 cd "$ROOT"
-python3 scripts/sync-source.py \
+python3 scripts/sync-entries.py \
   --source-id "$SOURCE_ID" \
   --hw "$HW" \
   "$MODE" \

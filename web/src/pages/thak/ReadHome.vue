@@ -3,7 +3,7 @@
     <section class="section thak-hero">
       <div class="container" style="max-width: 680px;">
         <h1>{{ t2s('讀潮州話') }}</h1>
-        <p class="lead">{{ t2s('瀏覽潮州話辭書與教材，所有資料標明出處，開放使用。') }}</p>
+        <p class="lead">{{ t2s('瀏覽潮州話辭書、教材與經文，所有資料標明出處，開放使用。') }}</p>
         <div class="cat-tabs">
           <button v-for="(t, i) in catTabs" :key="t.key" class="cat-tab" :class="{ active: activeCat === i }" @click="activeCat = i">{{ t.label }}</button>
         </div>
@@ -45,6 +45,7 @@ const catTabs = computed(() => [
   { key: 'all', label: t2s('全部') },
   { key: 'dictionary', label: t2s('辭書') },
   { key: 'textbook', label: t2s('教材') },
+  { key: 'scripture', label: t2s('經文') },
 ])
 
 const sources = ref([])
@@ -67,7 +68,7 @@ const filtered = computed(() => {
 })
 
 function typeLabel(type) {
-  const map = { dictionary: t2s('辭書'), textbook: t2s('教材') }
+  const map = { dictionary: t2s('辭書'), textbook: t2s('教材'), scripture: t2s('經文') }
   return map[type] || type
 }
 </script>

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-ROOT="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DB="$ROOT/tmp/openteochew.db"
 HW="${HW:-$HOME/Documents/Code/hokkien-writing/dataset}"
 
@@ -15,7 +15,7 @@ done
 
 if [ -f "$HW/export/books/001_Handbook_of_the_Swatow_Vernacular.csv" ]; then
   echo "Syncing from dataset ($HW)..."
-  python3 "$ROOT/scripts/sync-source.py" --source-id 1 --hw "$HW"
+  python3 "$ROOT/scripts/sync-entries.py" --source-id 1 --hw "$HW"
 fi
 
 echo "Done: $DB"

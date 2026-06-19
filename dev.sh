@@ -4,7 +4,7 @@ set -e
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
 if [ ! -f "$ROOT/tmp/openteochew.db" ] || [ "$(sqlite3 "$ROOT/tmp/openteochew.db" 'SELECT COUNT(*) FROM entries;')" = "0" ]; then
-  bash "$ROOT/init_dev_db.sh"
+  bash "$ROOT/scripts/init_dev_db.sh"
 fi
 
 cd "$ROOT/backend"

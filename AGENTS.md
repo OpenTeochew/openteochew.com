@@ -116,15 +116,17 @@ python3 scripts/full-sync.py --pages-only       # 只同步 OCR 頁
 ./dev.sh                   # Start backend server（DB 空時自動 init）
 
 # 重建本地 SQLite（dev.sh 內部呼叫，平時不需手動跑）
-HW="$HOME/Documents/Code/hokkien-writing/dataset" ./init_dev_db.sh
+HW="$HOME/Documents/Code/hokkien-writing/dataset" ./scripts/init_dev_db.sh
 
-# 同步 dataset 到 D1（包裝 scripts/sync-source.py）
-./sync_source.sh --local                       # 預設 source 1
-./sync_source.sh --local --source-id 2         # 指定 source
-./sync_source.sh --local --entries-only        # 只同步詞條
-./sync_source.sh --local --pages-only          # 只同步 OCR 頁
-./sync_source.sh --remote                      # 推到遠端 D1（需 .env.dev）
-./sync_source.sh --hw /path/to/dataset         # 自訂 dataset 路徑
+# 同步 dataset 到 D1（包裝 scripts/sync-entries.py）
+./scripts/sync-entries.sh --local                       # 預設 source 1
+./scripts/sync-entries.sh --local --source-id 2         # 指定 source
+./scripts/sync-entries.sh --local --entries-only        # 只同步詞條
+./scripts/sync-entries.sh --local --pages-only          # 只同步 OCR 頁
+./scripts/sync-entries.sh --remote                      # 推到遠端 D1（需 .env.dev）
+./scripts/sync-entries.sh --hw /path/to/dataset         # 自訂 dataset 路徑
+./scripts/sync-sources.sh --local                       # 同步 sources 元數據 (CSV→D1)
+./scripts/sync-sources.sh --remote                      # 同步到遠端 D1
 
 # 部署
 ./deploy.sh                    # Build + deploy to openteochew.com
