@@ -170,6 +170,9 @@ async function loadData() {
     ])
     source.value = sourceResult
     pages.value = pagesResult
+    const raw = sourceResult.name + (sourceResult.name_zh ? `（${sourceResult.name_zh}）` : '') + ' — 潮州話開放資料庫'
+    document.documentElement.dataset.origTitle = raw
+    document.title = t2s(raw)
   } catch (e) {
     console.error('Failed to load source:', e)
   } finally {

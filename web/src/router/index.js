@@ -76,8 +76,12 @@ const t2sSimple = (() => {
 
 router.afterEach(async (to) => {
   let title = titles[to.name] || '潮州話開放資料庫 OpenTeochew'
-  title = await t2sSimple(title)
-  document.title = title
+  if (to.name === 'SearchResults') {
+    const terms = Object.entries(to.query).filter(([k]) => k.startsWith('q_')).map(([, v]) => `"${v}"`).join(',')
+    if (terms) title = `${terms}的搜尋結果 — 潮州話開放資料庫`
+  }
+  document.documentElement.dataset.origTitle = title
+  document.title = await t2sSimple(title)
 })
 
 export default router

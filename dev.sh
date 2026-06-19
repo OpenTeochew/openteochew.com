@@ -8,6 +8,9 @@ if [ ! -f "$ROOT/tmp/openteochew.db" ] || [ "$(sqlite3 "$ROOT/tmp/openteochew.db
   bash "$ROOT/scripts/init_dev_db.sh"
 fi
 
+# Build frontend
+bash "$ROOT/build.sh"
+
 cd "$ROOT/backend"
 
 # Reset local D1 state
