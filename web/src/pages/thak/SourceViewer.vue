@@ -10,6 +10,7 @@
         <div>
           <h1>{{ source.name }}{{ source.name_zh ? '（' + source.name_zh + '）' : '' }}</h1>
           <p class="meta-text">{{ [source.author, source.year].filter(Boolean).join(' · ') }}</p>
+          <div v-if="source.description" class="dict-desc" v-html="marked.parse(source.description)"></div>
         </div>
       </div>
     </div>

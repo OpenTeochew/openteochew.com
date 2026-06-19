@@ -19,6 +19,9 @@ if [ "$ENTRIES" -gt 0 ]; then
   npx wrangler d1 execute openteochew-db --local --file /tmp/openteochew-local-seed.sql
   rm -f /tmp/openteochew-local-seed.sql
   npx wrangler d1 execute openteochew-db --local --command "UPDATE sources SET total_entries = (SELECT COUNT(*) FROM entries WHERE entries.source_id = sources.id), total_pages = (SELECT COUNT(*) FROM pages WHERE pages.source_id = sources.id);"
+
+# Sync sources metadata from CSV (overrides hardcoded seed descriptions)
+bash "$ROOT/scripts/sync-sources.sh" --local 2>/dev/null
 else
   echo "No entries found in local DB — skipping seed."
 fi
