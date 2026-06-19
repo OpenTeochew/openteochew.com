@@ -3,7 +3,7 @@ set -e
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 DB="$ROOT/tmp/openteochew.db"
-HW="${HW:-$ROOT/../dataset}"
+HW="${HW:-$HOME/Documents/Code/hokkien-writing/dataset}"
 
 mkdir -p "$ROOT/tmp"
 rm -f "$DB"

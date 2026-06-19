@@ -107,7 +107,7 @@ const sources = ref([])
 const sourcesLoading = ref(true)
 
 const topSources = computed(() =>
-  [...sources.value].sort((a, b) => (b.total_entries || 0) - (a.total_entries || 0)).slice(0, 5)
+  [...sources.value].sort((a, b) => (b.total_entries || 0) - (a.total_entries || 0))
 )
 
 onMounted(async () => {
