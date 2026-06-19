@@ -165,7 +165,7 @@ if [ -n "$UPLOAD_PDF" ]; then
   echo
 fi
 
-cd "$ROOT"
+cd "$ROOT/.."
 python3 scripts/sync-entries.py \
   --source-id "$SOURCE_ID" \
   --hw "$HW" \

@@ -40,22 +40,25 @@
           <div v-else class="ocr-entries" style="text-align:center;padding:60px 0;color:var(--muted)">{{ t2s('此頁無 OCR 文字') }}</div>
         </div>
         <div class="scan-panel" :class="{ open: scanOpen }">
-          <button class="scan-panel-close" @click="scanOpen = false">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            {{ t2s('關閉') }}
-           </button>
-           <div class="scan-panel-inner">
-             <button class="scan-close" @click="scanOpen = false" :aria-label="t2s('關閉原冊')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-            <div class="scan-image">
-              <img v-if="pageImageUrl" :src="pageImageUrl" :alt="t2s('第') + ' ' + pageNum + ' ' + t2s('頁')" style="max-width:100%;max-height:100%;object-fit:contain;" @error="imgError = true">
-              <div v-if="!pageImageUrl || imgError" class="scan-image-ph">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                <p>{{ t2s('原冊掃描頁面') }}<br><span style="font-size:12px;color:var(--meta)">{{ t2s('第') }} {{ pageNum }} {{ t2s('頁') }} · {{ source?.name }}{{ source?.name_zh ? '（' + source.name_zh + '）' : '' }}</span></p>
+            <div class="scan-panel-bar">
+              <button class="scan-panel-close" @click="scanOpen = false" :aria-label="t2s('關閉')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+             <div class="scan-panel-inner">
+              <div class="scan-image">
+                <img v-if="pageImageUrl" :src="pageImageUrl" :alt="t2s('第') + ' ' + pageNum + ' ' + t2s('頁')" style="max-width:100%;max-height:100%;object-fit:contain;cursor:pointer" @error="imgError = true" @click="openLightbox">
+                <div v-if="!pageImageUrl || imgError" class="scan-image-ph">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <p>{{ t2s('原冊掃描頁面') }}<br><span style="font-size:12px;color:var(--meta)">{{ t2s('第') }} {{ pageNum }} {{ t2s('頁') }} · {{ source?.name }}{{ source?.name_zh ? '（' + source.name_zh + '）' : '' }}</span></p>
+                </div>
+              </div>
+              <div class="scan-panel-nav">
+                <button class="dict-page-btn" :disabled="pageNum <= 1" @click="goPrev">← {{ t2s('上一頁') }}</button>
+                <span class="dict-page-num">{{ t2s('第') }} {{ pageNum }} / {{ source.total_pages || '?' }} {{ t2s('頁') }}</span>
+                <button class="dict-page-btn" :disabled="pageNum >= (source.total_pages || Infinity)" @click="goNext">{{ t2s('下一頁') }} →</button>
               </div>
             </div>
-          </div>
         </div>
       </div>
       <div class="dict-toolbar" style="border-top:1px solid var(--border);border-bottom:none">
@@ -68,6 +71,19 @@
         </div>
       </div>
     </div>
+  </div>
+  <div v-if="lightboxOpen" class="lightbox-overlay" @click.self="closeLightbox">
+    <button class="lightbox-close" @click="closeLightbox" :aria-label="t2s('關閉')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="lightbox-nav lightbox-prev" :disabled="pageNum <= 1" @click="goPrevLightbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <img v-if="pageImageUrl" class="lightbox-img" :src="pageImageUrl" :alt="t2s('第') + ' ' + pageNum + ' ' + t2s('頁')" />
+    <button class="lightbox-nav lightbox-next" :disabled="pageNum >= (source.total_pages || Infinity)" @click="goNextLightbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="lightbox-counter">{{ t2s('第') }} {{ pageNum }} / {{ source.total_pages || '?' }} {{ t2s('頁') }}</div>
   </div>
 </template>
 
@@ -93,6 +109,7 @@ const pageNum = ref(Number(route.query.page) || 1)
 const imgError = ref(false)
 const pages = ref([])
 const jumpTarget = ref(null)
+const lightboxOpen = ref(false)
 
 const canJump = computed(() => {
   const v = jumpTarget.value
@@ -183,6 +200,7 @@ watch(scanOpen, (val) => {
 })
 
 onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onLightboxKeydown)
   const scrollY = Number(document.body.dataset.scrollY || 0)
   document.body.style.position = ''
   document.body.style.top = ''
@@ -223,4 +241,32 @@ const renderedOcr = computed(() => {
 const pageImageUrl = computed(() => {
   return currentPage.value?.image_url || null
 })
+
+function openLightbox() {
+  lightboxOpen.value = true
+  document.addEventListener('keydown', onLightboxKeydown)
+}
+
+function closeLightbox() {
+  lightboxOpen.value = false
+  document.removeEventListener('keydown', onLightboxKeydown)
+}
+
+function goPrevLightbox() {
+  if (pageNum.value > 1) pageNum.value--
+}
+
+function goNextLightbox() {
+  pageNum.value++
+}
+
+function onLightboxKeydown(e) {
+  if (e.key === 'Escape') {
+    closeLightbox()
+  } else if (e.key === 'ArrowLeft') {
+    goPrevLightbox()
+  } else if (e.key === 'ArrowRight') {
+    goNextLightbox()
+  }
+}
 </script>
