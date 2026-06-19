@@ -1,4 +1,4 @@
-INSERT INTO sources (id, name, name_zh, author, year, type, level, status, description, sort_order, original_fields) VALUES
+INSERT OR REPLACE INTO sources (id, name, name_zh, author, year, type, level, status, description, sort_order, original_fields) VALUES
 (1, 'Handbook of the Swatow Vernacular', '汕頭話手冊', 'Lim Hiong Seng（[新加坡]林雄成）', '1886', 'textbook', 'SS', 'public_domain', 'Wikisource: https://en.wikisource.org/wiki/Handbook_of_the_Swatow_Vernacular', 1, 'puj,en,han'),
 (2, 'First Lessons in the Tie-chiw Dialect', '潮州話初階', 'William Dean（[美]璘為仁）', '1841', 'textbook', 'SS', 'public_domain', 'Wikisource: https://en.wikisource.org/wiki/First_Lessons_in_the_Tie-chiw_Dialect', 2, 'puj,en,han'),
 (3, 'English-Chinese Vocabulary of the Vernacular Or Spoken Language of Swatow', '英漢汕頭方言口語詞典(卓威廉詞典)', 'Rudolf Lechler（[德]黎力基）; Samuel Wells Williams（[美]衛三畏）; William Duffus（[英]卓威廉）', '1883', 'dictionary', 'SS', 'public_domain', 'Wikisource: https://en.wikisource.org/wiki/English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow', 3, 'puj,en'),

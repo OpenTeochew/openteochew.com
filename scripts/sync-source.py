@@ -43,6 +43,11 @@ SOURCE_CONFIG = {
         # "csv": "A_Chinese_and_English_vocabulary_in_the_Tie-chiu_dialect.csv",
         # "md": "A_Chinese_and_English_vocabulary_in_the_Tie-chiu_dialect.md",
         "slug": "A_Chinese_and_English_vocabulary_in_the_Tie_chiu_dialect",
+    },
+    6: {
+        # "csv": "First_Lessons_in_the_Swatow_Dialect.csv",
+        # "md": "First_Lessons_in_the_Swatow_Dialect.md",
+        "slug": "First_Lessons_in_the_Swatow_Dialect",
     }
 }
 
