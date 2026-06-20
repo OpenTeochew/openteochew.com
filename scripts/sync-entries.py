@@ -22,62 +22,14 @@ SOURCE_CONFIG = {
     1: {
         "csv": "001_Handbook_of_the_Swatow_Vernacular.csv",
         "md": "001_Handbook_of_the_Swatow_Vernacular.md",
-        "slug": "Handbook_of_the_Swatow_Vernacular",
     },
     3: {
         "csv": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.csv",
         "md": "002_English-Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow.md",
-        "slug": "English_Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow",
     },
     2: {
         "csv": "003_First_Lessons_in_the_Tie-chiw_Dialect.csv",
         "md": "003_First_Lessons_in_the_Tie-chiw_Dialect.md",
-        "slug": "First_Lessons_in_the_Tie_chiw_Dialect",
-    },
-    4: {
-        # "csv": "A_Pronouncing_and_Defining_Dictionary_of_the_Swatow_Dialect.csv",
-        # "md": "A_Pronouncing_and_Defining_Dictionary_of_the_Swatow_Dialect.md",
-        "slug": "A_Pronouncing_and_Defining_Dictionary_of_the_Swatow_Dialect",
-    },
-    5: {
-        # "csv": "A_Chinese_and_English_vocabulary_in_the_Tie-chiu_dialect.csv",
-        # "md": "A_Chinese_and_English_vocabulary_in_the_Tie-chiu_dialect.md",
-        "slug": "A_Chinese_and_English_vocabulary_in_the_Tie_chiu_dialect",
-    },
-    6: {
-        # "csv": "First_Lessons_in_the_Swatow_Dialect.csv",
-        # "md": "First_Lessons_in_the_Swatow_Dialect.md",
-        "slug": "First_Lessons_in_the_Swatow_Dialect",
-    },
-    7: {
-        # "csv": "Handbook_of_the_Swatow_Dialect.csv",
-        # "md": "Handbook_of_the_Swatow_Dialect.md",
-        "slug": "Handbook_of_the_Swatow_Dialect",
-    },
-    8: {
-        # "csv": "Primary_Lessons_in_Swatow_Grammar.csv",
-        # "md": "Primary_Lessons_in_Swatow_Grammar.md",
-        "slug": "Primary_Lessons_in_Swatow_Grammar",
-    },
-    9: {
-        # "csv": "A Swatow Index to the Syllabic Dictionary of Chinese.csv",
-        # "md": "A_Swatow_Index_to_the_Syllabic_Dictionary_of_Chinese.md",
-        "slug": "A_Swatow_Index_to_the_Syllabic_Dictionary_of_Chinese",
-    },
-    10: {
-        # "csv": "Sin-Ieh_Ma-Thai_Hok-Im_Tsur_Tshuan-Tsur.csv",
-        # "md": "Sin-Ieh_Ma-Thai_Hok-Im_Tsur_Tshuan-Tsur.md",
-        "slug": "Sin_Ieh_Ma_Thai_Hok_Im_Tsur_Tshuan_Tsur",
-    },
-    11: {
-        # "csv": "Ku-ieh_Tshang-Si-Ki_Tshuan-Tsur.csv",
-        # "md": "Ku-ieh_Tshang-Si-Ki_Tshuan-Tsur.md",
-        "slug": "Ku_ieh_Tshang_Si_Ki_Tshuan_Tsur",
-    },
-    12: {
-        # "csv": "The Swatow Syllabary with Mandarin Pronunciations.csv",
-        # "md": "The_Swatow_Syllabary_with_Mandarin_Pronunciations.md",
-        "slug": "The_Swatow_Syllabary_with_Mandarin_Pronunciations",
     },
 }
 
@@ -234,6 +186,15 @@ def parse_page_range(s):
         start, end = s.split("-", 1)
         return int(start), int(end)
     return 1, int(s)
+
+
+def load_slug_from_csv(source_id):
+    csv_path = REPO / "scripts" / "sources.csv"
+    with open(csv_path, newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if int(row["id"]) == source_id:
+                return row.get("slug") or None
+    return None
 
 
 def generate_image_only_pages_sql(source_id, slug, page_nums):
@@ -682,19 +643,22 @@ def main():
     parser.add_argument("--page-range", help="image-only pages, e.g. '1-300' or '300'")
     args = parser.parse_args()
 
-    cfg = SOURCE_CONFIG.get(args.source_id)
-    if not cfg:
-        print(f"ERROR: no config for source_id={args.source_id}", file=sys.stderr)
-        sys.exit(1)
-
-    slug = cfg["slug"]
+    slug = load_slug_from_csv(args.source_id)
     hw = args.hw
-    csv_file = cfg.get("csv")
-    md_file = cfg.get("md")
-    csv_path = args.csv or (hw / "export" / "books" / csv_file if csv_file else None)
-    md_path = args.md or (hw / "books" / md_file if md_file else None)
 
-    if not args.page_range:
+    if args.page_range:
+        csv_path = None
+        md_path = None
+    else:
+        cfg = SOURCE_CONFIG.get(args.source_id)
+        if not cfg:
+            print(f"ERROR: no config for source_id={args.source_id}", file=sys.stderr)
+            sys.exit(1)
+        csv_file = cfg.get("csv")
+        md_file = cfg.get("md")
+        csv_path = args.csv or (hw / "export" / "books" / csv_file if csv_file else None)
+        md_path = args.md or (hw / "books" / md_file if md_file else None)
+
         if not csv_path or not csv_path.exists():
             print(f"ERROR: CSV not found: {csv_path or '(not configured)'}", file=sys.stderr)
             sys.exit(1)

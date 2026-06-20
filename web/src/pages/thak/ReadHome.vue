@@ -46,6 +46,7 @@ const catTabs = computed(() => [
   { key: 'dictionary', label: t2s('辭書') },
   { key: 'textbook', label: t2s('教材') },
   { key: 'scripture', label: t2s('經文') },
+  { key: 'play', label: t2s('戲文') },
 ])
 
 const sources = ref([])
@@ -61,14 +62,24 @@ onMounted(async () => {
   }
 })
 
+const sortSources = (a, b) => {
+  const aHasEntries = a.total_entries ? 1 : 0
+  const bHasEntries = b.total_entries ? 1 : 0
+  if (bHasEntries !== aHasEntries) return bHasEntries - aHasEntries
+  const aHasPages = a.total_pages ? 1 : 0
+  const bHasPages = b.total_pages ? 1 : 0
+  if (bHasPages !== aHasPages) return bHasPages - aHasPages
+  return (a.year || 0) - (b.year || 0)
+}
+
 const filtered = computed(() => {
   const key = catTabs.value[activeCat.value].key
-  if (key === 'all') return sources.value
-  return sources.value.filter(s => s.type === key)
+  const list = key === 'all' ? sources.value : sources.value.filter(s => s.type === key)
+  return [...list].sort(sortSources)
 })
 
 function typeLabel(type) {
-  const map = { dictionary: t2s('辭書'), textbook: t2s('教材'), scripture: t2s('經文') }
+  const map = { dictionary: t2s('辭書'), textbook: t2s('教材'), scripture: t2s('經文'), play: t2s('戲文') }
   return map[type] || type
 }
 </script>

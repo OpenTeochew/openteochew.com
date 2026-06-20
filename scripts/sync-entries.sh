@@ -106,13 +106,14 @@ while [ $# -gt 0 ]; do
 done
 
 if [ "$MODE" = "--remote" ]; then
-  if [ ! -f "$ROOT/.env.dev" ]; then
-    echo "ERROR: $ROOT/.env.dev not found (required for --remote)" >&2
+  ENV_FILE="$ROOT/../.env.dev"
+  if [ ! -f "$ENV_FILE" ]; then
+    echo "ERROR: $ENV_FILE not found (required for --remote)" >&2
     exit 1
   fi
   set -a
   # shellcheck disable=SC1091
-  source "$ROOT/.env.dev"
+  source "$ENV_FILE"
   set +a
 fi
 
@@ -126,23 +127,16 @@ echo "=== Sync source_id=$SOURCE_ID ($MODE) ==="
 echo "  HW:   $HW"
 echo
 
-# Slug mapping (mirrors sync-entries.py SOURCE_CONFIG)
+# Read slug from sources.csv
 slug_for_id() {
-  case "$1" in
-    1) echo "Handbook_of_the_Swatow_Vernacular" ;;
-    2) echo "First_Lessons_in_the_Tie_chiw_Dialect" ;;
-    3) echo "English_Chinese_Vocabulary_of_the_Vernacular_Or_Spoken_Language_of_Swatow" ;;
-    4) echo "A_Pronouncing_and_Defining_Dictionary_of_the_Swatow_Dialect" ;;
-    5) echo "A_Chinese_and_English_vocabulary_in_the_Tie_chiu_dialect" ;;
-    6) echo "First_Lessons_in_the_Swatow_Dialect" ;;
-    7) echo "Handbook_of_the_Swatow_Dialect" ;;
-    8) echo "Primary_Lessons_in_Swatow_Grammar" ;;
-    9) echo "A_Swatow_Index_to_the_Syllabic_Dictionary_of_Chinese" ;;
-    10) echo "Sin_Ieh_Ma_Thai_Hok_Im_Tsur_Tshuan_Tsur" ;;
-    11) echo "Ku_ieh_Tshang_Si_Ki_Tshuan_Tsur" ;;
-    12) echo "The_Swatow_Syllabary_with_Mandarin_Pronunciations" ;;
-    *) echo "" ;;
-  esac
+  python3 -c "
+import csv, sys
+src_id = int(sys.argv[1])
+with open('$ROOT/sources.csv', newline='') as f:
+    for row in csv.DictReader(f):
+        if int(row['id']) == src_id:
+            print(row['slug'] or '')
+" "$1" || echo ""
 }
 
 if [ -n "$UPLOAD_PDF" ]; then
