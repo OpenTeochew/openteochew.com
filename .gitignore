@@ -4,3 +4,4 @@ backend/public/scans/
 node_modules/
 .wrangler/
 .env.dev
+__pycache__/

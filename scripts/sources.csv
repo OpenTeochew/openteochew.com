@@ -12,7 +12,7 @@ id,slug,name,name_zh,author,year,type,level,status,description,sort_order,origin
 11,Ku_ieh_Tshang_Si_Ki_Tshuan_Tsur,Kū-ieh Tshàng-Sì-Kì Tshuân-Tsṳ,舊約創世紀全書,"William Duffus（[英]卓威廉; John Campbell Gibson（[英]汲約翰）",1888,scripture,SS,public_domain,"由澳洲雪梨 Dr. Kenny Wang 數位化，影像著作權歸其所有。",11,puj
 12,The_Swatow_Syllabary_with_Mandarin_Pronunciations,The Swatow Syllabary with Mandarin Pronunciations,潮正兩音字集,"John Steele（[英]池約翰）",1924,dictionary,SS,public_domain,,12,"han,puj"
 13,Nisshin_Kaiwa,日汕會話,日汕會話,"臺灣總督府文教局學務課",1938,textbook,SS,public_domain,"臺灣總督府編纂之日汕會話教材，昭和13年（1938）出版。內容分發音、單語、會話三篇。",13,"ja,han"
-14,Teochiu_Textbook_1912,แบบหัดพูดภาษาเตี้ยจิว (แต้จิ๋ว),潮州話教科書,ไต้เงี้ยบ (Tai Ngieb),1912,textbook,SS,public_domain,"使用泰文發音向泰國人教授潮州話。",14,"th"
+14,Teochiu_Textbook_1912,แบบหัดพูดภาษาเตี้ยจิว (แต้จิ๋ว),潮州話教科書,ไต้เงี้ยบ (Tai Ngieb),1912,textbook,SS,public_domain,"使用泰文發音向泰國人教授潮州話。 [Wikisource](https://th.wikisource.org/wiki/%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%AB%E0%B8%B1%E0%B8%94%E0%B8%9E%E0%B8%B9%E0%B8%94%E0%B8%A0%E0%B8%B2%E0%B8%A9%E0%B8%B2%E0%B9%80%E0%B8%95%E0%B8%B5%E0%B9%89%E0%B8%A2%E0%B8%88%E0%B8%B4%E0%B8%A7_(%E0%B9%81%E0%B8%95%E0%B9%89%E0%B8%88%E0%B8%B4%E0%B9%8B%E0%B8%A7))",14,"th"
 15,Jitsuyo_Nisshin_Go_Shokkei,實用日汕語捷徑,實用日汕語捷徑,"[日]安重龜三郎",1920,textbook,SS,public_domain,"汕頭東瀛學校發行，大正九年（1920）出版。",15,"ja,han"
 16,Hue_Chip_Ngia_Sok_Tsap_Ngou_Im_Tshuan_Png,彙集雅俗十五音全本,擊木知音,[民國]江夏懋亭氏,1915,dictionary,SS,public_domain,"[維基百科](https://zh.wikipedia.org/wiki/彙集雅俗通十五音全本)",16,"han"
 17,Iau_Li_Mng_Tap,要理問答,要理問答,香港主教師准,1911,scripture,SS,public_domain,"",17,"puj,han"
