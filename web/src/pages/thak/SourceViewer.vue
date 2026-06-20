@@ -3,12 +3,12 @@
   <div v-else-if="!source" style="text-align:center;padding:80px 0;color:var(--muted)">{{ t2s('來源未找到') }}</div>
   <div v-else>
     <div class="container breadcrumb">
-      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">{{ t2s('字典原冊') }}</router-link> › <span style="color:var(--fg)">{{ source.name }}{{ source.name_zh ? '（' + t2s(source.name_zh) + '）' : '' }}</span>
+      <router-link :to="{ name: 'ReadHome' }">Thak</router-link> › <router-link :to="{ name: 'ReadHome' }">{{ t2s('字典原冊') }}</router-link> › <span style="color:var(--fg)">{{ source.name }}{{ source.name_zh && source.name_zh !== source.name ? '（' + t2s(source.name_zh) + '）' : '' }}</span>
     </div>
     <div class="container dict-header">
       <div class="dict-header-inner">
         <div>
-          <h1>{{ t2s(source.name) }}{{ source.name_zh ? '（' + t2s(source.name_zh) + '）' : '' }}</h1>
+          <h1>{{ t2s(source.name) }}{{ source.name_zh && source.name_zh !== source.name ? '（' + t2s(source.name_zh) + '）' : '' }}</h1>
           <p class="meta-text">{{ [t2s(source.author), source.year].filter(Boolean).join(' · ') }}</p>
           <div v-if="source.description" class="dict-desc" v-html="marked.parse(t2s(source.description))"></div>
         </div>
@@ -51,7 +51,7 @@
                 <img v-if="pageImageUrl" :src="pageImageUrl" :alt="t2s('第') + ' ' + pageNum + ' ' + t2s('頁')" style="max-width:100%;max-height:100%;object-fit:contain;cursor:pointer" @error="imgError = true" @click="openLightbox">
                 <div v-if="!pageImageUrl || imgError" class="scan-image-ph">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  <p>{{ t2s('原冊掃描頁面') }}<br><span style="font-size:12px;color:var(--meta)">{{ t2s('第') }} {{ pageNum }} {{ t2s('頁') }} · {{ source?.name }}{{ source?.name_zh ? '（' + source.name_zh + '）' : '' }}</span></p>
+                  <p>{{ t2s('原冊掃描頁面') }}<br><span style="font-size:12px;color:var(--meta)">{{ t2s('第') }} {{ pageNum }} {{ t2s('頁') }} · {{ source?.name }}{{ source?.name_zh && source.name_zh !== source.name ? '（' + source.name_zh + '）' : '' }}</span></p>
                 </div>
               </div>
               <div class="scan-panel-nav">
@@ -170,7 +170,7 @@ async function loadData() {
     ])
     source.value = sourceResult
     pages.value = pagesResult
-    const raw = sourceResult.name + (sourceResult.name_zh ? `（${sourceResult.name_zh}）` : '') + ' — 潮州話開放資料庫'
+    const raw = sourceResult.name + (sourceResult.name_zh && sourceResult.name_zh !== sourceResult.name ? `（${sourceResult.name_zh}）` : '') + ' — 潮州話開放資料庫'
     document.documentElement.dataset.origTitle = raw
     document.title = t2s(raw)
   } catch (e) {
