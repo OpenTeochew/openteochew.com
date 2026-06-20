@@ -508,11 +508,18 @@ def execute_remote(statements):
             Path(tmp_path).unlink(missing_ok=True)
 
 
-def sync_pages_phase(cur, source_id, md_path, slug):
+def sync_pages_phase(cur, source_id, md_path, slug, force=False):
     new_pages = parse_pages(md_path)
     if not new_pages:
         print("  pages: no page markers found, skipping")
         return set(), []
+
+    if force:
+        print(f"  pages: FORCE re-sync {len(new_pages)} pages")
+        changed_page_nums = {p["page_num"] for p in new_pages}
+        stmts = [f"DELETE FROM pages WHERE source_id = {source_id};"]
+        stmts.extend(generate_pages_sql(source_id, slug, new_pages, [], []))
+        return changed_page_nums, stmts
 
     backfilled = backfill_hashes(cur, source_id)
     if backfilled:
@@ -543,9 +550,15 @@ def sync_pages_phase(cur, source_id, md_path, slug):
     return changed_page_nums, stmts
 
 
-def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold, hw_path=None):
+def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold, hw_path=None, force=False):
     csv_rows = parse_csv(csv_path, hw_path=hw_path)
     print(f"  CSV: {len(csv_rows)} rows")
+
+    if force:
+        print(f"  entries: FORCE re-sync all entries ({len(csv_rows)} rows)")
+        stmts = [f"DELETE FROM entries WHERE source_id = {source_id};"]
+        stmts.extend(generate_clean_entries_sql(source_id, csv_rows))
+        return stmts
 
     if changed_page_nums is not None:
         page_nums_list = list(changed_page_nums) if changed_page_nums else None
@@ -641,6 +654,7 @@ def main():
     parser.add_argument("--entries-only", action="store_true", help="skip pages sync")
     parser.add_argument("--match-threshold", type=float, default=0.8, help="fuzzy match threshold")
     parser.add_argument("--page-range", help="image-only pages, e.g. '1-300' or '300'")
+    parser.add_argument("--force", action="store_true", help="force full re-sync (delete + re-insert)")
     args = parser.parse_args()
 
     slug = load_slug_from_csv(args.source_id)
@@ -679,6 +693,11 @@ def main():
                 new_pages = parse_pages(md_path)
                 if not new_pages:
                     print("  pages: no page markers found, skipping")
+                elif args.force:
+                    print(f"  pages: FORCE re-sync {len(new_pages)} pages")
+                    changed_page_nums = {p["page_num"] for p in new_pages}
+                    all_stmts.append(f"DELETE FROM pages WHERE source_id = {args.source_id};")
+                    all_stmts.extend(generate_pages_sql(args.source_id, slug, new_pages, [], []))
                 else:
                     db_hashes = db_page_hashes_remote(args.source_id)
                     added, modified, removed = diff_pages(db_hashes, new_pages)
@@ -691,24 +710,30 @@ def main():
                     all_stmts.extend(generate_pages_sql(args.source_id, slug, added, modified, removed))
 
             if not args.pages_only:
-                target_pages = None if args.entries_only else changed_page_nums
-                if target_pages is not None or args.entries_only:
+                if args.force:
                     csv_rows = parse_csv(csv_path, hw_path=str(hw))
-                    db_rows = db_entries_remote(args.source_id, target_pages)
-                    if len(db_rows) >= CLEAN_SYNC_THRESHOLD:
-                        scoped_csv = csv_rows if target_pages is None else [
-                            r for r in csv_rows if r.get("_page_num") in changed_page_nums
-                        ]
-                        print(f"  large change set ({len(db_rows)} db rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
-                        stmts = generate_clean_entries_sql(args.source_id, scoped_csv)
-                        print(f"  clean sync: delete + insert {len(scoped_csv)} entries")
-                    else:
-                        inserts, updates, deletes = diff_entries(csv_rows, db_rows, target_pages, args.match_threshold)
-                        print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
-                        stmts = generate_entries_sql(args.source_id, inserts, updates, deletes)
-                    all_stmts.extend(stmts)
-                elif changed_page_nums is not None and not changed_page_nums:
-                    print("  no page changes, skipping entries")
+                    print(f"  entries: FORCE re-sync all entries ({len(csv_rows)} rows)")
+                    all_stmts.append(f"DELETE FROM entries WHERE source_id = {args.source_id};")
+                    all_stmts.extend(generate_clean_entries_sql(args.source_id, csv_rows))
+                else:
+                    target_pages = None if args.entries_only else changed_page_nums
+                    if target_pages is not None or args.entries_only:
+                        csv_rows = parse_csv(csv_path, hw_path=str(hw))
+                        db_rows = db_entries_remote(args.source_id, target_pages)
+                        if len(db_rows) >= CLEAN_SYNC_THRESHOLD:
+                            scoped_csv = csv_rows if target_pages is None else [
+                                r for r in csv_rows if r.get("_page_num") in changed_page_nums
+                            ]
+                            print(f"  large change set ({len(db_rows)} db rows >= {CLEAN_SYNC_THRESHOLD}), using clean sync")
+                            stmts = generate_clean_entries_sql(args.source_id, scoped_csv)
+                            print(f"  clean sync: delete + insert {len(scoped_csv)} entries")
+                        else:
+                            inserts, updates, deletes = diff_entries(csv_rows, db_rows, target_pages, args.match_threshold)
+                            print(f"  entries diff: +{len(inserts)} ~{len(updates)} -{len(deletes)}")
+                            stmts = generate_entries_sql(args.source_id, inserts, updates, deletes)
+                        all_stmts.extend(stmts)
+                    elif changed_page_nums is not None and not changed_page_nums:
+                        print("  no page changes, skipping entries")
 
         if all_stmts:
             execute_remote(all_stmts)
@@ -747,29 +772,37 @@ def main():
                 if md_path and md_path.exists():
                     print(f"  MD:  {md_path}")
                     changed_page_nums, pages_stmts = sync_pages_phase(
-                        cur, args.source_id, md_path, slug
+                        cur, args.source_id, md_path, slug,
+                        force=args.force,
                     )
                     all_stmts.extend(pages_stmts)
                 else:
                     print(f"  MD:  not found, skipping pages")
 
             if not args.pages_only:
-                if args.entries_only:
-                    entries_changed = None
-                elif changed_page_nums is not None and not changed_page_nums:
-                    print("  no page changes, skipping entries")
-                    entries_changed = None
-                elif changed_page_nums is not None:
-                    entries_changed = changed_page_nums
-                else:
-                    entries_changed = None
-
-                if entries_changed is not None or args.entries_only:
+                if args.force:
                     entries_stmts = sync_entries_phase(
-                        cur, args.source_id, csv_path, entries_changed, args.match_threshold,
-                        hw_path=str(hw),
+                        cur, args.source_id, csv_path, None, args.match_threshold,
+                        hw_path=str(hw), force=True,
                     )
                     all_stmts.extend(entries_stmts)
+                else:
+                    if args.entries_only:
+                        entries_changed = None
+                    elif changed_page_nums is not None and not changed_page_nums:
+                        print("  no page changes, skipping entries")
+                        entries_changed = None
+                    elif changed_page_nums is not None:
+                        entries_changed = changed_page_nums
+                    else:
+                        entries_changed = None
+
+                    if entries_changed is not None or args.entries_only:
+                        entries_stmts = sync_entries_phase(
+                            cur, args.source_id, csv_path, entries_changed, args.match_threshold,
+                            hw_path=str(hw),
+                        )
+                        all_stmts.extend(entries_stmts)
 
         if all_stmts:
             for stmt in all_stmts:

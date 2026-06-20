@@ -98,6 +98,7 @@ while [ $# -gt 0 ]; do
       ;;
     --force)
       FORCE="--force"
+      EXTRA_ARGS+=("--force")
       shift
       ;;
     --force-pages)
