@@ -21,6 +21,9 @@ Options:
   --page-range R    Image-only pages (no OCR/entries). e.g. '1-300' or '300'
   --upload-pdf PATH Upload PDF to R2 before syncing
   --slug SLUG       Book slug for --upload-pdf (default: derived from source-id)
+  --dpi N           Render DPI for --upload-pdf (default: 300)
+  --force           Re-split and overwrite all pages in R2
+  --force-pages R   Re-split and overwrite specific pages only (e.g. 1-20)
   --threshold F     Fuzzy match threshold (default: 0.8)
   --csv PATH        Override CSV path
   --md PATH         Override markdown path
@@ -41,6 +44,9 @@ HW="$ROOT/../dataset"
 PAGE_RANGE_MODE=false
 UPLOAD_PDF=""
 SLUG=""
+DPI=""
+FORCE=""
+FORCE_PAGES=""
 EXTRA_ARGS=()
 
 while [ $# -gt 0 ]; do
@@ -84,6 +90,22 @@ while [ $# -gt 0 ]; do
       ;;
     --slug=*)
       SLUG="${1#*=}"
+      shift
+      ;;
+    --dpi)
+      DPI="$2"
+      shift 2
+      ;;
+    --force)
+      FORCE="--force"
+      shift
+      ;;
+    --force-pages)
+      FORCE_PAGES="--force-pages $2"
+      shift 2
+      ;;
+    --force-pages=*)
+      FORCE_PAGES="--force-pages ${1#*=}"
       shift
       ;;
     --skip-existing)
@@ -155,7 +177,7 @@ if [ -n "$UPLOAD_PDF" ]; then
   echo "  PDF:  $UPLOAD_PDF"
   echo "  Slug: $SLUG"
   echo
-  python3 scripts/upload-pdf.py --pdf="$UPLOAD_PDF" --slug="$SLUG" --skip-existing --yes
+  python3 scripts/upload-pdf.py --pdf="$UPLOAD_PDF" --slug="$SLUG" --skip-existing --yes${DPI:+ --dpi "$DPI"} $FORCE $FORCE_PAGES
   echo
 fi
 
