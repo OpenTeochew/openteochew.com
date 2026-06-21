@@ -22,6 +22,7 @@ Options:
   --upload-pdf PATH Upload PDF to R2 before syncing
   --slug SLUG       Book slug for --upload-pdf (default: derived from source-id)
   --dpi N           Render DPI for --upload-pdf (default: 300)
+  --pages R         Upload specific pages only (e.g. 219-590). Passed to upload-pdf.py
   --force           Re-split and overwrite all pages in R2
   --force-pages R   Re-split and overwrite specific pages only (e.g. 1-20)
   --threshold F     Fuzzy match threshold (default: 0.8)
@@ -45,6 +46,7 @@ PAGE_RANGE_MODE=false
 UPLOAD_PDF=""
 SLUG=""
 DPI=""
+PAGES=""
 FORCE=""
 FORCE_PAGES=""
 EXTRA_ARGS=()
@@ -94,6 +96,10 @@ while [ $# -gt 0 ]; do
       ;;
     --dpi)
       DPI="$2"
+      shift 2
+      ;;
+    --pages)
+      PAGES="$2"
       shift 2
       ;;
     --force)
@@ -178,7 +184,7 @@ if [ -n "$UPLOAD_PDF" ]; then
   echo "  PDF:  $UPLOAD_PDF"
   echo "  Slug: $SLUG"
   echo
-  python3 scripts/upload-pdf.py --pdf="$UPLOAD_PDF" --slug="$SLUG" --skip-existing --yes${DPI:+ --dpi "$DPI"} $FORCE $FORCE_PAGES
+  python3 scripts/upload-pdf.py --pdf="$UPLOAD_PDF" --slug="$SLUG" --skip-existing --yes${DPI:+ --dpi "$DPI"} ${PAGES:+ --pages "$PAGES"} $FORCE $FORCE_PAGES
   echo
 fi
 

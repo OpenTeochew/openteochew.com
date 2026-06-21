@@ -22,7 +22,8 @@
               <div class="dict-meta">
                 <span class="dict-tag">{{ typeLabel(s.type) }}</span>
                 <span v-if="s.total_entries" class="meta-text">{{ s.total_entries.toLocaleString() }} {{ t2s('詞條') }}</span>
-                <span v-else class="source-pending">{{ t2s('收錄中') }}</span>
+                <span v-else-if="!s.total_pages" class="status-missing">{{ t2s('缺') }}</span>
+                <span v-else class="status-ocr">{{ t2s('待OCR') }}</span>
                 <span class="meta-text">{{ s.total_pages ? s.total_pages + ' ' + t2s('頁') : '' }}</span>
               </div>
             </div>
@@ -47,6 +48,7 @@ const catTabs = computed(() => [
   { key: 'textbook', label: t2s('教材') },
   { key: 'scripture', label: t2s('經文') },
   { key: 'play', label: t2s('戲文') },
+  { key: 'folk', label: t2s('歌謠') },
 ])
 
 const sources = ref([])
@@ -79,7 +81,7 @@ const filtered = computed(() => {
 })
 
 function typeLabel(type) {
-  const map = { dictionary: t2s('辭書'), textbook: t2s('教材'), scripture: t2s('經文'), play: t2s('戲文') }
+  const map = { dictionary: t2s('辭書'), textbook: t2s('教材'), scripture: t2s('經文'), play: t2s('戲文'), folk: t2s('歌謠') }
   return map[type] || type
 }
 </script>
