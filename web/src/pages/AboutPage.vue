@@ -15,7 +15,7 @@ const { t2s } = useSimplified()
           <h2>{{ t2s('核心理念') }}</h2>
           <ul class="about-list">
             <li><strong>{{ t2s('匯集而非創建') }}</strong><p>{{ t2s('收錄、整理、歸檔已有的潮州話字典、詞典與語料，不憑空造詞。') }}</p></li>
-            <li><strong>{{ t2s('開放數據') }}</strong><p>{{ t2s('所有整理後的數據以 CC0 公共領域授權發布，允許自由使用、研究與二次開發。') }}</p></li>
+            <li><strong>{{ t2s('開放數據') }}</strong><p>{{ t2s('所有整理後的結構化數據（詞條、OCR 校訂）以 CC0 公共領域授權發布。掃描影像版權因來源而異，') }}<router-link to="/license">{{ t2s('詳見版權聲明') }}</router-link>{{ t2s('。') }}</p></li>
             <li><strong>{{ t2s('描述主義') }}</strong><p>{{ t2s('收錄各家流行的寫法、讀音、用法，包含公認正確的用法，也包含新興的、小眾的用法。') }}</p></li>
             <li><strong>{{ t2s('來源透明') }}</strong><p>{{ t2s('每條結果標明原始字典、頁碼與版權狀態，可追溯至原始文獻。') }}</p></li>
           </ul>
@@ -58,6 +58,13 @@ const { t2s } = useSimplified()
               — {{ t2s('基礎設施託管，提供了極為慷慨的免費額度') }}
             </li>
           </ul>
+        </div>
+        <div class="about-section">
+          <p class="meta-text">
+            <router-link to="/privacy">{{ t2s('隱私條款') }}</router-link>
+            ·
+            <router-link to="/license">{{ t2s('版權聲明') }}</router-link>
+          </p>
         </div>
       </div>
     </section>

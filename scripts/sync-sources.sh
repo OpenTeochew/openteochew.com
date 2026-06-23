@@ -6,6 +6,8 @@ BACKEND="$ROOT/backend"
 CSV="$ROOT/scripts/sources.csv"
 DB="openteochew-db"
 
+trap 'echo "❌ $(basename "$0") 失敗：第 $LINENO 行（指令：$BASH_COMMAND）" >&2' ERR
+
 show_help() {
   cat <<EOF
 Usage: $(basename "$0") [--local | --remote]
@@ -43,7 +45,7 @@ SQL_FILE="/tmp/openteochew-sync-sources-$$.sql"
 python3 <<PYEOF > "$SQL_FILE"
 import csv, sys
 
-FIELDS = ["id","name","name_zh","author","year","type","level","status","description","sort_order","original_fields"]
+FIELDS = ["id","name","name_zh","author","year","type","level","status","description","sort_order","original_fields","scan_source","proofread_note"]
 
 with open("$CSV", newline="", encoding="utf-8") as f:
     reader = csv.DictReader(f)

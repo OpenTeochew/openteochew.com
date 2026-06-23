@@ -3,6 +3,8 @@ set -e
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
+trap 'echo "❌ $(basename "$0") 失敗：第 $LINENO 行（指令：$BASH_COMMAND）" >&2' ERR
+
 usage() {
   cat <<EOF
 Usage: $0 [--local|--remote] [options]

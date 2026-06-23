@@ -18,7 +18,7 @@
           <li>{{ locale.t2s('國家社會科學基金研究項目「近代域外潮州方言文獻所見詞彙系統及其歷史演變研究」（25BYY061）') }}</li>
         </ul>
         <span class="foot-links">
-          <span>&copy; 2026 OpenTeochew · CC0 {{ locale.t2s('數據') }} · MIT {{ locale.t2s('代碼') }} · <router-link to="/privacy">{{ locale.t2s('隱私條款') }}</router-link></span>
+          <span>&copy; 2026 OpenTeochew · <router-link to="/license">{{ locale.t2s('版權聲明') }}</router-link> · <router-link to="/privacy">{{ locale.t2s('隱私條款') }}</router-link></span>
         </span>
       </div>
       <div class="foot-right">
