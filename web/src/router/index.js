@@ -43,6 +43,11 @@ const routes = [
     path: '/privacy',
     name: 'Privacy',
     component: () => import('../pages/PrivacyPage.vue')
+  },
+  {
+    path: '/license',
+    name: 'License',
+    component: () => import('../pages/LicensePage.vue')
   }
 ]
 
@@ -59,7 +64,8 @@ const titles = {
   ArticleReader: '閱讀 — 潮州話開放資料庫',
   SourceViewer: '來源 — 潮州話開放資料庫',
   About: '關於 — 潮州話開放資料庫',
-  Privacy: '隱私條款 — 潮州話開放資料庫'
+  Privacy: '隱私條款 — 潮州話開放資料庫',
+  License: '版權聲明 — 潮州話開放資料庫'
 }
 
 const t2sSimple = (() => {
