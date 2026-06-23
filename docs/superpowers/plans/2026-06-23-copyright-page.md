@@ -372,7 +372,7 @@ onMounted(async () => {
                 <td>{{ src.author ? t2s(src.author) : '—' }}</td>
                 <td class="col-pub">{{ src.year || '—' }}</td>
                 <td class="col-pub">{{ t2s('公共領域') }}</td>
-                <td class="col-scan">{{ src.scan_source && src.scan_source !== '—' ? t2s(src.scan_source) : '—' }}</td>
+                <td class="col-scan">{{ src.scan_source ? t2s(src.scan_source) : '—' }}</td>
               </tr>
             </tbody>
           </table>
