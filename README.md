@@ -18,7 +18,7 @@ OpenTeochew aggregates entries and texts from Teochew dictionaries and textbooks
 - **原文掃描** — 逐頁瀏覽字典原冊掃描影像，並附 OCR 文字（原文/校訂對照）
 - **語料閱讀** — Markdown 格式的潮州話語料文章，附目錄導航
 - **繁簡切換** — 全站 UI 文字與詞條漢字動態轉換為簡體中文
-- **開源數據** — 數據 CC0，代碼 MIT
+- **開源數據** — 結構化數據 CC0，掃描影像版權逐源標注，代碼 MIT
 
 ## 技術棧 / Tech Stack
 
@@ -114,7 +114,9 @@ Contributions are welcome via Issues and Pull Requests. Please read [AGENTS.md](
 ## 授權 / License
 
 - **代碼**：[MIT](LICENSE)
-- **數據**：CC0
+- **結構化數據**（詞條、OCR 校訂）：CC0
+- **掃描影像**：因來源而異，詳見[版權聲明](https://openteochew.com/#/license)
+- **原書文獻**：公共領域
 
 ---
 
