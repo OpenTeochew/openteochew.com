@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+trap 'echo "❌ $(basename "$0") 失敗：第 $LINENO 行（指令：$BASH_COMMAND）" >&2' ERR
+
 echo "Building OpenTeochew..."
 
 STATIC_DIR="backend/public"

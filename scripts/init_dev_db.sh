@@ -5,6 +5,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DB="$ROOT/tmp/openteochew.db"
 HW="${HW:-$HOME/Documents/Code/hokkien-writing/dataset}"
 
+trap 'echo "❌ $(basename "$0") 失敗：第 $LINENO 行（指令：$BASH_COMMAND）" >&2' ERR
+
 mkdir -p "$ROOT/tmp"
 rm -f "$DB"
 
