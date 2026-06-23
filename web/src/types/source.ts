@@ -13,6 +13,8 @@ export interface Source {
   total_pages: number
   sort_order: number
   original_fields: string | null
+  scan_source: string | null
+  proofread_note: string | null
 }
 
 export interface SourceDetail extends Source {
