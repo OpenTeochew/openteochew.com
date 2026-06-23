@@ -76,6 +76,11 @@ tmp/                  # 原型（已忽略）
 - Worker name: `openteochew`，custom domain: `openteochew.com` + `www.openteochew.com`
 - 原型參考：`tmp/index.html`（已 gitignore）
 
+## Git Workflow
+
+- 功能開發分支格式：`feat/年月日/功能說明`（例：`feat/20260623/copyright-page`）
+- 從 `main` 切出，開發完成後合併回 `main`
+
 ## Coding Principles
 
 1. **Think Before Coding** — 不假設，不掩蓋困惑，主動揭示權衡。
