@@ -76,7 +76,7 @@ cd "$BACKEND"
 if [ "$MODE" = "--local" ]; then
   npx wrangler d1 execute "$DB" --local --file "$SQL_FILE"
 else
-  npx wrangler d1 execute "$DB" --remote --file "$SQL_FILE"
+  npx wrangler d1 execute "$DB" --remote --yes --file "$SQL_FILE"
 fi
 cd "$ROOT"
 

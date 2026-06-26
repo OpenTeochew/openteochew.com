@@ -498,7 +498,7 @@ def execute_remote(statements):
             total_batches = (len(statements) + BATCH_SIZE - 1) // BATCH_SIZE
             print(f"  executing batch {batch_num}/{total_batches} ({len(batch)} statements)...")
             subprocess.run(
-                ["npx", "--yes", "wrangler", "d1", "execute", D1_NAME, "--remote", f"--file={tmp_path}"],
+                ["npx", "--yes", "wrangler", "d1", "execute", D1_NAME, "--remote", "--yes", f"--file={tmp_path}"],
                 check=True, cwd=REPO,
             )
             Path(tmp_path).unlink(missing_ok=True)
@@ -588,7 +588,7 @@ def sync_entries_phase(cur, source_id, csv_path, changed_page_nums, threshold, h
 
 def query_remote(sql):
     result = subprocess.run(
-        ["npx", "--yes", "wrangler", "d1", "execute", D1_NAME, "--remote", "--json", "--command", sql],
+        ["npx", "--yes", "wrangler", "d1", "execute", D1_NAME, "--remote", "--yes", "--json", "--command", sql],
         capture_output=True, text=True, cwd=REPO,
     )
     if result.returncode != 0:

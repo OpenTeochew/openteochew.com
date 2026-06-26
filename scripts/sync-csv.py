@@ -257,7 +257,7 @@ def execute_remote(statements):
             total_batches = (len(statements) + BATCH_SIZE - 1) // BATCH_SIZE
             print(f"  Executing batch {batch_num}/{total_batches} ({len(batch)} statements)...")
             subprocess.run(
-                ["npx", "wrangler", "d1", "execute", D1_NAME, "--remote", f"--file={tmp_path}"],
+                ["npx", "wrangler", "d1", "execute", D1_NAME, "--remote", "--yes", f"--file={tmp_path}"],
                 check=True, cwd=REPO,
             )
             Path(tmp_path).unlink(missing_ok=True)
