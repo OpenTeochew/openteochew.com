@@ -43,7 +43,7 @@ EOF
 
 MODE="--local"
 SOURCE_ID=1
-HW="$ROOT/../dataset"
+HW="${HW_DATASET:-$ROOT/../dataset}"
 PAGE_RANGE_MODE=false
 UPLOAD_PDF=""
 SLUG=""
