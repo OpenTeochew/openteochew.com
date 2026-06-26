@@ -158,8 +158,9 @@ CREATE TABLE sources (
   name TEXT NOT NULL,
   name_zh TEXT,
   author TEXT,
+  publisher TEXT,
   year TEXT,
-  type TEXT NOT NULL DEFAULT 'text_dict',
+  type TEXT NOT NULL DEFAULT 'dictionary',
   level TEXT,
   status TEXT DEFAULT 'pending',
   description TEXT,
@@ -167,6 +168,9 @@ CREATE TABLE sources (
   total_entries INTEGER DEFAULT 0,
   total_pages INTEGER DEFAULT 0,
   sort_order INTEGER DEFAULT 0,
+  original_fields TEXT,
+  scan_source TEXT,
+  proofread_note TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now'))
 );

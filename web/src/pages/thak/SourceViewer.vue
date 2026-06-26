@@ -9,8 +9,12 @@
       <div class="dict-header-inner">
         <div>
           <h1>{{ t2s(source.name) }}{{ source.name_zh && source.name_zh !== source.name ? '（' + t2s(source.name_zh) + '）' : '' }}</h1>
-          <p class="meta-text">{{ [t2s(source.author), source.year].filter(Boolean).join(' · ') }}</p>
+          <p class="meta-text">{{ [t2s(source.author), source.publisher && t2s(source.publisher), source.year].filter(Boolean).join(' · ') }}</p>
           <div v-if="source.description" class="dict-desc" v-html="marked.parse(t2s(source.description))"></div>
+          <div v-if="source.scan_source || source.proofread_note" class="dict-meta">
+            <span v-if="source.scan_source" class="dict-meta-item">{{ t2s('掃描影像') }}：{{ t2s(source.scan_source) }}</span>
+            <span v-if="source.proofread_note" class="dict-meta-item">{{ t2s('校訂') }}：{{ t2s(source.proofread_note) }}</span>
+          </div>
         </div>
       </div>
     </div>

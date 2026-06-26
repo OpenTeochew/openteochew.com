@@ -37,6 +37,7 @@ onMounted(async () => {
               <tr>
                 <th>{{ t2s('書名') }}</th>
                 <th>{{ t2s('作者') }}</th>
+                <th>{{ t2s('出版') }}</th>
                 <th>{{ t2s('年份') }}</th>
                 <th>{{ t2s('原書') }}</th>
                 <th>{{ t2s('掃描影像') }}</th>
@@ -50,6 +51,7 @@ onMounted(async () => {
                   </router-link>
                 </td>
                 <td>{{ src.author ? t2s(src.author) : '—' }}</td>
+                <td>{{ src.publisher ? t2s(src.publisher) : '—' }}</td>
                 <td class="col-pub">{{ src.year || '—' }}</td>
                 <td class="col-pub">{{ t2s('公共領域') }}</td>
                 <td class="col-scan">{{ src.scan_source ? t2s(src.scan_source) : '—' }}</td>

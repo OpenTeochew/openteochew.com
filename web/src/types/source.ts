@@ -3,8 +3,9 @@ export interface Source {
   name: string
   name_zh: string | null
   author: string | null
+  publisher: string | null
   year: string | null
-  type: 'dictionary' | 'textbook'
+  type: 'dictionary' | 'textbook' | 'scripture' | 'play' | 'folk'
   level: string | null
   status: string | null
   description: string | null
