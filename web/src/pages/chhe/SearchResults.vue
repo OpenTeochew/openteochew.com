@@ -33,6 +33,7 @@
         <div v-else-if="store.error" style="text-align:center;padding:60px 0;color:var(--muted)">{{ store.error }}</div>
         <template v-else-if="store.result">
           <div class="results-header">
+            <p v-if="bridgeNotice" class="bridge-notice">{{ bridgeNotice }}</p>
             <p class="results-count">{{ t2s('找到') }} <strong>{{ total }}</strong> {{ t2s('筆結果') }}（{{ groups.length }} {{ t2s('個來源') }}）</p>
             <div class="filter-chips">
               <button v-for="(f, i) in filters" :key="f" class="filter-chip" :class="{ active: activeFilter === i }" @click="activeFilter = i">{{ f }}</button>
@@ -149,6 +150,11 @@ const groups = computed(() => {
   }).sort((a, b) => (a.source.year || '').localeCompare(b.source.year || ''))
 })
 const total = computed(() => store.result?.total || 0)
+const bridgeNotice = computed(() => {
+  const meta = store.result?.match_meta
+  if (meta?.mode !== 'mandarin_bridge' || !meta.bridge_terms?.length) return ''
+  return `${t2s('注：以下顯示包含英文')}「${meta.bridge_terms.join(', ')}」${t2s('的結果')}`
+})
 
 const filters = computed(() => {
   const names = groups.value.map(g => `${g.source.year ? g.source.year + '·' : ''}${t2s(g.source.name_zh || g.source.name)}`)

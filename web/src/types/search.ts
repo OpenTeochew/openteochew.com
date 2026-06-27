@@ -19,8 +19,14 @@ export interface SearchGroup {
   entries: Entry[]
 }
 
+export interface SearchMatchMeta {
+  mode: 'direct' | 'mandarin_bridge'
+  bridge_terms?: string[]
+}
+
 export interface SearchResult {
   total: number
   page: number
   groups: SearchGroup[]
+  match_meta?: SearchMatchMeta
 }
