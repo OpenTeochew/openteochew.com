@@ -100,8 +100,9 @@ def upload_to_r2(pages, slug, skip_existing, force_pages=None):
 
         if skip_existing and (not force_pages or page_num not in force_pages):
             check = subprocess.run(
-                ["wrangler", "r2", "object", "get", f"{R2_BUCKET}/{r2_key}", "--file", "/dev/null", "--remote"],
+                ["npx", "--yes", "wrangler", "r2", "object", "get", f"{R2_BUCKET}/{r2_key}", "--file", "/dev/null", "--remote"],
                 capture_output=True,
+                cwd=str(REPO / "backend"),
             )
             if check.returncode == 0:
                 print(f"  skip (exists): {r2_key}")
@@ -109,9 +110,10 @@ def upload_to_r2(pages, slug, skip_existing, force_pages=None):
                 continue
 
         result = subprocess.run(
-            ["wrangler", "r2", "object", "put", f"{R2_BUCKET}/{r2_key}", "--file", str(fpath), "--remote"],
+            ["npx", "--yes", "wrangler", "r2", "object", "put", f"{R2_BUCKET}/{r2_key}", "--file", str(fpath), "--remote"],
             capture_output=True,
             text=True,
+            cwd=str(REPO / "backend"),
         )
 
         if result.returncode == 0:

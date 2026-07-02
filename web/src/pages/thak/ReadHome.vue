@@ -16,7 +16,7 @@
           <router-link v-for="s in filtered" :key="s.id" :to="{ name: 'SourceViewer', params: { id: s.id } }" class="dict-card">
             <div v-if="s.cover_url" class="dict-cover"><img :src="s.cover_url" :alt="s.name_zh || s.name" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius);" /></div>
             <div class="dict-info">
-              <h3>{{ s.year }}·{{ s.name_zh ? `《${t2s(s.name_zh)}》` : s.name }}</h3>
+              <h3><template v-if="s.year">{{ s.year }}·</template>{{ s.name_zh ? `《${t2s(s.name_zh)}》` : s.name }}</h3>
               <p class="dict-name-en">{{ s.name }}</p>
               <p class="meta-text">{{ s.author }}</p>
               <div class="dict-meta">
@@ -48,7 +48,7 @@ const catTabs = computed(() => [
   { key: 'textbook', label: t2s('教材') },
   { key: 'scripture', label: t2s('經文') },
   { key: 'play', label: t2s('戲文') },
-  { key: 'folk', label: t2s('歌謠') },
+  { key: 'folk', label: t2s('歌冊') },
 ])
 
 const sources = ref([])
@@ -81,7 +81,7 @@ const filtered = computed(() => {
 })
 
 function typeLabel(type) {
-  const map = { dictionary: t2s('辭書'), textbook: t2s('教材'), scripture: t2s('經文'), play: t2s('戲文'), folk: t2s('歌謠') }
+  const map = { dictionary: t2s('辭書'), textbook: t2s('教材'), scripture: t2s('經文'), play: t2s('戲文'), folk: t2s('歌冊') }
   return map[type] || type
 }
 </script>
