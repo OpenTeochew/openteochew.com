@@ -71,7 +71,11 @@ const sortSources = (a, b) => {
   const aHasPages = a.total_pages ? 1 : 0
   const bHasPages = b.total_pages ? 1 : 0
   if (bHasPages !== aHasPages) return bHasPages - aHasPages
-  return (a.year || 0) - (b.year || 0)
+  const aHasYear = a.year ? 1 : 0
+  const bHasYear = b.year ? 1 : 0
+  if (bHasYear !== aHasYear) return bHasYear - aHasYear
+  if (aHasYear) return a.year - b.year
+  return 0
 }
 
 const filtered = computed(() => {
