@@ -80,7 +80,7 @@ CREATE INDEX IF NOT EXISTS idx_entries_mandarin ON entries(mandarin);
 CREATE INDEX IF NOT EXISTS idx_entries_ja ON entries(ja);
 CREATE INDEX IF NOT EXISTS idx_entries_page ON entries(source_id, page_num);
 CREATE INDEX IF NOT EXISTS idx_sections_source ON sections(source_id);
-CREATE INDEX IF NOT EXISTS idx_pages_source ON pages(source_id, page_num);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_pages_source_page_unique ON pages(source_id, page_num);
 CREATE INDEX IF NOT EXISTS idx_pages_hash ON pages(source_id, content_hash);
 CREATE INDEX IF NOT EXISTS idx_examples_entry ON examples(entry_id);
 CREATE INDEX IF NOT EXISTS idx_articles_source ON articles(source_id);
