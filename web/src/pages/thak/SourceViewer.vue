@@ -41,8 +41,10 @@
     <div class="container" style="padding-top:0">
       <div class="dict-split" :class="{ 'scan-open': scanOpen }">
         <div class="ocr-main">
-          <div v-if="renderedOcr" class="ocr-entries" v-html="renderedOcr"></div>
-          <div v-else class="ocr-entries" style="text-align:center;padding:60px 0;color:var(--muted)">{{ t2s('此頁無 OCR 文字') }}</div>
+          <div ref="ocrEntriesRef">
+            <div v-if="renderedOcr" class="ocr-entries" v-html="renderedOcr"></div>
+            <div v-else class="ocr-entries" style="text-align:center;padding:60px 0;color:var(--muted)">{{ t2s('此頁無 OCR 文字') }}</div>
+          </div>
         </div>
         <div class="scan-panel" :class="{ open: scanOpen }">
             <div class="scan-panel-bar">
@@ -90,6 +92,15 @@
     </button>
     <div class="lightbox-counter">{{ t2s('第') }} {{ pageNum }} / {{ source.total_pages || '?' }} {{ t2s('頁') }}</div>
   </div>
+  <SelectionPopover :container="ocrEntriesRef" @select="onSelectionReport" />
+  <SuggestModal
+    :open="suggestOpen"
+    initial-category="text_revision"
+    :initial-selected-text="suggestSelectedText"
+    :source-id="Number(props.id)"
+    :page-num="pageNum"
+    @close="suggestOpen = false"
+  />
 </template>
 
 <script setup>
@@ -98,6 +109,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { Marked } from 'marked'
 import { sourcesApi } from '../../api/sources'
 import { useSimplified } from '../../composables/useSimplified'
+import SelectionPopover from '../../components/SelectionPopover.vue'
+import SuggestModal from '../../components/SuggestModal.vue'
 const { t2s } = useSimplified()
 
 const marked = new Marked({ gfm: true, breaks: true })
@@ -115,6 +128,14 @@ const imgError = ref(false)
 const pages = ref([])
 const jumpTarget = ref(null)
 const lightboxOpen = ref(false)
+const ocrEntriesRef = ref(null)
+const suggestOpen = ref(false)
+const suggestSelectedText = ref('')
+
+function onSelectionReport(text) {
+  suggestSelectedText.value = text
+  suggestOpen.value = true
+}
 
 const canJump = computed(() => {
   const v = jumpTarget.value
