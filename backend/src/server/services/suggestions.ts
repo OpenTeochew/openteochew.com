@@ -1,4 +1,4 @@
-import type { Status } from '../schemas/suggestion'
+import type { Category, Status } from '../schemas/suggestion'
 
 const COOKIE_TTL_MS = 30 * 24 * 3600 * 1000
 
@@ -97,4 +97,146 @@ export async function verifyCookie(token: string, cookie: string, nowMs: number)
   } catch {
     return false
   }
+}
+
+// -------- D1 CRUD --------
+
+export interface SuggestionRow {
+  id: number
+  category: Category
+  source_id: number | null
+  page_num: number | null
+  url: string | null
+  selected_text: string | null
+  user_note: string | null
+  email: string | null
+  status: Status
+  admin_note: string | null
+  ip_hash: string | null
+  user_agent: string | null
+  created_at: string
+  reviewed_at: string | null
+  reviewed_by: string | null
+}
+
+export interface InsertInput {
+  category: Category
+  source_id?: number
+  page_num?: number
+  url: string
+  selected_text?: string
+  user_note?: string
+  email?: string
+  ip_hash?: string
+  user_agent?: string
+}
+
+export async function insertSuggestion(db: D1Database, input: InsertInput): Promise<number> {
+  const res = await db
+    .prepare(
+      `INSERT INTO suggestions
+       (category, source_id, page_num, url, selected_text, user_note, email, ip_hash, user_agent)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .bind(
+      input.category,
+      input.source_id ?? null,
+      input.page_num ?? null,
+      input.url,
+      input.selected_text ?? null,
+      input.user_note ?? null,
+      input.email ?? null,
+      input.ip_hash ?? null,
+      input.user_agent ?? null
+    )
+    .run()
+  return Number(res.meta.last_row_id)
+}
+
+export interface ListParams {
+  status: Status | 'all'
+  category: Category | 'all'
+  source_id?: number
+  page: number
+  limit: number
+}
+
+export async function listSuggestions(
+  db: D1Database,
+  p: ListParams
+): Promise<{ total: number; items: SuggestionRow[] }> {
+  const where: string[] = []
+  const args: unknown[] = []
+  if (p.status !== 'all') { where.push('status = ?'); args.push(p.status) }
+  if (p.category !== 'all') { where.push('category = ?'); args.push(p.category) }
+  if (p.source_id !== undefined) { where.push('source_id = ?'); args.push(p.source_id) }
+  const whereSql = where.length ? 'WHERE ' + where.join(' AND ') : ''
+
+  const countRow = await db
+    .prepare(`SELECT COUNT(*) as c FROM suggestions ${whereSql}`)
+    .bind(...args)
+    .first<{ c: number }>()
+  const total = countRow?.c ?? 0
+
+  const offset = (p.page - 1) * p.limit
+  const rows = await db
+    .prepare(
+      `SELECT * FROM suggestions ${whereSql}
+       ORDER BY created_at DESC, id DESC
+       LIMIT ? OFFSET ?`
+    )
+    .bind(...args, p.limit, offset)
+    .all<SuggestionRow>()
+
+  return { total, items: rows.results }
+}
+
+export async function getSuggestion(db: D1Database, id: number): Promise<SuggestionRow | null> {
+  return await db
+    .prepare('SELECT * FROM suggestions WHERE id = ?')
+    .bind(id)
+    .first<SuggestionRow>()
+}
+
+export async function updateSuggestion(
+  db: D1Database,
+  id: number,
+  patch: { status: Status; admin_note?: string }
+): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE suggestions SET
+         status = ?,
+         admin_note = COALESCE(?, admin_note),
+         reviewed_at = datetime('now'),
+         reviewed_by = 'admin'
+       WHERE id = ?`
+    )
+    .bind(patch.status, patch.admin_note ?? null, id)
+    .run()
+}
+
+export interface ExportParams {
+  source_id?: number
+  include_completed: boolean
+}
+
+export async function exportSuggestions(
+  db: D1Database,
+  p: ExportParams
+): Promise<SuggestionRow[]> {
+  const statuses = p.include_completed ? ['accepted', 'completed'] : ['accepted']
+  const placeholders = statuses.map(() => '?').join(',')
+  const where: string[] = [`status IN (${placeholders})`]
+  const args: unknown[] = [...statuses]
+  if (p.source_id !== undefined) { where.push('source_id = ?'); args.push(p.source_id) }
+  const rows = await db
+    .prepare(
+      `SELECT * FROM suggestions
+       WHERE ${where.join(' AND ')}
+       ORDER BY source_id ASC, page_num ASC, created_at ASC`
+    )
+    .bind(...args)
+    .all<SuggestionRow>()
+  return rows.results
 }
