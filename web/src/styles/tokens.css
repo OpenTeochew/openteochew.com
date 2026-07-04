@@ -325,9 +325,12 @@ u.ocr-corr-orig::after { content: "校訂：" attr(data-mod); }
 u.ocr-corr:hover::after { opacity: 1; }
 ins.ocr-ins { text-decoration: underline var(--fg-2) dashed 1px; text-underline-offset: 3px; font-style: normal; }
 sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-left: 1px; background: var(--surface-warm); padding: 1px 4px; border-radius: 3px; }
-.ocr-entries h3 { font-size: 18px; margin: 20px 0 8px; color: var(--fg); font-weight: bold; }
-.ocr-entries h4 { font-size: 17px; margin: 16px 0 6px; color: var(--fg); font-weight: bold; }
-.ocr-entries h5 { font-size: 15px; margin: 14px 0 4px; color: var(--fg); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.ocr-entries h1, .ocr-entries h2, .ocr-entries h3, .ocr-entries h4, .ocr-entries h5, .ocr-entries h6 { color: #b7410e; }
+.ocr-entries h1 { font-size: 22px; margin: 24px 0 10px; font-weight: bold; }
+.ocr-entries h2 { font-size: 20px; margin: 22px 0 9px; font-weight: bold; }
+.ocr-entries h3 { font-size: 18px; margin: 20px 0 8px; font-weight: bold; }
+.ocr-entries h4 { font-size: 17px; margin: 16px 0 6px; font-weight: bold; }
+.ocr-entries h5 { font-size: 15px; margin: 14px 0 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
 .ocr-entries ul { padding-left: 20px; margin: 0; }
 .ocr-entries li { margin-bottom: 2px; }
 .ocr-entries strong { font-weight: 400; color: #b7410e; }
