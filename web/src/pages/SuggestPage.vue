@@ -5,7 +5,7 @@
       {{ t2s('歡迎提交網站功能反饋、資料貢獻，或您在瀏覽時想到的任何建議。') }}
     </p>
     <p style="color:var(--muted);font-size:13px">
-      {{ t2s('若您想回報特定頁面的 OCR 或翻譯錯誤，也可以直接在該頁面劃選文字後點擊「回報這段」。') }}
+      {{ t2s('若您想回報特定頁面的 OCR 或翻譯錯誤，也可以直接在該頁面劃選文字後點擊「校訂選中部分」。') }}
     </p>
     <div style="margin-top:24px;padding:20px;background:var(--surface);border-radius:8px">
       <SuggestForm

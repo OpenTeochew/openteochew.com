@@ -1,6 +1,6 @@
 <template>
   <div v-if="submitted" class="thanks">
-    {{ t2s('感謝您的建議！') }}
+    {{ t2s('已送出，感謝汝个相輔。') }}
   </div>
   <form v-else class="suggest-form" @submit.prevent="onSubmit">
     <label>{{ t2s('類別') }}</label>
@@ -81,7 +81,7 @@ async function onSubmit() {
     submitted.value = true
     emit('submitted')
   } catch (e) {
-    errorMsg.value = e.message || t2s('提交失敗，請稍後再試')
+    errorMsg.value = e.message || t2s('送出失敗，請稍後再試')
   } finally {
     submitting.value = false
   }

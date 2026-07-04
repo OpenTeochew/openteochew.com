@@ -6,7 +6,7 @@
     @mousedown.prevent
   >
     <button class="selection-popover-btn" @click="onClick">
-      {{ t2s('回報這段') }}
+      {{ t2s('校訂選中部分') }}
     </button>
   </div>
 </template>
