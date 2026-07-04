@@ -331,6 +331,7 @@ sup.ocr-anno { font-size: 0.7em; color: var(--muted); font-weight: 400; margin-l
 .ocr-entries ul { padding-left: 20px; margin: 0; }
 .ocr-entries li { margin-bottom: 2px; }
 .ocr-entries strong { font-weight: 400; color: #b7410e; }
+.ocr-entries em { color: #2c6e6a; }
 
 /* ── Compact query rows ─────────────────────────── */
 
