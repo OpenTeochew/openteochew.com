@@ -31,6 +31,9 @@ SOURCE_CONFIG = {
         "csv": "003_First_Lessons_in_the_Tie-chiw_Dialect.csv",
         "md": "003_First_Lessons_in_the_Tie-chiw_Dialect.md",
     },
+    33: {
+        "md": "005_Tie_Suann_Kua_Iau_Chip.md",
+    },
 }
 
 SECTION_RE = re.compile(r">\s*(.+)$")
@@ -673,7 +676,7 @@ def main():
         csv_path = args.csv or (hw / "export" / "books" / csv_file if csv_file else None)
         md_path = args.md or (hw / "books" / md_file if md_file else None)
 
-        if not csv_path or not csv_path.exists():
+        if not args.pages_only and (not csv_path or not csv_path.exists()):
             print(f"ERROR: CSV not found: {csv_path or '(not configured)'}", file=sys.stderr)
             sys.exit(1)
 
