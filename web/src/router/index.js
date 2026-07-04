@@ -48,6 +48,21 @@ const routes = [
     path: '/license',
     name: 'License',
     component: () => import('../pages/LicensePage.vue')
+  },
+  {
+    path: '/suggest',
+    name: 'Suggest',
+    component: () => import('../pages/SuggestPage.vue')
+  },
+  {
+    path: '/admin',
+    name: 'AdminLogin',
+    component: () => import('../pages/admin/AdminLogin.vue')
+  },
+  {
+    path: '/admin/suggestions',
+    name: 'SuggestionsAdmin',
+    component: () => import('../pages/admin/SuggestionsAdmin.vue')
   }
 ]
 
@@ -65,7 +80,10 @@ const titles = {
   SourceViewer: '來源 — 潮州話開放資料庫',
   About: '關於 — 潮州話開放資料庫',
   Privacy: '隱私條款 — 潮州話開放資料庫',
-  License: '版權聲明 — 潮州話開放資料庫'
+  License: '版權聲明 — 潮州話開放資料庫',
+  Suggest: '反饋建議 — 潮州話開放資料庫',
+  AdminLogin: '管理 — 潮州話開放資料庫',
+  SuggestionsAdmin: '建議審核 — 潮州話開放資料庫'
 }
 
 const t2sSimple = (() => {
