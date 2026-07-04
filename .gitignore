@@ -4,6 +4,5 @@ backend/public/scans/
 node_modules/
 .wrangler/
 .env.dev
-.dev.vars
-backend/.dev.vars
+*.vars
 __pycache__/
