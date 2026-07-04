@@ -21,9 +21,10 @@
               <p class="meta-text">{{ s.author }}</p>
               <div class="dict-meta">
                 <span class="dict-tag">{{ typeLabel(s.type) }}</span>
-                <span v-if="s.total_entries" class="meta-text">{{ s.total_entries.toLocaleString() }} {{ t2s('詞條') }}</span>
-                <span v-else-if="!s.total_pages" class="status-missing">{{ t2s('缺') }}</span>
-                <span v-else class="status-ocr">{{ t2s('待OCR') }}</span>
+                <span v-if="s.content_stage === 'curated'" class="meta-text">{{ (s.total_entries || 0).toLocaleString() }} {{ t2s('詞條') }}</span>
+                <span v-else-if="s.content_stage === 'pending_curation'" class="status-pending">{{ t2s('待整理') }}</span>
+                <span v-else-if="s.content_stage === 'pending_ocr'" class="status-ocr">{{ t2s('待OCR') }}</span>
+                <span v-else class="status-missing">{{ t2s('缺') }}</span>
                 <span class="meta-text">{{ s.total_pages ? s.total_pages + ' ' + t2s('頁') : '' }}</span>
               </div>
             </div>
@@ -64,13 +65,11 @@ onMounted(async () => {
   }
 })
 
+const stageRank = { curated: 0, pending_curation: 1, pending_ocr: 2, missing: 3 }
 const sortSources = (a, b) => {
-  const aHasEntries = a.total_entries ? 1 : 0
-  const bHasEntries = b.total_entries ? 1 : 0
-  if (bHasEntries !== aHasEntries) return bHasEntries - aHasEntries
-  const aHasPages = a.total_pages ? 1 : 0
-  const bHasPages = b.total_pages ? 1 : 0
-  if (bHasPages !== aHasPages) return bHasPages - aHasPages
+  const ra = stageRank[a.content_stage] ?? 99
+  const rb = stageRank[b.content_stage] ?? 99
+  if (ra !== rb) return ra - rb
   const aHasYear = a.year ? 1 : 0
   const bHasYear = b.year ? 1 : 0
   if (bHasYear !== aHasYear) return bHasYear - aHasYear

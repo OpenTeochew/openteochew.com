@@ -745,6 +745,11 @@ def main():
             f"UPDATE sources SET "
             f"total_entries = (SELECT COUNT(*) FROM entries WHERE source_id = {args.source_id}), "
             f"total_pages = (SELECT COUNT(*) FROM pages WHERE source_id = {args.source_id}), "
+            f"content_stage = CASE "
+            f"WHEN (SELECT COUNT(*) FROM entries WHERE source_id = {args.source_id}) > 0 THEN 'curated' "
+            f"WHEN (SELECT COUNT(*) FROM pages WHERE source_id = {args.source_id} AND ocr_text IS NOT NULL AND TRIM(ocr_text) != '') > 0 THEN 'pending_curation' "
+            f"WHEN (SELECT COUNT(*) FROM pages WHERE source_id = {args.source_id}) > 0 THEN 'pending_ocr' "
+            f"ELSE 'missing' END, "
             f"updated_at = datetime('now') "
             f"WHERE id = {args.source_id};"
         )
@@ -824,9 +829,26 @@ def main():
         total_pages = cur.fetchone()[0]
 
         cur.execute(
-            "UPDATE sources SET total_entries = ?, total_pages = ?, updated_at = datetime('now') "
+            "SELECT COUNT(*) FROM pages WHERE source_id = ? "
+            "AND ocr_text IS NOT NULL AND TRIM(ocr_text) != ''",
+            (args.source_id,),
+        )
+        total_ocr_pages = cur.fetchone()[0]
+
+        if total_entries > 0:
+            content_stage = 'curated'
+        elif total_ocr_pages > 0:
+            content_stage = 'pending_curation'
+        elif total_pages > 0:
+            content_stage = 'pending_ocr'
+        else:
+            content_stage = 'missing'
+
+        cur.execute(
+            "UPDATE sources SET total_entries = ?, total_pages = ?, "
+            "content_stage = ?, updated_at = datetime('now') "
             "WHERE id = ?",
-            (total_entries, total_pages, args.source_id),
+            (total_entries, total_pages, content_stage, args.source_id),
         )
 
         con.commit()

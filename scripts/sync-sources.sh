@@ -62,7 +62,7 @@ for row in rows:
             vals.append(f"'{v.replace(chr(39), chr(39)+chr(39))}'")
     print(f"INSERT OR REPLACE INTO sources ({','.join(FIELDS)}) VALUES ({','.join(vals)});")
 
-print("UPDATE sources SET total_entries = (SELECT COUNT(*) FROM entries WHERE entries.source_id = sources.id), total_pages = (SELECT COUNT(*) FROM pages WHERE pages.source_id = sources.id);")
+print("UPDATE sources SET total_entries = (SELECT COUNT(*) FROM entries WHERE entries.source_id = sources.id), total_pages = (SELECT COUNT(*) FROM pages WHERE pages.source_id = sources.id), content_stage = CASE WHEN (SELECT COUNT(*) FROM entries WHERE entries.source_id = sources.id) > 0 THEN 'curated' WHEN (SELECT COUNT(*) FROM pages WHERE pages.source_id = sources.id AND ocr_text IS NOT NULL AND TRIM(ocr_text) != '') > 0 THEN 'pending_curation' WHEN (SELECT COUNT(*) FROM pages WHERE pages.source_id = sources.id) > 0 THEN 'pending_ocr' ELSE 'missing' END;")
 PYEOF
 
 echo "Generated SQL ($(wc -l < "$SQL_FILE") lines)"

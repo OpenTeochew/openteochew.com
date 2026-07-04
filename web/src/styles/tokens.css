@@ -231,6 +231,7 @@ html.lang-simplified .about-list li .team-name { font-family: var(--font-body); 
 .source-pending { display: inline-flex; padding: 2px 8px; background: var(--accent-soft); color: var(--accent); border-radius: 4px; font-family: var(--font-body); font-size: 11px; font-weight: 400; }
 .status-missing { display: inline-flex; padding: 2px 8px; background: #f0dcd8; color: #b84a3a; border-radius: 4px; font-family: var(--font-body); font-size: 11px; font-weight: 400; }
 .status-ocr { display: inline-flex; padding: 2px 8px; background: #e6ecf5; color: #2b5c8a; border-radius: 4px; font-family: var(--font-body); font-size: 11px; font-weight: 400; }
+.status-pending { display: inline-flex; padding: 2px 8px; background: #fdf2c8; color: #8a5a2b; border-radius: 4px; font-family: var(--font-body); font-size: 11px; font-weight: 400; }
 .source-count { display: inline-flex; padding: 1px 5px; margin-left: 6px; background: var(--surface-warm); color: var(--muted); border-radius: 5px; font-family: var(--font-mono); font-size: 11px; font-weight: 400; }
 .article-list { display: flex; flex-direction: column; }
 .article-row { display: grid; grid-template-columns: 100px 1fr 80px; gap: 24px; padding: 20px 0; border-top: 1px solid var(--border); align-items: baseline; transition: background 150ms; }

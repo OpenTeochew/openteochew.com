@@ -12,6 +12,7 @@ export interface Source {
   cover_url: string | null
   total_entries: number
   total_pages: number
+  content_stage: 'missing' | 'pending_ocr' | 'pending_curation' | 'curated'
   sort_order: number
   original_fields: string | null
   scan_source: string | null
