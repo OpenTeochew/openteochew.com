@@ -33,7 +33,9 @@
         {{ t2s('匯出') }}
         <select v-model="exportSourceId">
           <option :value="null">{{ t2s('全部來源') }}</option>
-          <option v-for="n in knownSourceIds" :key="n" :value="n">source {{ n }}</option>
+          <option v-for="s in sources" :key="s.id" :value="s.id">
+            {{ s.id }} · {{ t2s(s.name) }}
+          </option>
         </select>
       </label>
       <label>
@@ -111,6 +113,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { adminApi } from '../../api/suggestions'
+import { sourcesApi } from '../../api/sources'
 import { useSimplified } from '../../composables/useSimplified'
 const { t2s } = useSimplified()
 
@@ -129,7 +132,7 @@ const filterSourceId = ref(null)
 
 const exportSourceId = ref(null)
 const exportIncludeCompleted = ref(false)
-const knownSourceIds = ref([1, 2, 3])
+const sources = ref([])
 
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
 
@@ -140,6 +143,14 @@ const exportHref = computed(() =>
 function formatTime(s) {
   if (!s) return ''
   return String(s).replace(' ', ' ').slice(0, 16)
+}
+
+async function loadSources() {
+  try {
+    sources.value = await sourcesApi.getAll()
+  } catch (e) {
+    console.error('Failed to load sources:', e)
+  }
 }
 
 async function reload(nextPage = page.value) {
@@ -179,5 +190,8 @@ async function doPatch(s, newStatus) {
   }
 }
 
-onMounted(reload)
+onMounted(() => {
+  loadSources()
+  reload()
+})
 </script>
