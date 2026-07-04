@@ -24,23 +24,12 @@
       </label>
       <label>
         {{ t2s('來源') }}
-        <input type="number" min="1" v-model.number="filterSourceId" @change="reload(1)" style="width:64px" :placeholder="t2s('全部')" />
-      </label>
-    </div>
-
-    <div class="admin-toolbar">
-      <label>
-        {{ t2s('匯出') }}
-        <select v-model="exportSourceId">
-          <option :value="null">{{ t2s('全部來源') }}</option>
+        <select v-model="filterSourceId" @change="reload(1)">
+          <option :value="null">{{ t2s('全部') }}</option>
           <option v-for="s in sources" :key="s.id" :value="s.id">
             {{ s.id }} · {{ t2s(s.name) }}
           </option>
         </select>
-      </label>
-      <label>
-        <input type="checkbox" v-model="exportIncludeCompleted" />
-        {{ t2s('含已完成') }}
       </label>
       <a class="export-btn" :href="exportHref">
         {{ t2s('下載 CSV') }}
@@ -130,14 +119,12 @@ const filterStatus = ref('pending')
 const filterCategory = ref('all')
 const filterSourceId = ref(null)
 
-const exportSourceId = ref(null)
-const exportIncludeCompleted = ref(false)
 const sources = ref([])
 
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
 
 const exportHref = computed(() =>
-  adminApi.exportUrl(exportSourceId.value || undefined, exportIncludeCompleted.value)
+  adminApi.exportUrl(filterSourceId.value || undefined, false)
 )
 
 function formatTime(s) {
