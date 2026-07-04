@@ -10,9 +10,9 @@
       <label><input type="radio" value="feedback" v-model="category"> {{ t2s('反饋建議') }}</label>
     </div>
 
-    <template v-if="showSelectedText">
-      <label>{{ t2s('原文片段') }} <span class="char-count">{{ selectedText.length }}/500</span></label>
-      <textarea rows="3" v-model="selectedText" maxlength="500" :placeholder="t2s('（自動填入劃選內容，可編輯）')"></textarea>
+    <template v-if="showSelectedText && selectedText">
+      <label>{{ t2s('原文片段') }}</label>
+      <div class="selected-preview">{{ selectedText }}</div>
     </template>
 
     <label>{{ t2s('補充說明') }} <span class="char-count">{{ userNote.length }}/500</span></label>

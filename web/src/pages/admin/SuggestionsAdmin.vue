@@ -23,67 +23,71 @@
         </select>
       </label>
       <label>
-        {{ t2s('來源 ID') }}
-        <input type="number" min="1" v-model.number="filterSourceId" @change="reload(1)" style="width:80px" />
+        {{ t2s('來源') }}
+        <input type="number" min="1" v-model.number="filterSourceId" @change="reload(1)" style="width:64px" :placeholder="t2s('全部')" />
       </label>
     </div>
 
-    <div class="admin-toolbar" style="border-top:1px solid var(--border);padding-top:12px">
+    <div class="admin-toolbar">
       <label>
-        {{ t2s('匯出來源') }}
+        {{ t2s('匯出') }}
         <select v-model="exportSourceId">
-          <option :value="null">{{ t2s('全部') }}</option>
-          <option v-for="n in knownSourceIds" :key="n" :value="n">{{ n }}</option>
+          <option :value="null">{{ t2s('全部來源') }}</option>
+          <option v-for="n in knownSourceIds" :key="n" :value="n">source {{ n }}</option>
         </select>
       </label>
       <label>
         <input type="checkbox" v-model="exportIncludeCompleted" />
-        {{ t2s('包含已完成') }}
+        {{ t2s('含已完成') }}
       </label>
-      <a class="primary" :href="exportHref" style="text-decoration:none;padding:6px 12px;background:var(--accent);color:#fff;border-radius:4px">
-        {{ t2s('匯出 CSV') }}
+      <a class="export-btn" :href="exportHref">
+        {{ t2s('下載 CSV') }}
       </a>
     </div>
 
+    <p v-if="!loading && items.length" class="admin-summary">
+      {{ total }} {{ t2s('條') }} · {{ t2s('第') }} {{ page }} / {{ totalPages }} {{ t2s('頁') }}
+    </p>
+
     <div v-if="loading" style="color:var(--muted);padding:20px 0">{{ t2s('載入中…') }}</div>
     <div v-else-if="!items.length" style="color:var(--muted);padding:20px 0">{{ t2s('沒有符合條件的建議') }}</div>
-    <div v-else>
+    <div v-else class="sugg-list">
       <div v-for="s in items" :key="s.id" class="sugg-card">
         <div class="sugg-card-head">
-          <span>#{{ s.id }}</span>
+          <span class="id">#{{ s.id }}</span>
           <span class="sugg-status" :class="'sugg-status-' + s.status">{{ s.status }}</span>
-          <span>{{ s.category }}</span>
-          <span v-if="s.source_id">source {{ s.source_id }}<span v-if="s.page_num">, p.{{ s.page_num }}</span></span>
-          <span>{{ s.created_at }}</span>
-          <a v-if="s.url" :href="s.url" target="_blank" rel="noopener" style="margin-left:auto">→ {{ t2s('原頁') }}</a>
+          <span class="cat">{{ s.category }}</span>
+          <span v-if="s.source_id" class="loc">src {{ s.source_id }}<span v-if="s.page_num">·p{{ s.page_num }}</span></span>
+          <span class="time">{{ formatTime(s.created_at) }}</span>
+          <a v-if="s.url" class="link" :href="s.url" target="_blank" rel="noopener">↗ {{ t2s('原頁') }}</a>
         </div>
         <div class="sugg-body">
           <div v-if="s.selected_text" class="field">
-            <div class="field-label">{{ t2s('原文片段') }}</div>
-            <pre>{{ s.selected_text }}</pre>
+            <span class="field-label">{{ t2s('原文') }}</span>
+            <span class="field-val">{{ s.selected_text }}</span>
           </div>
           <div v-if="s.user_note" class="field">
-            <div class="field-label">{{ t2s('補充說明') }}</div>
-            <pre>{{ s.user_note }}</pre>
+            <span class="field-label">{{ t2s('說明') }}</span>
+            <span class="field-val">{{ s.user_note }}</span>
           </div>
           <div v-if="s.email" class="field">
-            <div class="field-label">Email</div>
-            <span>{{ s.email }}</span>
+            <span class="field-label">email</span>
+            <span class="field-val mono">{{ s.email }}</span>
           </div>
           <div v-if="s.admin_note" class="field">
-            <div class="field-label">{{ t2s('審核備註') }}</div>
-            <pre>{{ s.admin_note }}</pre>
+            <span class="field-label">{{ t2s('備註') }}</span>
+            <span class="field-val">{{ s.admin_note }}</span>
           </div>
         </div>
         <div class="sugg-actions">
-          <input type="text" v-model="noteInputs[s.id]" :placeholder="t2s('備註（可選）')" />
+          <input type="text" v-model="noteInputs[s.id]" :placeholder="t2s('備註（選填）')" />
           <template v-if="s.status === 'pending'">
             <button class="accept" @click="doPatch(s, 'accepted')">✓ {{ t2s('接受') }}</button>
             <button class="reject" @click="doPatch(s, 'rejected')">✗ {{ t2s('拒絕') }}</button>
           </template>
           <template v-else-if="s.status === 'accepted'">
             <button class="complete" @click="doPatch(s, 'completed')">✓ {{ t2s('完成') }}</button>
-            <button class="reject" @click="doPatch(s, 'rejected')">{{ t2s('改為拒絕') }}</button>
+            <button class="reject" @click="doPatch(s, 'rejected')">{{ t2s('改拒') }}</button>
           </template>
           <template v-else-if="s.status === 'completed'">
             <button class="undo" @click="doPatch(s, 'accepted')">↶ {{ t2s('取消完成') }}</button>
@@ -94,9 +98,9 @@
         </div>
       </div>
 
-      <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;color:var(--muted)">
+      <div class="sugg-pager">
         <button :disabled="page <= 1" @click="reload(page - 1)">← {{ t2s('上一頁') }}</button>
-        <span>{{ t2s('第') }} {{ page }} / {{ totalPages }} {{ t2s('頁') }}（{{ total }} {{ t2s('條') }}）</span>
+        <span>{{ page }} / {{ totalPages }}</span>
         <button :disabled="page >= totalPages" @click="reload(page + 1)">{{ t2s('下一頁') }} →</button>
       </div>
     </div>
@@ -132,6 +136,11 @@ const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.valu
 const exportHref = computed(() =>
   adminApi.exportUrl(exportSourceId.value || undefined, exportIncludeCompleted.value)
 )
+
+function formatTime(s) {
+  if (!s) return ''
+  return String(s).replace(' ', ' ').slice(0, 16)
+}
 
 async function reload(nextPage = page.value) {
   loading.value = true
