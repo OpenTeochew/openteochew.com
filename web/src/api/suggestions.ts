@@ -61,10 +61,11 @@ export const adminApi = {
   patch(id: number, body: { status: string; admin_note?: string }) {
     return patchJson<Record<string, never>>(`/api/v1/admin/suggestions/${id}`, body)
   },
-  exportUrl(source_id?: number, include_completed = false): string {
+  exportUrl(params: { status?: string; category?: string; source_id?: number }): string {
     const q = new URLSearchParams()
-    if (source_id) q.set('source_id', String(source_id))
-    if (include_completed) q.set('include_completed', 'true')
+    if (params.status) q.set('status', params.status)
+    if (params.category) q.set('category', params.category)
+    if (params.source_id) q.set('source_id', String(params.source_id))
     return `/api/v1/admin/suggestions/export.csv?${q.toString()}`
   },
 }

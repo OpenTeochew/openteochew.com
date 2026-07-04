@@ -83,7 +83,11 @@ routes.get(
     const csv = toCsv(rows as unknown as Array<Record<string, unknown>>, HEADERS)
 
     const yyyymmdd = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-    const suffix = q.source_id ? `source${q.source_id}_` : ''
+    const parts: string[] = []
+    if (q.status !== 'all') parts.push(q.status)
+    if (q.category !== 'all') parts.push(q.category)
+    if (q.source_id) parts.push(`src${q.source_id}`)
+    const suffix = parts.length ? parts.join('_') + '_' : ''
     const filename = `suggestions_${suffix}${yyyymmdd}.csv`
 
     c.header('Content-Type', 'text/csv; charset=utf-8')

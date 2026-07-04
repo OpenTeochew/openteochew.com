@@ -124,7 +124,11 @@ const sources = ref([])
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
 
 const exportHref = computed(() =>
-  adminApi.exportUrl(filterSourceId.value || undefined, false)
+  adminApi.exportUrl({
+    status: filterStatus.value,
+    category: filterCategory.value,
+    source_id: filterSourceId.value || undefined,
+  })
 )
 
 function formatTime(s) {

@@ -44,11 +44,9 @@ export const listQuerySchema = z.object({
 })
 
 export const exportQuerySchema = z.object({
+  status: z.enum([...STATUSES, 'all'] as const).default('accepted'),
+  category: z.enum([...CATEGORIES, 'all'] as const).default('all'),
   source_id: z.coerce.number().int().positive().optional(),
-  include_completed: z
-    .union([z.literal('true'), z.literal('false'), z.literal('1'), z.literal('0')])
-    .transform((v) => v === 'true' || v === '1')
-    .default('false'),
 })
 
 export const loginSchema = z.object({

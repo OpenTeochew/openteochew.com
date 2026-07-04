@@ -217,23 +217,25 @@ export async function updateSuggestion(
 }
 
 export interface ExportParams {
+  status: Status | 'all'
+  category: Category | 'all'
   source_id?: number
-  include_completed: boolean
 }
 
 export async function exportSuggestions(
   db: D1Database,
   p: ExportParams
 ): Promise<SuggestionRow[]> {
-  const statuses = p.include_completed ? ['accepted', 'completed'] : ['accepted']
-  const placeholders = statuses.map(() => '?').join(',')
-  const where: string[] = [`status IN (${placeholders})`]
-  const args: unknown[] = [...statuses]
+  const where: string[] = []
+  const args: unknown[] = []
+  if (p.status !== 'all') { where.push('status = ?'); args.push(p.status) }
+  if (p.category !== 'all') { where.push('category = ?'); args.push(p.category) }
   if (p.source_id !== undefined) { where.push('source_id = ?'); args.push(p.source_id) }
+  const whereSql = where.length ? 'WHERE ' + where.join(' AND ') : ''
   const rows = await db
     .prepare(
       `SELECT * FROM suggestions
-       WHERE ${where.join(' AND ')}
+       ${whereSql}
        ORDER BY source_id ASC, page_num ASC, created_at ASC`
     )
     .bind(...args)
