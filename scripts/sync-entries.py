@@ -32,6 +32,7 @@ SOURCE_CONFIG = {
         "md": "003_First_Lessons_in_the_Tie-chiw_Dialect.md",
     },
     33: {
+        "csv": "005_Tie_Suann_Kua_Iau_Chip.csv",
         "md": "005_Tie_Suann_Kua_Iau_Chip.md",
     },
 }
