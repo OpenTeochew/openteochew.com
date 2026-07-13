@@ -35,6 +35,9 @@ SOURCE_CONFIG = {
         "csv": "005_Tie_Suann_Kua_Iau_Chip.csv",
         "md": "005_Tie_Suann_Kua_Iau_Chip.md",
     },
+    4: {
+        "md": "007_A_Pronouncing_and_Defining_Dictionary_of_the_Swatow_Dialect.md"
+    }
 }
 
 SECTION_RE = re.compile(r">\s*(.+)$")
