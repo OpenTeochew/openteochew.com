@@ -90,7 +90,7 @@ const defTabs = computed(() => {
     const stripped = stripAnno(esc(orig))
     const revised = renderAnno(esc(val || ''))
     const revisedText = revised.replace(/<[^>]*>/g, '').trim()
-    return revisedText ? `${stripped}<span class="rt-revised"><span class="revised-badge">校</span>${revised}</span>` : stripped
+    return revisedText ? `${stripped}<span class="rt-revised"><span class="revised-badge">注</span>${revised}</span>` : stripped
   }
   const fmtHan = (e, src) => fmt(e.han, e.han_orig, isFieldAnnotated(src?.original_fields ?? null, 'han'))
   const fmtPuj = (e, src) => fmt(e.puj, e.puj_orig, isFieldAnnotated(src?.original_fields ?? null, 'puj'))
