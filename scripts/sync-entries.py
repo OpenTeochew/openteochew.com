@@ -40,6 +40,7 @@ SOURCE_CONFIG = {
         "md": "007_A_Pronouncing_and_Defining_Dictionary_of_the_Swatow_Dialect.md"
     },
     5: {
+        "csv": "008_A_Chinese_and_English_Vocabulary_in_the_Tie-chiu_Dialect.csv",
         "md": "008_A_Chinese_and_English_Vocabulary_in_the_Tie-chiu_Dialect.md"
     }
 }
