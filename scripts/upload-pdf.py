@@ -81,6 +81,46 @@ def split_pdf(pdf_path, slug, dpi, quality, force_pages=None):
     return pages
 
 
+def delete_r2_prefix(slug):
+    import json
+    prefix = f"{slug}/"
+    print(f"  Listing objects in {R2_BUCKET}/{prefix}...")
+    result = subprocess.run(
+        ["npx", "--yes", "wrangler", "r2", "object", "list", R2_BUCKET,
+         "--prefix", prefix, "--remote", "--json"],
+        capture_output=True, text=True, cwd=str(REPO / "backend"),
+    )
+    if result.returncode != 0:
+        print(f"  WARNING: Could not list R2 objects: {result.stderr.strip()}", file=sys.stderr)
+        return
+
+    try:
+        objects = json.loads(result.stdout) if result.stdout.strip() else []
+    except json.JSONDecodeError:
+        objects = []
+
+    if not objects:
+        print(f"  No existing objects under {R2_BUCKET}/{prefix}")
+        return
+
+    print(f"  Deleting {len(objects)} objects from R2...")
+    deleted = 0
+    for obj in objects:
+        key = obj.get("key", "")
+        if not key:
+            continue
+        del_result = subprocess.run(
+            ["npx", "--yes", "wrangler", "r2", "object", "delete",
+             f"{R2_BUCKET}/{key}", "--remote"],
+            capture_output=True, cwd=str(REPO / "backend"),
+        )
+        if del_result.returncode == 0:
+            deleted += 1
+        else:
+            print(f"    FAILED to delete: {key}", file=sys.stderr)
+    print(f"  Deleted {deleted}/{len(objects)} objects from R2")
+
+
 def get_file_stats(pages):
     total_size = sum(p.stat().st_size for p in pages)
     from PIL import Image
@@ -139,6 +179,7 @@ def main():
     parser.add_argument("--yes", action="store_true", help="Skip confirmation prompt")
     parser.add_argument("--force", action="store_true", help="Re-split and re-upload all pages, overwriting existing")
     parser.add_argument("--force-pages", type=str, default=None, help="Re-split and overwrite specific pages only, e.g. 1-20 or 1,5,8-12")
+    parser.add_argument("--reupload", action="store_true", help="Delete all R2 objects for this slug and re-upload all local files (no re-split)")
     args = parser.parse_args()
 
     pdf_path = args.pdf.resolve()
@@ -167,6 +208,10 @@ def main():
     print(f"DPI:      {args.dpi}")
     print(f"Quality:  {args.quality}")
     print()
+
+    if args.reupload:
+        delete_r2_prefix(args.slug)
+        args.skip_existing = False
 
     if args.force:
         cache_dir = TMP_DIR / args.slug

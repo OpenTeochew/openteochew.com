@@ -186,7 +186,11 @@ if [ -n "$UPLOAD_PDF" ]; then
   echo "  PDF:  $UPLOAD_PDF"
   echo "  Slug: $SLUG"
   echo
-  python3 scripts/upload-pdf.py --pdf="$UPLOAD_PDF" --slug="$SLUG" --skip-existing --yes${DPI:+ --dpi "$DPI"} ${PAGES:+ --pages "$PAGES"} $FORCE $FORCE_PAGES
+  if [ "$FORCE" = "--force" ]; then
+    python3 scripts/upload-pdf.py --pdf="$UPLOAD_PDF" --slug="$SLUG" --reupload --yes${DPI:+ --dpi "$DPI"} ${PAGES:+ --pages "$PAGES"} $FORCE_PAGES
+  else
+    python3 scripts/upload-pdf.py --pdf="$UPLOAD_PDF" --slug="$SLUG" --skip-existing --yes${DPI:+ --dpi "$DPI"} ${PAGES:+ --pages "$PAGES"} $FORCE $FORCE_PAGES
+  fi
   echo
 fi
 
