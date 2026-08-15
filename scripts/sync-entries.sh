@@ -26,6 +26,7 @@ Options:
   --dpi N           Render DPI for --upload-pdf (default: 300)
   --pages R         Upload specific pages only (e.g. 219-590). Passed to upload-pdf.py
   --force           Re-split and overwrite all pages in R2
+  --start-batch N   Resume remote SQL execution from batch N (1-based; use only with identical input)
   --force-pages R   Re-split and overwrite specific pages only (e.g. 1-20)
   --threshold F     Fuzzy match threshold (default: 0.8)
   --csv PATH        Override CSV path
@@ -67,9 +68,9 @@ while [ $# -gt 0 ]; do
       HW="$2"
       shift 2
       ;;
-    --pages-only|--entries-only|--threshold=*|--csv|--md)
+    --pages-only|--entries-only|--threshold=*|--csv|--md|--start-batch)
       EXTRA_ARGS+=("$1")
-      if [ "$1" = "--threshold" ] || [ "$1" = "--csv" ] || [ "$1" = "--md" ]; then
+      if [ "$1" = "--threshold" ] || [ "$1" = "--csv" ] || [ "$1" = "--md" ] || [ "$1" = "--start-batch" ]; then
         EXTRA_ARGS+=("$2")
         shift
       fi

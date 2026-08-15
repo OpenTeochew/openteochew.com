@@ -498,16 +498,28 @@ def execute_local(db_path, statements):
         con.close()
 
 
-def execute_remote(statements):
+def execute_remote(statements, start_batch=1):
+    total_batches = (len(statements) + BATCH_SIZE - 1) // BATCH_SIZE
+    if start_batch < 1 or start_batch > total_batches:
+        raise ValueError(
+            f"start batch must be between 1 and {total_batches}, got {start_batch}"
+        )
+
+    if start_batch > 1:
+        print(
+            f"  RESUME: skipping completed batches 1-{start_batch - 1}; "
+            "input files and options must be identical to the failed run"
+        )
+
     tmp_path = None
     try:
-        for i in range(0, len(statements), BATCH_SIZE):
+        start_index = (start_batch - 1) * BATCH_SIZE
+        for i in range(start_index, len(statements), BATCH_SIZE):
             batch = statements[i:i + BATCH_SIZE]
             with tempfile.NamedTemporaryFile(mode="w", suffix=".sql", delete=False) as f:
                 f.write("\n".join(batch))
                 tmp_path = f.name
             batch_num = i // BATCH_SIZE + 1
-            total_batches = (len(statements) + BATCH_SIZE - 1) // BATCH_SIZE
             print(f"  executing batch {batch_num}/{total_batches} ({len(batch)} statements)...")
             subprocess.run(
                 ["npx", "--yes", "wrangler", "d1", "execute", D1_NAME, "--remote", "--yes", f"--file={tmp_path}"],
@@ -667,7 +679,14 @@ def main():
     parser.add_argument("--match-threshold", type=float, default=0.8, help="fuzzy match threshold")
     parser.add_argument("--page-range", help="image-only pages, e.g. '1-300' or '300'")
     parser.add_argument("--force", action="store_true", help="force full re-sync (delete + re-insert)")
+    parser.add_argument(
+        "--start-batch", type=int, default=1,
+        help="resume remote execution at this 1-based batch (requires identical input)",
+    )
     args = parser.parse_args()
+
+    if args.start_batch != 1 and not args.remote:
+        parser.error("--start-batch is only supported with --remote")
 
     slug = load_slug_from_csv(args.source_id)
     hw = args.hw
@@ -748,7 +767,7 @@ def main():
                         print("  no page changes, skipping entries")
 
         if all_stmts:
-            execute_remote(all_stmts)
+            execute_remote(all_stmts, start_batch=args.start_batch)
 
         update_stmt = (
             f"UPDATE sources SET "
