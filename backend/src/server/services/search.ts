@@ -133,6 +133,15 @@ async function runSearchEntries(
 
   const where = conditions.join(' AND ')
 
+  const sourceCounts = await db.prepare(
+    `SELECT e.source_id, COUNT(*) as total FROM entries e WHERE ${where} GROUP BY e.source_id`
+  ).bind(...values).all()
+  const sourceTotalMap = new Map<number, number>()
+  for (const row of sourceCounts.results as any[]) {
+    sourceTotalMap.set(row.source_id, Number(row.total))
+  }
+  const total = [...sourceTotalMap.values()].reduce((sum, count) => sum + count, 0)
+
   function escLikeOrder(s: string) {
     return s.replace(/[%_\\]/g, '\\$&')
   }
@@ -189,48 +198,35 @@ async function runSearchEntries(
     boostParts.push(`CASE WHEN ${primaryField} LIKE '%${escLikeOrder(origHan)}%' ESCAPE '\\' THEN 0 ELSE 1 END`)
   }
   if (primaryField) boostParts.push(`LENGTH(COALESCE(${primaryField}, ''))`)
-  const relevanceOrder = boostParts.length > 0 ? boostParts.join(', ') : '0'
+  const relevanceOrder = boostParts.length > 0 ? boostParts.join(', ') : 'e.sort_order'
 
   const offset = (params.page - 1) * params.limit
-  const pageEnd = offset + params.limit
-  const entries = await db.prepare(
-    `WITH ranked AS (
-       SELECT e.*,
-              COUNT(*) OVER () AS search_total,
-              COUNT(*) OVER (PARTITION BY e.source_id) AS source_total,
-              ROW_NUMBER() OVER (
-                PARTITION BY e.source_id
-                ORDER BY ${relevanceOrder}, e.sort_order
-              ) AS source_row
+  const sourceIds = params.source_id ? [params.source_id] : [...sourceTotalMap.keys()]
+  const resultEntries: any[] = []
+
+  for (const sourceId of sourceIds) {
+    const rows = await db.prepare(
+      `SELECT e.*, s.name as source_name, s.name_zh as source_name_zh,
+              s.year as source_year, s.original_fields as source_original_fields,
+              sec.title as section_title
        FROM entries e
-       WHERE ${where}
-     )
-     SELECT ranked.*, s.name as source_name, s.name_zh as source_name_zh,
-            s.year as source_year, s.original_fields as source_original_fields,
-            sec.title as section_title
-     FROM ranked
-     JOIN sources s ON ranked.source_id = s.id
-     LEFT JOIN sections sec ON ranked.section_id = sec.id
-     WHERE ranked.source_row > ? AND ranked.source_row <= ?
-     ORDER BY ranked.source_id, ranked.source_row`
-  ).bind(...values, offset, pageEnd).all()
-
-  const resultEntries = entries.results as any[]
-  let total = Number(resultEntries[0]?.search_total ?? resultEntries.length)
-  // Out-of-range pages have no window rows to carry the total. This is only
-  // needed for direct API callers; the UI requests another page only if one exists.
-  if (resultEntries.length === 0 && params.page > 1) {
-    const countResult = await db.prepare(
-      `SELECT COUNT(*) as total FROM entries e WHERE ${where}`
-    ).bind(...values).first<{ total: number }>()
-    total = Number(countResult?.total ?? 0)
+       JOIN sources s ON e.source_id = s.id
+       LEFT JOIN sections sec ON e.section_id = sec.id
+       WHERE ${where}${params.source_id ? '' : ' AND e.source_id = ?'}
+       ORDER BY ${relevanceOrder}, e.sort_order
+       LIMIT ? OFFSET ?`
+    ).bind(
+      ...(params.source_id ? values : [...values, sourceId]),
+      params.limit,
+      offset
+    ).all()
+    resultEntries.push(...(rows.results as any[]))
   }
 
-  const visibleCountMap = new Map<number, number>()
-  for (const entry of resultEntries) {
-    visibleCountMap.set(entry.source_id, (visibleCountMap.get(entry.source_id) ?? 0) + 1)
-  }
-  resultEntries.sort((a, b) => {
+  // Preserve cross-source ranking, while source-filtered searches keep the
+  // SQL relevance order used before pagination.
+  if (!params.source_id) {
+    resultEntries.sort((a, b) => {
       if (qEnTerms.length > 0) {
         const exactTermRank = (entry: any) => qEnTerms.findIndex((term) => {
           const normalized = term.toLowerCase()
@@ -260,14 +256,15 @@ async function runSearchEntries(
       const lb = primaryField ? (b[primaryField.replace('e.', '')] || '').length : 0
       if (la !== lb) return la - lb
       return a.source_id - b.source_id || a.sort_order - b.sort_order
-  })
+    })
+  }
 
   const groups: Map<number, { source: any; count: number; entries: any[] }> = new Map()
   for (const entry of resultEntries) {
     if (!groups.has(entry.source_id)) {
       groups.set(entry.source_id, {
         source: { id: entry.source_id, name: entry.source_name, name_zh: entry.source_name_zh, year: entry.source_year, original_fields: entry.source_original_fields },
-        count: Number(entry.source_total ?? visibleCountMap.get(entry.source_id) ?? 0),
+        count: sourceTotalMap.get(entry.source_id) || 0,
         entries: []
       })
     }

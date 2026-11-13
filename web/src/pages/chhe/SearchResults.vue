@@ -221,7 +221,12 @@ function runSearch(query) {
   Object.keys(groupMoreData).forEach(k => delete groupMoreData[k])
   const { buildParams } = useSearch()
   const params = buildParams(queryRows)
-  store.search(params)
+  params.limit = 20
+  const sameParams = Object.keys(params).length === Object.keys(store.params).length
+    && Object.entries(params).every(([key, value]) => store.params[key] === value)
+  if (!sameParams || !store.result) {
+    store.search(params)
+  }
 }
 
 onMounted(() => {

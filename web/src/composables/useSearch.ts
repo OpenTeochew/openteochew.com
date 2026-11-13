@@ -28,6 +28,7 @@ export function useSearch() {
 
   async function doSearch(rows: { field: string; value: string }[]) {
     const params = buildParams(rows)
+    params.limit = 20
     const query: Record<string, string> = {}
     for (const [k, v] of Object.entries(params)) {
       if (v) query[k] = String(v)
