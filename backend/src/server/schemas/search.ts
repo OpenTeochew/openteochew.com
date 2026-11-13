@@ -7,7 +7,7 @@ export const searchSchema = z.object({
   q_en: z.string().optional(),
   q_mandarin: z.string().optional(),
   q_ja: z.string().optional(),
-  source_id: z.coerce.number().optional(),
-  page: z.coerce.number().default(1),
-  limit: z.coerce.number().default(10),
+  source_id: z.coerce.number().int().positive().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
 })
